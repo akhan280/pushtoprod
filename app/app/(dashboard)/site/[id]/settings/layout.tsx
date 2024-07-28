@@ -21,7 +21,7 @@ export default async function SiteAnalyticsLayout({
     },
   });
 
-  if (!data || data.userId !== session.user.id) {
+  if (!data || data.userId !== session.id) {
     notFound();
   }
 

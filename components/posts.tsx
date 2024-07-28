@@ -12,12 +12,12 @@ export default async function Posts({
   limit?: number;
 }) {
   const session = await getSession();
-  if (!session?.user) {
+  if (!session?.id) {
     redirect("/login");
   }
   const posts = await prisma.post.findMany({
     where: {
-      userId: session.user.id as string,
+      userId: session.id as string,
       ...(siteId ? { siteId } : {}),
     },
     orderBy: {

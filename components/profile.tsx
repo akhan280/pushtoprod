@@ -6,7 +6,7 @@ import LogoutButton from "./logout-button";
 
 export default async function Profile() {
   const session = await getSession();
-  if (!session?.user) {
+  if (!session?.id) {
     redirect("/login");
   }
 
@@ -18,16 +18,16 @@ export default async function Profile() {
       >
         <Image
           src={
-            session.user.image ??
-            `https://avatar.vercel.sh/${session.user.email}`
+            session.id ??
+            `https://avatar.vercel.sh/${session.email}`
           }
           width={40}
           height={40}
-          alt={session.user.name ?? "User avatar"}
+          alt={session.email ?? "User avatar"}
           className="h-6 w-6 rounded-full"
         />
         <span className="truncate text-sm font-medium">
-          {session.user.name}
+          {session.phone}
         </span>
       </Link>
       <LogoutButton />

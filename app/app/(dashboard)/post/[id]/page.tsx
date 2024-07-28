@@ -20,7 +20,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
       },
     },
   });
-  if (!data || data.userId !== session.user.id) {
+  if (!data || data.userId !== session.id) {
     notFound();
   }
 
