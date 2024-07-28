@@ -1,3 +1,12 @@
+
+
+
+export type User = {
+  id: string
+  email?: string
+  phone?: string
+}
+
 export type DomainVerificationStatusProps =
   | "Valid Configuration"
   | "Invalid Configuration"

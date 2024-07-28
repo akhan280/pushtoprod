@@ -1,88 +1,37 @@
-import { getServerSession, type NextAuthOptions } from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import { createClient } from "./utils/supabase-server";
+import { User } from "./types";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GitHubProvider({
-      clientId: process.env.AUTH_GITHUB_ID as string,
-      clientSecret: process.env.AUTH_GITHUB_SECRET as string,
-      profile(profile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name || profile.login,
-          gh_username: profile.login,
-          email: profile.email,
-          image: profile.avatar_url,
-        };
-      },
-    }),
-  ],
-  pages: {
-    signIn: `/login`,
-    verifyRequest: `/login`,
-    error: "/login", // Error code passed in query string as ?error=
-  },
-  adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
-  cookies: {
-    sessionToken: {
-      name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-        domain: VERCEL_DEPLOYMENT
-          ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
-          : undefined,
-        secure: VERCEL_DEPLOYMENT,
-      },
-    },
-  },
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.user = user;
-      }
-      return token;
-    },
-    session: async ({ session, token }) => {
-      session.user = {
-        ...session.user,
-        // @ts-expect-error
-        id: token.sub,
-        // @ts-expect-error
-        username: token?.user?.username || token?.user?.gh_username,
-      };
-      return session;
-    },
-  },
-};
+export async function getSession(): Promise<User | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.getUser();
 
-export function getSession() {
-  return getServerSession(authOptions) as Promise<{
-    user: {
-      id: string;
-      name: string;
-      username: string;
-      email: string;
-      image: string;
-    };
-  } | null>;
+  if (error || !data.user) {
+    return null;
+  }
+
+  return {
+    id: data.user.id,
+    email: data.user.email,
+    phone: data.user.phone
+  };
 }
 
+
+
+// TODO: See if this is necessary to be different compared to withPostAuth (i.e. can they be merged)
 export function withSiteAuth(action: any) {
   return async (
     formData: FormData | null,
     siteId: string,
     key: string | null,
   ) => {
-    const session = await getSession();
-    if (!session) {
+    const supabase = createClient();
+    const {data, error} = await supabase.auth.getUser();
+
+    if (!data.user?.id) {
       return {
         error: "Not authenticated",
       };
@@ -92,7 +41,7 @@ export function withSiteAuth(action: any) {
         id: siteId,
       },
     });
-    if (!site || site.userId !== session.user.id) {
+    if (!site || site.userId !== data.user.id) {
       return {
         error: "Not authorized",
       };
@@ -108,8 +57,10 @@ export function withPostAuth(action: any) {
     postId: string,
     key: string | null,
   ) => {
-    const session = await getSession();
-    if (!session?.user.id) {
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.getUser()
+
+    if (!data.user?.id) {
       return {
         error: "Not authenticated",
       };
@@ -122,7 +73,7 @@ export function withPostAuth(action: any) {
         site: true,
       },
     });
-    if (!post || post.userId !== session.user.id) {
+    if (!post || post.userId !== data.user.id) {
       return {
         error: "Post not found",
       };
