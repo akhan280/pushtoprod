@@ -1,19 +1,20 @@
 "use server";
 
+import prisma from "@/lib/prisma";
+import { Post, Site } from "@prisma/client";
+import { revalidateTag } from "next/cache";
+import { withPostAuth, withSiteAuth } from "./auth";
 import { getSession } from "@/lib/auth";
 import {
   addDomainToVercel,
+  // getApexDomain,
   removeDomainFromVercelProject,
+  // removeDomainFromVercelTeam,
   validDomainRegex,
 } from "@/lib/domains";
-import { getBlurDataURL } from "@/lib/utils";
 import { put } from "@vercel/blob";
-import { eq } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
-import { revalidateTag } from "next/cache";
-import { withPostAuth, withSiteAuth } from "./auth";
-import db from "./db";
-import { SelectPost, SelectSite, posts, sites, users } from "./schema";
+import { getBlurDataURL } from "@/lib/utils";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -32,17 +33,19 @@ export const createSite = async (formData: FormData) => {
   const subdomain = formData.get("subdomain") as string;
 
   try {
-    const [response] = await db
-      .insert(sites)
-      .values({
+    const response = await prisma.site.create({
+      data: {
         name,
         description,
         subdomain,
-        userId: session.user.id,
-      })
-      .returning();
-
-    revalidateTag(
+        user: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+      },
+    });
+    await revalidateTag(
       `${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
     );
     return response;
@@ -60,7 +63,7 @@ export const createSite = async (formData: FormData) => {
 };
 
 export const updateSite = withSiteAuth(
-  async (formData: FormData, site: SelectSite, key: string) => {
+  async (formData: FormData, site: Site, key: string) => {
     const value = formData.get(key) as string;
 
     try {
@@ -74,15 +77,14 @@ export const updateSite = withSiteAuth(
 
           // if the custom domain is valid, we need to add it to Vercel
         } else if (validDomainRegex.test(value)) {
-          response = await db
-            .update(sites)
-            .set({
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
               customDomain: value,
-            })
-            .where(eq(sites.id, site.id))
-            .returning()
-            .then((res) => res[0]);
-
+            },
+          });
           await Promise.all([
             addDomainToVercel(value),
             // Optional: add www subdomain as well and redirect to apex domain
@@ -91,14 +93,14 @@ export const updateSite = withSiteAuth(
 
           // empty value means the user wants to remove the custom domain
         } else if (value === "") {
-          response = await db
-            .update(sites)
-            .set({
+          response = await prisma.site.update({
+            where: {
+              id: site.id,
+            },
+            data: {
               customDomain: null,
-            })
-            .where(eq(sites.id, site.id))
-            .returning()
-            .then((res) => res[0]);
+            },
+          });
         }
 
         // if the site had a different customDomain before, we need to remove it from Vercel
@@ -109,8 +111,20 @@ export const updateSite = withSiteAuth(
 
           // first, we need to check if the apex domain is being used by other sites
           const apexDomain = getApexDomain(`https://${site.customDomain}`);
-          const domainCount = await db.select({ count: count() }).from(sites).where(or(eq(sites.customDomain, apexDomain), ilike(sites.customDomain, `%.${apexDomain}`))).then((res) => res[0].count);
-
+          const domainCount = await prisma.site.count({
+            where: {
+              OR: [
+                {
+                  customDomain: apexDomain,
+                },
+                {
+                  customDomain: {
+                    endsWith: `.${apexDomain}`,
+                  },
+                },
+              ],
+            },
+          });
 
           // if the apex domain is being used by other sites
           // we should only remove it from our Vercel project
@@ -143,35 +157,35 @@ export const updateSite = withSiteAuth(
 
         const blurhash = key === "image" ? await getBlurDataURL(url) : null;
 
-        response = await db
-          .update(sites)
-          .set({
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
             [key]: url,
             ...(blurhash && { imageBlurhash: blurhash }),
-          })
-          .where(eq(sites.id, site.id))
-          .returning()
-          .then((res) => res[0]);
+          },
+        });
       } else {
-        response = await db
-          .update(sites)
-          .set({
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
             [key]: value,
-          })
-          .where(eq(sites.id, site.id))
-          .returning()
-          .then((res) => res[0]);
+          },
+        });
       }
-
       console.log(
         "Updated site data! Revalidating tags: ",
         `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
         `${site.customDomain}-metadata`,
       );
-      revalidateTag(
+      await revalidateTag(
         `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
       );
-      site.customDomain && revalidateTag(`${site.customDomain}-metadata`);
+      site.customDomain &&
+        (await revalidateTag(`${site.customDomain}-metadata`));
 
       return response;
     } catch (error: any) {
@@ -188,108 +202,104 @@ export const updateSite = withSiteAuth(
   },
 );
 
-export const deleteSite = withSiteAuth(
-  async (_: FormData, site: SelectSite) => {
-    try {
-      const [response] = await db
-        .delete(sites)
-        .where(eq(sites.id, site.id))
-        .returning();
-
-      revalidateTag(
-        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
-      );
-      response.customDomain && revalidateTag(`${site.customDomain}-metadata`);
-      return response;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
+export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
+  try {
+    const response = await prisma.site.delete({
+      where: {
+        id: site.id,
+      },
+    });
+    await revalidateTag(
+      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+    );
+    response.customDomain &&
+      (await revalidateTag(`${site.customDomain}-metadata`));
+    return response;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+});
 
 export const getSiteFromPostId = async (postId: string) => {
-  const post = await db.query.posts.findFirst({
-    where: eq(posts.id, postId),
-    columns: {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
       siteId: true,
     },
   });
-
   return post?.siteId;
 };
 
-export const createPost = withSiteAuth(
-  async (_: FormData, site: SelectSite) => {
-    const session = await getSession();
-    if (!session?.user.id) {
-      return {
-        error: "Not authenticated",
-      };
-    }
-
-    const [response] = await db
-      .insert(posts)
-      .values({
-        siteId: site.id,
-        userId: session.user.id,
-      })
-      .returning();
-
-    revalidateTag(
-      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
-    );
-    site.customDomain && revalidateTag(`${site.customDomain}-posts`);
-
-    return response;
-  },
-);
-
-// creating a separate function for this because we're not using FormData
-export const updatePost = async (data: SelectPost) => {
+export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   const session = await getSession();
   if (!session?.user.id) {
     return {
       error: "Not authenticated",
     };
   }
-
-  const post = await db.query.posts.findFirst({
-    where: eq(posts.id, data.id),
-    with: {
-      site: true,
+  const response = await prisma.post.create({
+    data: {
+      siteId: site.id,
+      userId: session.user.id,
     },
   });
 
+  await revalidateTag(
+    `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
+  );
+  site.customDomain && (await revalidateTag(`${site.customDomain}-posts`));
+
+  return response;
+});
+
+// creating a separate function for this because we're not using FormData
+export const updatePost = async (data: Post) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+  const post = await prisma.post.findUnique({
+    where: {
+      id: data.id,
+    },
+    include: {
+      site: true,
+    },
+  });
   if (!post || post.userId !== session.user.id) {
     return {
       error: "Post not found",
     };
   }
-
   try {
-    const [response] = await db
-      .update(posts)
-      .set({
+    const response = await prisma.post.update({
+      where: {
+        id: data.id,
+      },
+      data: {
         title: data.title,
         description: data.description,
         content: data.content,
-      })
-      .where(eq(posts.id, data.id))
-      .returning();
+      },
+    });
 
-    revalidateTag(
+    await revalidateTag(
       `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
     );
-    revalidateTag(
+    await revalidateTag(
       `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
     );
 
     // if the site has a custom domain, we need to revalidate those tags too
     post.site?.customDomain &&
-      (revalidateTag(`${post.site?.customDomain}-posts`),
-      revalidateTag(`${post.site?.customDomain}-${post.slug}`));
+      (await revalidateTag(`${post.site?.customDomain}-posts`),
+      await revalidateTag(`${post.site?.customDomain}-${post.slug}`));
 
     return response;
   } catch (error: any) {
@@ -302,8 +312,8 @@ export const updatePost = async (data: SelectPost) => {
 export const updatePostMetadata = withPostAuth(
   async (
     formData: FormData,
-    post: SelectPost & {
-      site: SelectSite;
+    post: Post & {
+      site: Site;
     },
     key: string,
   ) => {
@@ -320,37 +330,38 @@ export const updatePostMetadata = withPostAuth(
         });
 
         const blurhash = await getBlurDataURL(url);
-        response = await db
-          .update(posts)
-          .set({
+
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
             image: url,
             imageBlurhash: blurhash,
-          })
-          .where(eq(posts.id, post.id))
-          .returning()
-          .then((res) => res[0]);
+          },
+        });
       } else {
-        response = await db
-          .update(posts)
-          .set({
+        response = await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
             [key]: key === "published" ? value === "true" : value,
-          })
-          .where(eq(posts.id, post.id))
-          .returning()
-          .then((res) => res[0]);
+          },
+        });
       }
 
-      revalidateTag(
+      await revalidateTag(
         `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-posts`,
       );
-      revalidateTag(
+      await revalidateTag(
         `${post.site?.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-${post.slug}`,
       );
 
       // if the site has a custom domain, we need to revalidate those tags too
       post.site?.customDomain &&
-        (revalidateTag(`${post.site?.customDomain}-posts`),
-        revalidateTag(`${post.site?.customDomain}-${post.slug}`));
+        (await revalidateTag(`${post.site?.customDomain}-posts`),
+        await revalidateTag(`${post.site?.customDomain}-${post.slug}`));
 
       return response;
     } catch (error: any) {
@@ -367,24 +378,23 @@ export const updatePostMetadata = withPostAuth(
   },
 );
 
-export const deletePost = withPostAuth(
-  async (_: FormData, post: SelectPost) => {
-    try {
-      const [response] = await db
-        .delete(posts)
-        .where(eq(posts.id, post.id))
-        .returning({
-          siteId: posts.siteId,
-        });
-
-      return response;
-    } catch (error: any) {
-      return {
-        error: error.message,
-      };
-    }
-  },
-);
+export const deletePost = withPostAuth(async (_: FormData, post: Post) => {
+  try {
+    const response = await prisma.post.delete({
+      where: {
+        id: post.id,
+      },
+      select: {
+        siteId: true,
+      },
+    });
+    return response;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+});
 
 export const editUser = async (
   formData: FormData,
@@ -400,14 +410,14 @@ export const editUser = async (
   const value = formData.get(key) as string;
 
   try {
-    const [response] = await db
-      .update(users)
-      .set({
+    const response = await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
         [key]: value,
-      })
-      .where(eq(users.id, session.user.id))
-      .returning();
-
+      },
+    });
     return response;
   } catch (error: any) {
     if (error.code === "P2002") {

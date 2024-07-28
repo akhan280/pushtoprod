@@ -1,11 +1,10 @@
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import db from "./db";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { Adapter } from "next-auth/adapters";
-import { accounts, sessions, users, verificationTokens } from "./schema";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "@/lib/prisma";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GitHubProvider({
@@ -27,12 +26,7 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: `/login`,
     error: "/login", // Error code passed in query string as ?error=
   },
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }) as Adapter,
+  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   cookies: {
     sessionToken: {
@@ -93,11 +87,11 @@ export function withSiteAuth(action: any) {
         error: "Not authenticated",
       };
     }
-
-    const site = await db.query.sites.findFirst({
-      where: (sites, { eq }) => eq(sites.id, siteId),
+    const site = await prisma.site.findUnique({
+      where: {
+        id: siteId,
+      },
     });
-
     if (!site || site.userId !== session.user.id) {
       return {
         error: "Not authorized",
@@ -120,14 +114,14 @@ export function withPostAuth(action: any) {
         error: "Not authenticated",
       };
     }
-
-    const post = await db.query.posts.findFirst({
-      where: (posts, { eq }) => eq(posts.id, postId),
-      with: {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
         site: true,
       },
     });
-
     if (!post || post.userId !== session.user.id) {
       return {
         error: "Post not found",
