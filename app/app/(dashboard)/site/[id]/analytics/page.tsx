@@ -17,7 +17,7 @@ export default async function SiteAnalytics({
       id: decodeURIComponent(params.id),
     },
   });
-  if (!data || data.userId !== session.user.id) {
+  if (!data || data.userId !== session.id) {
     notFound();
   }
 

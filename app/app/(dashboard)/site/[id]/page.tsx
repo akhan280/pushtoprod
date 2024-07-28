@@ -19,7 +19,7 @@ export default async function SitePosts({
     },
   });
 
-  if (!data || data.userId !== session.user.id) {
+  if (!data || data.userId !== session.id) {
     notFound();
   }
 

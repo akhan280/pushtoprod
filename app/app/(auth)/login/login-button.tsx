@@ -1,7 +1,6 @@
 "use client";
 
 import LoadingDots from "@/components/icons/loading-dots";
-import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -23,7 +22,6 @@ export default function LoginButton() {
       disabled={loading}
       onClick={() => {
         setLoading(true);
-        signIn("github");
       }}
       className={`${
         loading

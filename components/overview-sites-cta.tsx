@@ -11,7 +11,7 @@ export default async function OverviewSitesCTA() {
   }
   const sites = await prisma.site.count({
     where: {
-      userId: session.user.id as string,
+      userId: session.id as string,
     },
   });
 

@@ -23,7 +23,7 @@ const nanoid = customAlphabet(
 
 export const createSite = async (formData: FormData) => {
   const session = await getSession();
-  if (!session?.user.id) {
+  if (!session?.id) {
     return {
       error: "Not authenticated",
     };
@@ -40,7 +40,7 @@ export const createSite = async (formData: FormData) => {
         subdomain,
         user: {
           connect: {
-            id: session.user.id,
+            id: session.id,
           },
         },
       },
@@ -236,7 +236,7 @@ export const getSiteFromPostId = async (postId: string) => {
 
 export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   const session = await getSession();
-  if (!session?.user.id) {
+  if (!session?.id) {
     return {
       error: "Not authenticated",
     };
@@ -244,7 +244,7 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
   const response = await prisma.post.create({
     data: {
       siteId: site.id,
-      userId: session.user.id,
+      userId: session.id,
     },
   });
 
@@ -259,7 +259,7 @@ export const createPost = withSiteAuth(async (_: FormData, site: Site) => {
 // creating a separate function for this because we're not using FormData
 export const updatePost = async (data: Post) => {
   const session = await getSession();
-  if (!session?.user.id) {
+  if (!session?.id) {
     return {
       error: "Not authenticated",
     };
@@ -272,7 +272,7 @@ export const updatePost = async (data: Post) => {
       site: true,
     },
   });
-  if (!post || post.userId !== session.user.id) {
+  if (!post || post.userId !== session.id) {
     return {
       error: "Post not found",
     };
@@ -402,7 +402,7 @@ export const editUser = async (
   key: string,
 ) => {
   const session = await getSession();
-  if (!session?.user.id) {
+  if (!session?.id) {
     return {
       error: "Not authenticated",
     };
@@ -412,7 +412,7 @@ export const editUser = async (
   try {
     const response = await prisma.user.update({
       where: {
-        id: session.user.id,
+        id: session.id,
       },
       data: {
         [key]: value,
