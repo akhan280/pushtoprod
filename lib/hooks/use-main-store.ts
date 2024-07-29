@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand'
 import { AuthSlice, createAuthSlice } from './auth-slice';
 
 export type MainStoreType = AuthSlice;
