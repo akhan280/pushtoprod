@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function updateSession(request: NextRequest) {
+export async function updateSession(request: NextRequest, hostname: string, path: string) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -35,16 +35,47 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+
+  // console.log("User Data:", user);
+  // console.log("Hostname & Root Domain", hostname, process.env.NEXT_PUBLIC_ROOT_DOMAIN);
+
+  if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
+    if (!user && path !== "/login") {
+      // console.log("No user session, redirecting to login");
+      return NextResponse.redirect(new URL("/login", request.url));
+    } else if (user && path == "/login") {
+      // console.log("User already logged in, redirecting to home");
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    // console.log("Rewriting URL for app domain");
+    return NextResponse.rewrite(
+      new URL(`/app${path === "/" ? "" : path}`, request.url),
+    );
   }
+
+  if (
+    hostname === "localhost:3000" ||
+    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  ) {
+    // console.log("Rewriting URL for home");
+    return NextResponse.rewrite(
+      new URL(`/home${path === "/" ? "" : path}`, request.url),
+    );
+  } else {
+    return NextResponse.rewrite(new URL(`/${hostname}${path}`, request.url));
+  }
+
+
+  // if (
+  //   !user &&
+  //   !request.nextUrl.pathname.startsWith('/login') &&
+  //   !request.nextUrl.pathname.startsWith('/auth')
+  // ) {
+  //   // no user, potentially respond by redirecting the user to the login page
+  //   const url = request.nextUrl.clone()
+  //   url.pathname = '/login'
+  //   return NextResponse.redirect(url)
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
@@ -61,5 +92,4 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse
 }
-
 
