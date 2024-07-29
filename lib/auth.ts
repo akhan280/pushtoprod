@@ -1,3 +1,4 @@
+"use server"
 import prisma from "@/lib/prisma";
 import { createClient } from "./utils/supabase-server";
 import { User } from "./types";
@@ -19,10 +20,8 @@ export async function getSession(): Promise<User | null> {
   };
 }
 
-
-
 // TODO: See if this is necessary to be different compared to withPostAuth (i.e. can they be merged)
-export function withSiteAuth(action: any) {
+export async function withSiteAuth(action: any) {
   return async (
     formData: FormData | null,
     siteId: string,
@@ -51,7 +50,7 @@ export function withSiteAuth(action: any) {
   };
 }
 
-export function withPostAuth(action: any) {
+export async function withPostAuth(action: any) {
   return async (
     formData: FormData | null,
     postId: string,
