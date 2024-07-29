@@ -31,7 +31,7 @@ export default function TwoFactorAuth() {
       if (response.ok) {
         const data = await response.json();
         toast.success("OTP verified successfully!");
-        router.push("/dashboard"); // Redirect to the dashboard or desired page
+        router.push("/"); 
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || "Invalid OTP.");

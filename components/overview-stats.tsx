@@ -1,6 +1,5 @@
 "use client";
 
-import { random } from "@/lib/utils";
 import { Card, Metric, Text, AreaChart, BadgeDelta, Flex } from "@tremor/react";
 import { useMemo } from "react";
 
@@ -10,7 +9,7 @@ export default function OverviewStats() {
     return [
       ...months.map((month) => ({
         Month: `${month} 23`,
-        "Total Visitors": random(20000, 170418),
+        "Total Visitors": 132132,
       })),
       {
         Month: "Jul 23",

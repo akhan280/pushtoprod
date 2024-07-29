@@ -2,9 +2,9 @@
 
 import { createClient } from "./utils/supabase-server";
 
-const supabase = createClient();
 
 export async function sendOTP(phone: string) {
+  const supabase = createClient();
 
   try {
     console.log(`Attempting to send OTP to ${phone}`);

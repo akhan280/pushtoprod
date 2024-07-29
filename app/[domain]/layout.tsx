@@ -89,7 +89,7 @@ export default async function SiteLayout({
               <Image
                 alt={data.name || ""}
                 height={40}
-                src={data.logo || ""}
+                src="https://illustrations.popsy.co/gray/timed-out-error.svg"
                 width={40}
               />
             </div>

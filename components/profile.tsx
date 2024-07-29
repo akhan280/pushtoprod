@@ -17,10 +17,7 @@ export default async function Profile() {
         className="flex w-full flex-1 items-center space-x-3 rounded-lg px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-stone-200 active:bg-stone-300 dark:text-white dark:hover:bg-stone-700 dark:active:bg-stone-800"
       >
         <Image
-          src={
-            session.id ??
-            `https://avatar.vercel.sh/${session.email}`
-          }
+          src="https://illustrations.popsy.co/gray/timed-out-error.svg"
           width={40}
           height={40}
           alt={session.email ?? "User avatar"}
