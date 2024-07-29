@@ -35,6 +35,5 @@ export default async function middleware(req: NextRequest) {
     searchParams.length > 0 ? `?${searchParams}` : ""
   }`;
 
-
   return await updateSession(req, hostname, path);
 }
