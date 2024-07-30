@@ -41,13 +41,14 @@ export async function updateSession(request: NextRequest, hostname: string, path
 
   if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
     if (!user && path !== "/login") {
-      // console.log("No user session, redirecting to login");
+      console.log("No user session, redirecting to login");
       return NextResponse.redirect(new URL("/login", request.url));
     } else if (user && path == "/login") {
-      // console.log("User already logged in, redirecting to home");
+      console.log("User already logged in, redirecting to home");
       return NextResponse.redirect(new URL("/", request.url));
     }
-    // console.log("Rewriting URL for app domain");
+    console.log("Rewriting URL for app domain");
+    console.log(path, request.url)
     return NextResponse.rewrite(
       new URL(`/app${path === "/" ? "" : path}`, request.url),
     );
@@ -57,13 +58,21 @@ export async function updateSession(request: NextRequest, hostname: string, path
     hostname === "localhost:3000" ||
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
-    // console.log("Rewriting URL for home");
+
+    if (user) {
+      console.log('This is auth user with root')
+      return NextResponse.rewrite(
+        new URL(`/app${path === "/" ? "" : path}`, request.url),
+      );
+    }
+    console.log("Rewriting URL for home");
     return NextResponse.rewrite(
       new URL(`/home${path === "/" ? "" : path}`, request.url),
     );
-  } else {
+  } 
+
     return NextResponse.rewrite(new URL(`/${hostname}${path}`, request.url));
-  }
+
 
 
   // if (

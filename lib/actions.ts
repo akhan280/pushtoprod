@@ -1,4 +1,4 @@
-"use server";
+"use server"
 import prisma from "@/lib/prisma";
 import { Post, Site } from "@prisma/client";
 import { revalidateTag } from "next/cache";
@@ -12,11 +12,60 @@ import {
 import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Project } from "./types";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
   7,
 );
+
+
+export const createProject = async (projectData: Omit<Project, 'id'>) => {
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    const userId = session.id;
+    const project = await prisma.project.create({
+      data: {
+        ...projectData,
+        collaborators: {
+          connect: [{ id: userId }],
+        },
+      },
+      include: {
+        collaborators: {
+          select: {
+            user: true,
+          },
+        },
+      },
+    });
+    return {
+      project,
+      error: null,
+    };
+  } catch (error: unknown) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        project: null,
+        error: error.message,
+      };
+    }
+    return {
+      project: null,
+      error: "An unexpected error occurred",
+    };
+  }
+};
+
+
 
 export const createSite = async (formData: FormData) => {
   const session = await getSession();

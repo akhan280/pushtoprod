@@ -25,7 +25,7 @@ export default function Overview() {
 
       <div className="flex flex-col space-y-6 z-10 items-center">
         <h1 className="font-cal text-3xl font-bold dark:text-white">
-          YEET
+          areeb and ani are goated
         </h1>
         <h1 className="font-cal text-3xl font-bold dark:text-white">
           YEET

@@ -1,22 +1,42 @@
-import { InlineSnippet } from "@/components/form/domain-configuration";
-import Image from "next/image";
+import { Suspense } from "react";
+import Sites from "@/components/sites";
+import OverviewStats from "@/components/overview-stats";
+import Posts from "@/components/posts";
+import Link from "next/link";
+import PlaceholderCard from "@/components/placeholder-card";
+import OverviewSitesCTA from "@/components/overview-sites-cta";
 
-export default function HomePage() {
+export default function Overview() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center space-y-10 bg-black">
-      <Image
-        width={512}
-        height={512}
-        src="/logo.png"
-        alt="Platforms on Vercel"
-        className="w-48"
-      />
-      <h1 className="text-white">
-        Edit this page on{" "}
-        <InlineSnippet className="ml-2 bg-blue-900 text-blue-100">
-          app/home/page.tsx
-        </InlineSnippet>
-      </h1>
+    <div className="flex max-w-screen flex-col min-h-screen">
+      {/* SVG Filter Definition */}
+      <svg className="hidden">
+        <filter id="grainy">
+          <feTurbulence type="turbulence" baseFrequency="0.5"></feTurbulence>
+          <feColorMatrix type="saturate" values="0"></feColorMatrix>
+          <feBlend mode="multiply" in2="SourceGraphic" />
+        </filter>
+      </svg>
+
+      {/* Grainy Background */}
+      <div className="fixed inset-0 pointer-events-none" style={{ opacity: 0.18 }}>
+        <div className="w-full h-full" style={{ filter: 'url(#grainy)', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+      </div>
+
+      <div className="flex flex-col space-y-6 z-10 items-center">
+        <h1 className="font-cal text-3xl font-bold dark:text-white">
+          YEET in home.tsx
+        </h1>
+        <h1 className="font-cal text-3xl font-bold dark:text-white">
+          YEET
+        </h1>
+
+        <h1 className="font-cal text-3xl font-bold dark:text-white">
+          YEET
+        </h1>
+
+      </div>
+
     </div>
   );
 }

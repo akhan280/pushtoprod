@@ -20,6 +20,8 @@ export default async function middleware(req: NextRequest) {
 
   let hostname = `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
 
+  // let hostname = 'localhost:3000';
+
   if (
     hostname.includes("---") &&
     hostname.endsWith(`.${process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX}`)

@@ -61,34 +61,6 @@
 
 
 
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000000;
-  }
-}
-
-@layer utilities {
-  .overflow-hidden {
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-  }
-}
-
-.ProseMirror .is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
-}
-.ProseMirror .is-empty::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
-}
-
 /* Custom image styles */
 
 .ProseMirror img {
