@@ -163,7 +163,7 @@ export default function Nav({ children }: { children: ReactNode }) {
           segments[0] === "post" && segments.length === 2 && !showSidebar
             ? "left-5 top-5"
             : "right-5 top-7"
-        } sm:hidden`}
+        } 2xl:hidden`}
         onClick={() => setShowSidebar(!showSidebar)}
       >
         <Menu width={20} />
@@ -171,7 +171,7 @@ export default function Nav({ children }: { children: ReactNode }) {
       <div
         className={`transform ${
           showSidebar ? "w-full translate-x-0" : "-translate-x-full"
-        } fixed z-10 flex h-full flex-col justify-between border-r border-stone-200 bg-stone-100 p-4 transition-all dark:border-stone-700 dark:bg-stone-900 sm:w-60 sm:translate-x-0`}
+        } fixed z-10 flex h-full flex-col justify-between border-r border-stone-200 bg-stone-100 p-4 transition-all dark:border-stone-700 dark:bg-stone-900 md:w-30 2xl:translate-x-0`}
       >
         <div className="grid gap-2">
           <div className="flex items-center space-x-2 rounded-lg px-2 py-1.5">

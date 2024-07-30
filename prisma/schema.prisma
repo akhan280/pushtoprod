@@ -23,6 +23,7 @@ model User {
   accounts      Account[]
   sites         Site[]
   posts         Post[]
+  projects      ProjectCollaborator[]
 }
 
 model Account {
@@ -35,8 +36,29 @@ model Account {
   @@index([userId])
 }
 
+model Project {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  notes         String?
+  technologies  String?
+  githuburl     String?
+  columnId      String
+  collaborators ProjectCollaborator[]
+}
 
-// TODO: Post -> Project
+// many to many table for projects and collaborates
+model ProjectCollaborator {
+  userId    String
+  projectId String
+  assignedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([userId, projectId])
+}
+
 model Post {
   id            String   @id @default(cuid())
   title         String?  @db.Text

@@ -1,11 +1,29 @@
+import { UniqueIdentifier } from "@dnd-kit/core";
+import { ColumnId } from "../components/kanban/kanban";
 
-
+export type Project = {
+  id: string;
+  title: string;
+  description: string;
+  collaborators?: User[];
+  notes?: string;
+  technologies?: string;
+  githuburl?: string;
+  columnId: ColumnId;
+}
 
 export type User = {
   id: string
   email?: string
   phone?: string
 }
+
+
+export interface Column {
+  id: UniqueIdentifier;
+  title: string;
+}
+
 
 export type DomainVerificationStatusProps =
   | "Valid Configuration"
