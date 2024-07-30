@@ -23,6 +23,7 @@ import { coordinateGetter } from "./containers-keyboard-preset";
 import { hasDraggableData } from "./utils";
 import { Column, Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
+import { KanbanFetcher } from "./kanbanFetcher";
 
 const defaultCols = [
   {
@@ -45,6 +46,8 @@ interface KanbanBoardProps {
   fetchedProjects: Project[];
 }
 
+
+
 export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
@@ -55,9 +58,19 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
   useEffect(() => {
+    
     setProjects(fetchedProjects);
     console.log('projecst', fetchedProjects)
   }, [fetchedProjects, setProjects]);
+  // useEffect(() => {
+  //   async function fetchProjects() {
+  //     const proj = await KanbanFetcher();
+  //     setProjects(proj);
+  //     console.log('projects', projects);
+  //   }
+
+  //   fetchProjects();
+  // }, [setProjects]);
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -67,6 +80,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     })
   );
 
+  
   function getDraggingTaskData(projectId: UniqueIdentifier, columnId: ColumnId) {
     const projectsInColumn = projects?.filter((project) => project.columnId === columnId) ?? [];
     const projectPosition = projectsInColumn.findIndex((project) => project.id === projectId);
@@ -173,6 +187,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   };
 
   return (
+    
     <DndContext
       accessibility={{
         announcements,

@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { getSession } from "../../lib/auth";
 import { Project } from "../../lib/types";
 import { KanbanBoard } from "./kanban";
-import { getProjects } from "./getKanban";
+import { getProjects } from '../../lib/actions'
 
 export async function KanbanFetcher() {
     const response = await getProjects();
@@ -53,7 +53,7 @@ export async function KanbanFetcher() {
         },
         {
           id: "3",
-          title: "Project 3",
+          title: "Project 4",
           description: "Description for project 3",
           columnId: "to-launch",
           collaborators: [
@@ -73,6 +73,8 @@ export async function KanbanFetcher() {
           githuburl: "https://github.com/project3",
         },
       ];
+
+      console.log("dmu",dummyProjects)
       
     return (
         <KanbanBoard fetchedProjects = {dummyProjects}></KanbanBoard>
