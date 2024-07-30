@@ -35,6 +35,9 @@ export async function updateSession(request: NextRequest, hostname: string, path
     data: { user },
   } = await supabase.auth.getUser()
 
+  if (user) {
+    console.log("[MIDDLEWARE] User ID:", user.id);
+  }
 
   console.log("[MIDDLEWARE] User Data:", user?.role);
   // console.log("Hostname & Root Domain", hostname, process.env.NEXT_PUBLIC_ROOT_DOMAIN);

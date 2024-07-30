@@ -22,6 +22,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Column, Project } from "../../lib/types";
 import { ProjectCard } from "./project-card";
+import { createProject } from "@/lib/actions";
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
 
 export type ColumnType = "Column";
@@ -35,6 +39,7 @@ interface BoardColumnProps {
   projects: Project[];
   isOverlay?: boolean;
 }
+
 
 export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
   const projectsIds = useMemo(() => {
@@ -137,8 +142,46 @@ export function BoardContainer({ children }: { children: React.ReactNode }) {
   );
 }
 
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
+  }),
+  description: z.string().min(5, {
+    message: "Description must be at least 5 characters.",
+  }),
+  notes: z.string().optional(),
+  technologies: z.string().optional(),
+  githuburl: z.string().optional(),
+  columnId: z.string().min(1, {
+    message: "Column ID must be specified.",
+  }),
+});
+
 
 export function AddDialog({column}: {column: UniqueIdentifier}) {
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      notes: "",
+      technologies: "",
+      githuburl: "",
+      columnId: column,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = await createProject(values);
+
+    if (result.error) {
+      console.error("Error creating project:", result.error);
+    } else {
+      console.log("Project created:", result.project);
+    }
+  }
+  
   console.log('adding', column)
   return (
     <Dialog>
@@ -171,13 +214,13 @@ export function AddDialog({column}: {column: UniqueIdentifier}) {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        {/* <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Title
             </Label>
             <Input
-              id="name"
+              id="title"
               defaultValue="Pedro Duarte"
               className="col-span-3"
             />
@@ -192,10 +235,67 @@ export function AddDialog({column}: {column: UniqueIdentifier}) {
               className="col-span-3"
             />
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
+        </div> */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="title"
+                {...form.register("title")}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Input
+                id="description"
+                {...form.register("description")}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="notes" className="text-right">
+                Notes
+              </Label>
+              <Input id="notes" {...form.register("notes")} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="technologies" className="text-right">
+                Technologies
+              </Label>
+              <Input
+                id="technologies"
+                {...form.register("technologies")}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="githuburl" className="text-right">
+                GitHub URL
+              </Label>
+              <Input
+                id="githuburl"
+                {...form.register("githuburl")}
+                className="col-span-3"
+              />
+            </div>
+            <Input
+              id="columnId"
+              type="hidden"
+              {...form.register("columnId")}
+              value={column}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button type="submit">Submit</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
