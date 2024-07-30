@@ -38,7 +38,7 @@ interface BoardColumnProps {
 
 export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
   const projectsIds = useMemo(() => {
-    return projects.map((projects) => projects.id);
+    return projects?.map((projects) => projects.id);
   }, [projects]);
 
   const {
@@ -101,7 +101,7 @@ export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
       <ScrollArea>
         <CardContent className="flex flex-grow flex-col gap-2 p-2">
           <SortableContext items={projectsIds}>
-            {projects.map((projects) => (
+            {projects?.map((projects) => (
               <ProjectCard key={projects.id} project={projects} />
             ))}
           </SortableContext>

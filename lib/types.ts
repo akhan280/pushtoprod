@@ -6,16 +6,27 @@ export type Project = {
   title: string;
   description: string;
   collaborators?: User[];
-  notes?: string;
-  technologies?: string;
-  githuburl?: string;
+  notes?: string | null;
+  technologies?: string | null;
+  githuburl?: string | null;
   columnId: ColumnId;
 }
 
 export type User = {
-  id: string
-  email?: string
-  phone?: string
+  id: string;
+  email?: string | null;
+  name?: string | null;
+  username?: string | null;
+  gh_username?: string | null;
+  image?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+export interface Column {
+  id: UniqueIdentifier;
+  title: string;
 }
 
 
