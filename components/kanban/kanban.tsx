@@ -16,6 +16,7 @@ import {
   UniqueIdentifier,
   TouchSensor,
   MouseSensor,
+  PointerSensor,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { ProjectCard } from "./project-card";
@@ -74,7 +75,17 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   // }, [setProjects]);
 
   const sensors = useSensors(
-    useSensor(MouseSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5
+      }
+    }),
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        delay: 10,
+        tolerance: 4,   
+      }
+    }),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: coordinateGetter,
