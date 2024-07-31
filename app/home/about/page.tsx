@@ -69,36 +69,6 @@ export default function Overview() {
     },
   ];
 
-  const dummyPost = {
-    id: "post1",
-    title: "Dummy Post",
-    description: "This is a dummy post",
-    content: "Lorem ipsum dolor sit amet",
-    slug: "dummy-post",
-    image: "https://example.com/image.png",
-    imageBlurhash: "U29nQ=fQfQfQfQfQfQfQfQfQfQfQfQfQfQfQ",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    published: true,
-    siteId: "site1",
-    userId: "user1",
-    site: {
-      id: "site1",
-      name: "Dummy Site",
-      description: "This is a dummy site",
-      logo: "https://example.com/logo.png",
-      font: "Arial",
-      image: "https://example.com/site-image.png",
-      imageBlurhash: "U29nQ=fQfQfQfQfQfQfQfQfQfQfQfQfQfQfQ",
-      subdomain: "dummy-site",
-      customDomain: "dummy-site.com",
-      message404: "Page not found",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: "user1",
-    },
-  };
-
   return (
     <div className="flex max-w-screen flex-col min-h-screen">
       {/* SVG Filter Definition */}
@@ -130,7 +100,6 @@ export default function Overview() {
       <div className="min-h-screen">
         <KanbanBoard fetchedProjects={dummyProjects}></KanbanBoard>
       </div>
-      <Editor post={dummyPost}></Editor>
     </div>
   );
 }

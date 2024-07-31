@@ -10,6 +10,7 @@ import { CheckCheck, ExpandIcon, GripVertical } from "lucide-react";
 import { ColumnId } from "./kanban";
 import { Badge } from "../ui/badge";
 import { Project } from "../../lib/types";
+import useMainStore from "../../lib/hooks/use-main-store";
 
 export type ProjectType = "Project";
 export interface ProjectDragData {
@@ -41,6 +42,8 @@ export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
     },
   });
 
+  const {showDialog} = useMainStore();
+
   const style = {
     transition,
     transform: CSS.Translate.toString(transform),
@@ -61,6 +64,7 @@ export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => showDialog(true)}
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
@@ -69,7 +73,7 @@ export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
         <ExpandIcon></ExpandIcon>
         <div>hi</div>
         <Badge variant={"outline"} className="ml-auto font-semibold">
-          Task
+          Project
         </Badge>
       </CardHeader>
       <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
