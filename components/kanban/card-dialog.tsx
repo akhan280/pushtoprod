@@ -31,7 +31,7 @@ type ColumnId = "ideas" | "development" | "to-launch";
 export function AddDialog() {
 
     const [loading, setLoading] = useState(false);
-    const { selectedProject, addProject, dialog, showDialog } = useMainStore();
+    const { selectedProject, addProject, dialog, showDialog, dragged, showDraggedDialog } = useMainStore();
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -60,24 +60,33 @@ export function AddDialog() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
       console.log("Form values:", values); // Add this line for debugging 
       setLoading(true)
-      const newProject: Project = {
-        id: uuidv4(),
-        ...values,
-      };
-      const result = await createProject(newProject);
-      if (result.error) {
-        console.error("Error creating project:", result.error);
-      } else {
-        console.log("Project created:", result.project);
-        addProject(newProject);
+
+      if(dragged){
+        console.log("Saving project, not creating new", values);
         showDialog(false);
+        showDraggedDialog(false);
+
+      }
+      else{
+        const newProject: Project = {
+          id: uuidv4(),
+          ...values,
+        };
+        const result = await createProject(newProject);
+        if (result.error) {
+          console.error("Error creating project:", result.error);
+        } else {
+          console.log("Project created:", result.project);
+          addProject(newProject);
+          showDialog(false);
+        }
       }
       setLoading(false)
     }
   
     return (
       // if dialog == true, we open
-      <Dialog open={dialog}>
+      <Dialog open={dialog} onOpenChange={showDialog}>
         <DialogContent className="sm:max-w-[425px] bg-white">
           <DialogHeader>
             <DialogTitle>Add</DialogTitle>
@@ -145,8 +154,9 @@ export function AddDialog() {
                 />
               </div>
               <DialogFooter>
+                
                 {!loading ? <Button variant={"outline"} className="z-20" type="submit">
-                  Submit
+                  {dragged ? "Save" : "Submit"}
                 </Button>: <ButtonLoading />}
               </DialogFooter>
             </form>
