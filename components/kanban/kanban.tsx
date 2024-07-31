@@ -24,7 +24,7 @@ import { coordinateGetter } from "./containers-keyboard-preset";
 import { hasDraggableData } from "./utils";
 import { Column, Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
-import { AddDialog } from "./card-dialog";
+import { AddDialog } from "../dialog/card-dialog";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
 
@@ -264,29 +264,48 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
 
     console.log('data type', data?.type)
     if (data?.type === "Project") {
-      console.log('Dragging project')
+      console.log('[OnDrag Start] Dragging project')
       setActiveProject(data.project);
+      console.log('[OnDrag Start]', activeProject)
+
       return;
     }
   }
 
   async function onDragEnd(event: DragEndEvent) {
+    console.log('[Kanban] Drag end', activeColumn);
+    console.log('[Kanban] Drag end', event);
+
     setActiveColumn(null);
     setActiveProject(null);
 
     const { active, over } = event;
+
     if (!over) return;
+    if (!over.data || !over.data.current ) return; //!over.data.current.project
 
     const activeId = active.id;
     const overId = over.id;
-
+    
     const project = event.active.data.current!.project;
     const previousColumn = pickedUpProjectColumn.current;
-    const newColumn = over.data.current!.project.columnId;
-    console.log('[Kanban] Drag ended on project:', project)
-    console.log('[Kanban] Previous Column:', pickedUpProjectColumn.current)
-    console.log('[Kanban] New Column:', over.data.current!.project.columnId)
+    const newColumn = project.columnId;
 
+    if (!newColumn) {
+      console.log('[Kanban] newColumn is null', newColumn);
+      console.log('[Kanban] newColumn is null; projects', projects);
+      const currentProject = projects.find((proj) => proj.id === project.id);
+    
+      if (currentProject && previousColumn !== null) {
+        currentProject.columnId = previousColumn;
+      }
+      console.log('[Kanban] newColumn is null; currentProject', currentProject);
+    }
+    
+    console.log('[Kanban] Drag ended on project:', project);
+    console.log('[Kanban] Previous Column:', pickedUpProjectColumn.current);
+    console.log('[Kanban] New Column:', newColumn);
+    
     // 2) 
     // if (previousColumn === "to-launch" && newColumn === "development" || previousColumn === "to-launch" && newColumn === "ideas"|| previousColumn === "development" && newColumn === "ideas"){
     //   showDialog(false)
@@ -318,17 +337,9 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
       
     }
       
-      
-      
-    
-    
-    
-
-    
-    
     const projectMovement = { 
-      next: over.data.current!.project.columnId,
-      previous: pickedUpProjectColumn.current,
+      next: newColumn,
+      previous: previousColumn,
       ...project,
     }
 
