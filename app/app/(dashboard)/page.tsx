@@ -6,16 +6,11 @@ import Link from "next/link";
 import PlaceholderCard from "@/components/placeholder-card";
 import OverviewSitesCTA from "@/components/overview-sites-cta";
 import { KanbanBoard } from "../../../components/kanban/kanban";
-import { KanbanFetcher } from "@/components/kanban/kanbanFetcher";
-import { Button } from "@/components/ui/button";
+import { KanbanFetcher } from "@/components/kanban/kanbanLayout";
+import { getProjects } from "../../../lib/actions";
 
 
-
-
-
-
-
-export default function Overview() {
+export default async function Overview() {
   // const addOneUser = async () => {
   //   try {
   //     const result = await addUser(userData);
@@ -28,6 +23,10 @@ export default function Overview() {
   //     console.error("Error:", error);
   //   }
   // };
+  const response = await getProjects();
+  const projects = response.projects ?? [];
+
+  console.log('[Kanban] Fetched items', projects.length)
 
   return (
     <div className="flex flex-col">
@@ -44,8 +43,9 @@ export default function Overview() {
             </div>
           }
         >
-          <KanbanFetcher/>
-          
+          <div className="min-h-screen">
+            <KanbanBoard fetchedProjects={projects}/>
+          </div>
         </Suspense>
       </div>
 

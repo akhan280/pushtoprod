@@ -23,7 +23,10 @@ import { coordinateGetter } from "./containers-keyboard-preset";
 import { hasDraggableData } from "./utils";
 import { Column, Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
-import { KanbanFetcher } from "./kanbanFetcher";
+import { AddDialog } from "./card-dialog";
+import { updateProjectStatus } from "../../lib/actions";
+import { toast } from "../ui/use-toast";
+
 
 const defaultCols = [
   {
@@ -46,14 +49,12 @@ interface KanbanBoardProps {
   fetchedProjects: Project[];
 }
 
-
-
 export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const { projects, setProjects } = useMainStore();
+  const { setSelectedProject, showDialog, projects, setProjects } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
@@ -81,7 +82,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   );
 
   
-  function getDraggingTaskData(projectId: UniqueIdentifier, columnId: ColumnId) {
+  function getDraggingProjectData(projectId: UniqueIdentifier, columnId: ColumnId) {
     const projectsInColumn = projects?.filter((project) => project.columnId === columnId) ?? [];
     const projectPosition = projectsInColumn.findIndex((project) => project.id === projectId);
     const column = columns.find((col) => col.id === columnId);
@@ -103,12 +104,12 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         } of ${columnsId.length}`;
       } else if (active.data.current?.type === "Project") {
         pickedUpProjectColumn.current = active.data.current.project.columnId;
-        const { projectsInColumn, projectPosition, column } = getDraggingTaskData(
+        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
           active.id,
           pickedUpProjectColumn.current!
         );
         return `Picked up Project ${
-          active.data.current.project.content
+          active.data.current.project.title
         } at position: ${projectPosition + 1} of ${
           projectsInColumn.length
         } in column ${column?.title}`;
@@ -129,18 +130,18 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         active.data.current?.type === "Project" &&
         over.data.current?.type === "Project"
       ) {
-        const { projectsInColumn, projectPosition, column } = getDraggingTaskData(
+        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
           over.id,
           over.data.current.project.columnId
         );
         if (over.data.current.project.columnId !== pickedUpProjectColumn.current) {
           return `Project ${
-            active.data.current.project.content
+            active.data.current.project.title
           } was moved over column ${column?.title} in position ${
             projectPosition + 1
           } of ${projectsInColumn.length}`;
         }
-        return `Task was moved over position ${projectPosition + 1} of ${
+        return `Project was moved over position ${projectPosition + 1} of ${
           projectsInColumn.length
         } in column ${column?.title}`;
       }
@@ -164,7 +165,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         active.data.current?.type === "Project" &&
         over.data.current?.type === "Project"
       ) {
-        const { projectsInColumn, projectPosition, column } = getDraggingTaskData(
+        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
           over.id,
           over.data.current.project.columnId
         );
@@ -173,7 +174,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
             projectPosition + 1
           } of ${projectsInColumn.length}`;
         }
-        return `Task was dropped into position ${projectPosition + 1} of ${
+
+        return `Project was dropped into position ${projectPosition + 1} of ${
           projectsInColumn.length
         } in column ${column?.title}`;
       }
@@ -216,9 +218,11 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
             />
           </div>
         </SortableContext>
+        <AddDialog></AddDialog>
+
       </BoardContainer>
 
-      {"document" in window &&
+      {typeof window !== "undefined" &&
         createPortal(
           <DragOverlay>
             {activeColumn && (
@@ -238,20 +242,24 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   );
 
   function onDragStart(event: DragStartEvent) {
+    console.log(hasDraggableData(event.active))
     if (!hasDraggableData(event.active)) return;
+    
     const data = event.active.data.current;
     if (data?.type === "Column") {
       setActiveColumn(data.column);
       return;
     }
 
+    console.log('data type', data?.type)
     if (data?.type === "Project") {
+      console.log('Dragging project')
       setActiveProject(data.project);
       return;
     }
   }
 
-  function onDragEnd(event: DragEndEvent) {
+  async function onDragEnd(event: DragEndEvent) {
     setActiveColumn(null);
     setActiveProject(null);
 
@@ -261,21 +269,43 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     const activeId = active.id;
     const overId = over.id;
 
-    if (!hasDraggableData(active)) return;
+    const project = event.active.data.current!.project;
+    const previousColumn = pickedUpProjectColumn.current;
+    const newColumn = over.data.current!.project.columnId;
+    console.log('[Kanban] Drag ended on project:', project)
+    console.log('[Kanban] Previous Column:', pickedUpProjectColumn.current)
+    console.log('[Kanban] New Column:', over.data.current!.project.columnId)
 
-    const activeData = active.data.current;
-
-    if (activeId === overId) return;
-
-    const isActiveAColumn = activeData?.type === "Column";
-    if (isActiveAColumn) {
-      setColumns((columns) => {
-        const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
-        const overColumnIndex = columns.findIndex((col) => col.id === overId);
-        return arrayMove(columns, activeColumnIndex, overColumnIndex);
-      });
-      return;
+    // 2) 
+    if (previousColumn === "to-launch" && newColumn === "development" || previousColumn === "to-launch" && newColumn === "ideas"|| previousColumn === "development" && newColumn === "ideas"){
+      showDialog(false)
     }
+    
+    if (newColumn !== previousColumn ) {
+        showDialog(true)
+    }
+    
+    const projectMovement = { 
+      next: over.data.current!.project.columnId,
+      previous: pickedUpProjectColumn.current,
+      ...project,
+    }
+
+    setSelectedProject(projectMovement)
+
+    // TODO: on the current index, it will save to db
+    const response = await updateProjectStatus(project.id, newColumn);
+    if (response.error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
+    }
+
+    if (!hasDraggableData(active)) return;
+    const activeData = active.data.current;
+    if (activeId === overId) return;
 
     const isActiveAProject = activeData?.type === "Project";
     if (isActiveAProject) {
@@ -298,6 +328,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         setProjects(reorderedProjects);
       }
     }
+    
+    
   }
 
   function onDragOver(event: DragOverEvent) {
