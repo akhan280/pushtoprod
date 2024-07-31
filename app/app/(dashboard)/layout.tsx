@@ -1,16 +1,22 @@
 import { ReactNode, Suspense } from "react";
 import Profile from "@/components/profile";
-import Nav from "@/components/nav";
+import { TooltipProvider } from "../../../components/ui/tooltip";
+import Navbar from "../../../components/nav-bar";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div>
-      <Nav>
+      <TooltipProvider>
         <Suspense fallback={<div>Loading...</div>}>
+        <div className="flex flex-row ml-auto">
           <Profile />
+        </div>
+
         </Suspense>
-      </Nav>
       <div className="min-h-screen dark:bg-black md:pl-32">{children}</div>
+      <div><Navbar></Navbar></div>
+
+      </TooltipProvider>
     </div>
   );
 }
