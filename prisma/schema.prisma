@@ -12,10 +12,10 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(cuid()) @unique
   name          String?
   username      String?
-  email         String?   @unique
+  email         String?    @unique
   gh_username   String?
   image         String?
   createdAt     DateTime  @default(now())
@@ -24,6 +24,7 @@ model User {
   sites         Site[]
   posts         Post[]
   projects      ProjectCollaborator[]
+  paid          Boolean    @default(false)
 }
 
 model Account {
@@ -49,7 +50,7 @@ model Project {
 
 // many to many table for projects and collaborates
 model ProjectCollaborator {
-  userId    String
+  userId    String 
   projectId String
   assignedAt DateTime @default(now())
 
@@ -98,14 +99,4 @@ model Site {
   posts         Post[]
 
   @@index([userId])
-}
-
-model Example {
-  id            Int     @id @default(autoincrement())
-  name          String?
-  description   String? @db.Text
-  domainCount   Int?
-  url           String?
-  image         String? @db.Text
-  imageBlurhash String? @db.Text
 }

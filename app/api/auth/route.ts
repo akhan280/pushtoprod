@@ -15,6 +15,21 @@ export async function POST(req: Request) {
       console.error('[Submit OTP] An error occurred:', error, phone, code, data);
       return NextResponse.json({ error: 'Incorrect code' }, { status: 500 });
     }
+
+    console.log('[API AUTH] Creating User in Prisma')
+    const response = await prisma?.user.upsert({
+      update: {},
+      create: {
+        id: data.user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        paid: false,
+      },
+      where: {
+        id: data.user.id
+      },
+    })
+
     return NextResponse.json({ response: "Successfully verified OTP"}, { status: 200 });
 
   } catch (err) {
