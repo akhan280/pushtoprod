@@ -54,7 +54,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const { setSelectedProject, showDialog, projects, setProjects } = useMainStore();
+  const { setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
@@ -277,13 +277,43 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     console.log('[Kanban] New Column:', over.data.current!.project.columnId)
 
     // 2) 
-    if (previousColumn === "to-launch" && newColumn === "development" || previousColumn === "to-launch" && newColumn === "ideas"|| previousColumn === "development" && newColumn === "ideas"){
-      showDialog(false)
-    }
+    // if (previousColumn === "to-launch" && newColumn === "development" || previousColumn === "to-launch" && newColumn === "ideas"|| previousColumn === "development" && newColumn === "ideas"){
+    //   showDialog(false)
+    // }
     
     if (newColumn !== previousColumn ) {
         showDialog(true)
+        showDraggedDialog(true)
     }
+    // else{
+    //   showDialog(true)
+    // }
+
+    if (previousColumn === "ideas" && newColumn === "development"){
+      showDialog(true)
+      showDraggedDialog(true)
+    }
+    else if (previousColumn === "development" && newColumn === "to-launch"){
+      showDialog(true)
+      showDraggedDialog(true)
+    }
+    else if (previousColumn === "ideas" && newColumn === "to-launch"){
+      showDialog(true)
+      showDraggedDialog(true)
+    }
+    else{
+      showDialog(false)
+      showDraggedDialog(false)
+      
+    }
+      
+      
+      
+    
+    
+    
+
+    
     
     const projectMovement = { 
       next: over.data.current!.project.columnId,
