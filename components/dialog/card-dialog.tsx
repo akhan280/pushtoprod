@@ -10,6 +10,7 @@ import { createProject } from "@/lib/actions";
 import { ColumnId } from "../kanban/kanban";
 import { ProjectMovement } from "@/lib/hooks/kanban-slice";
 import { v4 as uuidv4 } from "uuid";
+import { Project } from "@/lib/types";
 
 export default function DialogLayout() {
   const { selectedProject, setSelectedProject, setRequestAdd, requestedAdd, dialog, addProject } = useMainStore();
@@ -24,45 +25,30 @@ export default function DialogLayout() {
   
       const columnId = type as ColumnId;
   
-      const projectData = {
+      const projectData: Project = {
+        id: uuidv4(),
         title: "Untitled",
         description: "none",
         notes: "none", 
+        collaborators: [],
         technologies: "none", 
         githuburl: "empty", 
         columnId: columnId,
       };
-  
-
      
-      // console.log(`new proj is ${newProject}`)
-  
-     
+      console.log(`new proj is ${projectData}`)
       const result = await createProject(projectData);
       console.log("PROJECT awaiting:", result.project?.id)
 
-
       try{
         if (result.project) {
-
-
           const project: ProjectMovement = {
             ...result.project,
-            id: result.project?.id || "",
-            title: result.project.title || "Untitled", // Ensure title is a string
-            description: result.project.description || "", // Provide a default value for description
-            notes: result.project.notes || "",
-            technologies: result.project.technologies || "",
-            githuburl: result.project.githuburl || "",
-            columnId: columnId, // Ensure columnId matches the expected type
             previous: columnId as ColumnId, 
             next: columnId as ColumnId,
           };
 
           addProject(project);
-    
-          
-    
           setSelectedProject(project);
           setRequestAdd(""); 
 

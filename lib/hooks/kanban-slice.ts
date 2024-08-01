@@ -22,7 +22,6 @@ type KanbanActions = {
   setProjects: (projects: Project[]) => void;
   setSelectedProject: (project: ProjectMovement | null) => void;
   setRequestAdd: (requestedAdd: string) => void;
-  
 };
 
 export type KanbanSlice = KanbanStore & KanbanActions;
