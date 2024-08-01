@@ -3,6 +3,8 @@ import PlaceholderCard from "@/components/placeholder-card";
 import { KanbanBoard } from "../../../components/kanban/kanban";
 import { getProjects } from "../../../lib/actions";
 import Navbar from "../../../components/nav-bar";
+import DialogLayout from "../../../components/dialog/card-dialog";
+import AddNewProject from "../../../components/add-new-project";
 
 export default async function Overview() {
   // const addOneUser = async () => {
@@ -36,7 +38,9 @@ export default async function Overview() {
           }
         >
           <div className="min-h-screen">
+            <AddNewProject></AddNewProject>
             <KanbanBoard fetchedProjects={projects} />
+            <DialogLayout></DialogLayout>
           </div>
         </Suspense>
       </div>

@@ -24,9 +24,9 @@ import { coordinateGetter } from "./containers-keyboard-preset";
 import { hasDraggableData } from "./utils";
 import { Column, Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
-import { AddDialog } from "../dialog/card-dialog";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
+import DialogLayout from "../dialog/card-dialog";
 
 
 const defaultCols = [
@@ -55,7 +55,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const { setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog } = useMainStore();
+  const { selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
@@ -229,8 +229,6 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
             />
           </div>
         </SortableContext>
-        <AddDialog></AddDialog>
-
       </BoardContainer>
 
       {typeof window !== "undefined" &&
@@ -313,29 +311,10 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     
     if (newColumn !== previousColumn ) {
         showDialog(true)
-        showDraggedDialog(true)
     }
     // else{
     //   showDialog(true)
     // }
-
-    if (previousColumn === "ideas" && newColumn === "development"){
-      showDialog(true)
-      showDraggedDialog(true)
-    }
-    else if (previousColumn === "development" && newColumn === "to-launch"){
-      showDialog(true)
-      showDraggedDialog(true)
-    }
-    else if (previousColumn === "ideas" && newColumn === "to-launch"){
-      showDialog(true)
-      showDraggedDialog(true)
-    }
-    else{
-      showDialog(false)
-      showDraggedDialog(false)
-      
-    }
       
     const projectMovement = { 
       next: newColumn,
