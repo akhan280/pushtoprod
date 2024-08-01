@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand';
 import { Project } from '../types';
+import { ColumnId } from '@/components/kanban/kanban';
 
 export type ProjectMovement = Project & {
   previous: string;

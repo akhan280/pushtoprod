@@ -38,7 +38,7 @@ export function LaunchDialog({ dummyPost }: IdeasDialogProps) {
 
   return (
     <div>
-      {requestedAdd ? (
+      {/* {requestedAdd ? (
         <Dialog open={dialog} onOpenChange={showDialog}>
         <DialogContent className="bg-white sm:max-w-[425px]">
           <Header />
@@ -51,7 +51,7 @@ export function LaunchDialog({ dummyPost }: IdeasDialogProps) {
         </DialogContent>
       </Dialog>
      
-      ) : (
+      ) :  */}
         <Sheet open={dialog} onOpenChange={showDialog}>
         <SheetContent className="bg-white sm:max-w-[800px]" route ={selectedProject?.id!}>
           <Header />
@@ -66,7 +66,7 @@ export function LaunchDialog({ dummyPost }: IdeasDialogProps) {
 
         </SheetContent>
       </Sheet>
-      )}
+      
     </div>
   );
 }
