@@ -11,7 +11,9 @@ import { Project } from "../../lib/types";
 import { AutosizeTextarea } from "../ui/textarea";
 import Editor from "../editor";
 import { Input } from "../ui/input";
-import { MenuDrags } from "../menu-drag";
+import { MultiSelect } from "../multi-select";
+
+
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -40,6 +42,14 @@ export default function Header() {
     setProjectProperty
   } = useMainStore();
 
+  const frameworksList = [
+    { value: "react", label: "React"},
+    { value: "angular", label: "Angular"},
+    { value: "vue", label: "Vue"},
+    { value: "svelte", label: "Svelte" },
+    { value: "ember", label: "Ember" },
+  ];
+
 
 //   useEffect(() => {
 //     if (selectedProject) {
@@ -54,6 +64,8 @@ export default function Header() {
 //       });
 //     }
 //   }, [selectedProject]);
+
+const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(["react", "angular"]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -82,7 +94,7 @@ export default function Header() {
   }
 
   return (
-    <div>
+    <div className="border border-b-green-100">
 
       <Input value={selectedProject?.title || ""} 
       placeholder="Title"  
@@ -112,6 +124,24 @@ export default function Header() {
       </div>
       </div>
 
+      <MultiSelect
+        options={frameworksList}
+        onValueChange={setSelectedFrameworks}
+        defaultValue={selectedFrameworks}
+        placeholder="Select frameworks"
+        variant="inverted"
+        animation={2}
+        maxCount={3}
+      />
+      
+      <div className="mt-4">
+        <h2 className="text-xl font-semibold">Selected Frameworks:</h2>
+        <ul className="list-disc list-inside">
+          {selectedFrameworks.map((framework) => (
+            <li key={framework}>{framework}</li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex flex-row px-2">
       <label className="w-1/4 text-gray-500">{"technologies"}</label>
