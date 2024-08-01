@@ -9,7 +9,7 @@ export type Project = {
   notes?: string | null;
   technologies?: string | null;
   githuburl?: string | null;
-  columnId: ColumnId;
+  columnId: "ideas" | "development" | "to-launch"; 
 }
 
 export type User = {

@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { Project } from '../types';
 
-type ProjectMovement = Project & {
+export type ProjectMovement = Project & {
   previous: string;
   next: string;
 };

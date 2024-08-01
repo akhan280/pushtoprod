@@ -39,7 +39,7 @@ export function DevelopmentDialog({ dummyPost }: IdeasDialogProps) {
       {requestedAdd ? (
         <Dialog open={dialog} onOpenChange={showDialog}>
         <DialogContent className="bg-white sm:max-w-[425px]">
-          <Header />
+          {/* <Header /> */}
           <DialogHeader>
             <DialogTitle>We are developing</DialogTitle>
             <DialogDescription>
@@ -52,7 +52,7 @@ export function DevelopmentDialog({ dummyPost }: IdeasDialogProps) {
       ) : (
         <Sheet open={dialog} onOpenChange={showDialog}>
         <SheetContent className="bg-white sm:max-w-[800px]" route = {selectedProject?.id!}>
-          <Header />
+          {/* <Header /> */}
           <SheetHeader>
             <SheetTitle>we are devloping Are you absolutely sure?</SheetTitle>
             <SheetDescription>

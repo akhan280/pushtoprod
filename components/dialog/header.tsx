@@ -7,20 +7,11 @@ import { z } from "zod";
 import useMainStore from "../../lib/hooks/use-main-store";
 import { createProject } from "../../lib/actions";
 import { Project } from "../../lib/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import { Form } from "../ui/form";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { ButtonLoading } from "../ui/button-loading";
+
+import { AutosizeTextarea } from "../ui/textarea";
 import Editor from "../editor";
+import { Input } from "../ui/input";
+import { MenuDrags } from "../menu-drag";
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -46,32 +37,24 @@ export default function Header() {
     showDialog,
     dragged,
     showDraggedDialog,
+    setProjectProperty
   } = useMainStore();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      notes: "",
-      technologies: "",
-      githuburl: "",
-      columnId: "ideas", // Set a valid default value
-    },
-  });  
 
-  useEffect(() => {
-    if (selectedProject) {
-      form.reset({
-        title: selectedProject.title,
-        description: selectedProject.description,
-        notes: selectedProject.notes!,
-        technologies: selectedProject.technologies!,
-        githuburl: selectedProject.githuburl!,
-        columnId: selectedProject.columnId as ColumnId,
-      });
-    }
-  }, [selectedProject, form]);
+//   useEffect(() => {
+//     if (selectedProject) {
+//         populateProject()
+//       form.reset({
+//         title: selectedProject.title,
+//         description: selectedProject.description,
+//         notes: selectedProject.notes!,
+//         technologies: selectedProject.technologies!,
+//         githuburl: selectedProject.githuburl!,
+//         columnId: selectedProject.columnId as ColumnId,
+//       });
+//     }
+//   }, [selectedProject]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Form values:", values); // Add this line for debugging
@@ -100,7 +83,57 @@ export default function Header() {
 
   return (
     <div>
-      <Form {...form}>
+
+      <Input value={selectedProject?.title || ""} 
+      placeholder="Title"  
+      onChange={(e) => setProjectProperty("title", e.target.value)}
+      className="bg-transparent border-0 outline-0 py-8 text-bold text-[40px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
+      ></Input>
+      
+    
+      <AutosizeTextarea
+      placeholder="description"
+      wrap="hard"
+      className="bg-transparent border-0 outline-0 text-bold text-md overflow-auto resize-y focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
+      value={selectedProject?.description || ""}
+      onChange={(e) => setProjectProperty("description", e.target.value)}
+      rows={1}
+      />
+
+    <div className="flex flex-row px-2">
+    <label className="w-1/4 text-gray-500">{"notes"}</label>
+      <div className="w-3/4">
+      <AutosizeTextarea
+      placeholder="notes"
+      className="bg-transparent border-0 outline-0 text-bold text-md overflow-auto resize-y hover:bg-[#F3F3F3] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
+      value={selectedProject?.notes || ""}
+      onChange={(e) => setProjectProperty("notes", e.target.value)}
+      />
+      </div>
+      </div>
+
+
+      <div className="flex flex-row px-2">
+      <label className="w-1/4 text-gray-500">{"technologies"}</label>
+      <div className="w-3/4">
+      <AutosizeTextarea
+      placeholder="technologies"
+      className="bg-transparent border-0 outline-0 text-bold text-md overflow-auto resize-y hover:bg-[#F3F3F3] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
+      value={selectedProject?.technologies || ""}
+      onChange={(e) => setProjectProperty("technologies", e.target.value)}
+      />
+        </div>
+
+    </div>
+      <AutosizeTextarea
+      placeholder="githuburl"
+      className="bg-transparent border-0 outline-0 py-8 text-bold text-md focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
+      value={selectedProject?.githuburl || ""}
+      onChange={(e) => setProjectProperty("githuburl", e.target.value)}
+      />
+
+      
+      {/* <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -165,7 +198,7 @@ export default function Header() {
             )}
           </DialogFooter>
         </form>
-      </Form>
+      </Form> */}
     </div>
   );
 }
