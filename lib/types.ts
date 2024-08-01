@@ -1,26 +1,31 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { ColumnId } from "../components/kanban/kanban";
 
-export type Project = {
-  id: string;
-  title: string;
-  description: string;
-  collaborators?: User[];
-  notes?: string | null;
-  technologies?: string | null;
-  githuburl?: string | null;
-  columnId: "ideas" | "development" | "to-launch"; 
-}
-
 export type User = {
   id: string;
-  email?: string | null;
-  name?: string | null;
-  username?: string | null;
-  gh_username?: string | null;
-  image?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  name: string | null;
+  username: string | null;
+  email: string | null;
+  gh_username: string | null;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  paid: boolean;
+}
+
+export type Collaborator =  {
+  user: User;
+}
+
+export type Project = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  notes: string | null;
+  collaborators: Collaborator[];
+  technologies: string | null;
+  githuburl: string | null;
+  columnId: string;
 }
 
 
