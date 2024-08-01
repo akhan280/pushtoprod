@@ -39,8 +39,8 @@ model Account {
 
 model Project {
   id            String   @id @default(uuid())
-  title         String
-  description   String
+  title         String?  @default("Untitled Project")
+  description   String?  @default("description")
   notes         String?
   technologies  String?
   githuburl     String?

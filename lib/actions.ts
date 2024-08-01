@@ -55,6 +55,41 @@ export const updateProjectStatus = async (id: string, columnId: string) => {
 }
 
 
+export const updateProjectField = async (projectId: string, key: string, value: string) => {
+  
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  console.log(`updating project ${projectId} WITH ${key} to ${value}`);
+
+  try {
+    const project = await prisma.project.update({
+      where: {
+        id: projectId
+      },
+      data: {
+        [key]: value,
+      }
+    })
+    
+    return {project: project, error: null}
+  } catch (error: any) {
+    console.error("Error updating project:", error);
+    return {
+      project: null,
+      error: "An unexpected error occurred",
+    };
+  }
+
+}
+
+
+
 export const createProject = async (projectData: Omit<Project, 'id'>) => {
   const session = await getSession();
   if (!session?.id) {
