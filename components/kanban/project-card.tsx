@@ -21,9 +21,10 @@ export interface ProjectDragData {
 interface ProjectCardProps {
   project: Project;
   isOverlay?: boolean;
+  column: any;
 }
 
-export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
+export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
   const {
     setNodeRef,
     attributes,
@@ -42,7 +43,7 @@ export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
     },
   });
 
-  const {showDialog} = useMainStore();
+  const {showDialog, setSelectedProject} = useMainStore();
 
   const style = {
     transition,
@@ -64,7 +65,7 @@ export function ProjectCard({ project, isOverlay }: ProjectCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => showDialog(true)}
+      onClick={() => {setSelectedProject({...project, previous: column, next: column}), showDialog(true)}}
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}

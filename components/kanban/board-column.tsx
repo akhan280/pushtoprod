@@ -67,7 +67,7 @@ export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
     }
   );
 
-  const {showDialog} = useMainStore();
+  const {showDialog, showDraggedDialog, setSelectedProject} = useMainStore();
 
   return (
     <Card
@@ -79,13 +79,12 @@ export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
     >
       <CardHeader className="p-4 font-semibold border-b-2 text-left flex flex-row space-between items-center">
         <span className="mr-auto"> {column.title}</span>
-        <Button onClick ={() => showDialog(true)} variant="outline">Add {column.title}</Button>
       </CardHeader>
       <ScrollArea>
         <CardContent className="flex flex-grow flex-col gap-2 p-2">
           <SortableContext items={projectsIds}>
             {projects?.map((projects) => (
-              <ProjectCard key={projects.id} project={projects} />
+              <ProjectCard key={projects.id} column = {column.title} project={projects}  />
             ))}
           </SortableContext>
         </CardContent>
