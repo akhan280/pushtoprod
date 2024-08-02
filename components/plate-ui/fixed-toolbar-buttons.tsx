@@ -33,6 +33,7 @@ export function FixedToolbarButtons() {
             <ToolbarGroup noSeparator>
               <InsertDropdownMenu />
               <TurnIntoDropdownMenu />
+
             </ToolbarGroup>
 
             <ToolbarGroup>
