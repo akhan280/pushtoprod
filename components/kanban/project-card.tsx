@@ -11,6 +11,10 @@ import { ColumnId } from "./kanban";
 import { Badge } from "../ui/badge";
 import { Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
+import {useRouter} from "next/navigation";
+
+
+
 
 export type ProjectType = "Project";
 export interface ProjectDragData {
@@ -44,7 +48,7 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
   });
 
   const {showDialog, setSelectedProject} = useMainStore();
-
+  const router = useRouter();
   const style = {
     transition,
     transform: CSS.Translate.toString(transform),
@@ -59,13 +63,21 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
     },
   });
 
+  const onProjectClick = (project: Project) => {
+    if (project.columnId === "development" || project.columnId === "to-launch") {
+      console.log('[On Drag End] Routing to:', `/project/${project.columnId}/${project.id}`);
+      router.push(`/project/${project.columnId}/${project.id}`);
+    }
+  };
+
+  
   return (
     <Card
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => {setSelectedProject({...project, previous: column, next: column}), showDialog(true)}}
+      onClick={() => {setSelectedProject({...project, previous: column, next: column}), onProjectClick(project)}}
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
