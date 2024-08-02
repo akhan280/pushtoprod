@@ -27,6 +27,8 @@ import useMainStore from "../../lib/hooks/use-main-store";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
 import DialogLayout from "../dialog/card-dialog";
+import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 
 
 const defaultCols = [
@@ -58,6 +60,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const { selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     
@@ -304,17 +308,9 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     console.log('[Kanban] Previous Column:', pickedUpProjectColumn.current);
     console.log('[Kanban] New Column:', newColumn);
     
-    // 2) 
-    // if (previousColumn === "to-launch" && newColumn === "development" || previousColumn === "to-launch" && newColumn === "ideas"|| previousColumn === "development" && newColumn === "ideas"){
-    //   showDialog(false)
-    // }
-    
     if (newColumn !== previousColumn ) {
         showDialog(true)
     }
-    // else{
-    //   showDialog(true)
-    // }
       
     const projectMovement = { 
       next: newColumn,
@@ -332,6 +328,10 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with your request.",
       });
+    }
+
+    if (newColumn === "development" || newColumn === "to-launch") {
+      router.push(`/project/${newColumn}/${project.id}`)
     }
 
     if (!hasDraggableData(active)) return;

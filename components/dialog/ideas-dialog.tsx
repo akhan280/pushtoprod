@@ -36,21 +36,7 @@ export function IdeasDialog({ dummyPost }: IdeasDialogProps) {
 
   return (
     <div>
-      {/* {requestedAdd ? (
-        <Dialog open={dialog} onOpenChange={showDialog}>
-        <DialogContent className="bg-white sm:max-w-[425px]">
-          <Header />
-          <DialogHeader>
-            <DialogTitle>Add</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-     
-      )  */}
-        <Sheet open={dialog} onOpenChange={showDialog}>
+      <Sheet open={dialog} onOpenChange={showDialog}>
         <SheetContent className="bg-white sm:max-w-[800px]" route ={selectedProject?.id!}>
           <Header />
           <SheetHeader>
@@ -61,10 +47,8 @@ export function IdeasDialog({ dummyPost }: IdeasDialogProps) {
             </SheetDescription>
           </SheetHeader>
           {!dragged && <Editor post={dummyPost} />}
-
         </SheetContent>
       </Sheet>
-      
     </div>
   );
 }
