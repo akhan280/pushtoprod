@@ -277,13 +277,82 @@ const plugins = createPlugins(
 );
 
 
-const initialValue = [
+// const initialValue = [
 
+//     {
+//         id: '1',
+//         type: 'p',
+//         children: [{ text: 'Hello, World!' }],
+//       },
+//     {
+//       type: ELEMENT_EXCALIDRAW,
+//       children: [{ text: '' }],
+//       data: {
+//         elements: [
+//           {
+//             id: 'example-id',
+//             type: 'rectangle',
+//             x: 100,
+//             y: 100,
+//             width: 200,
+//             height: 100,
+//             strokeColor: 'black',
+//             backgroundColor: 'transparent',
+//           },
+//           // You can add more elements to the drawing here
+//         ],
+//         appState: {
+//           viewBackgroundColor: '#ffffff',
+//           currentItemStrokeColor: 'black',
+//           currentItemBackgroundColor: 'transparent',
+//         },
+//       },
+//     },
+//     // other initial values...
+//   ];
+
+const initialValue = [
     {
-        id: '1',
-        type: 'p',
-        children: [{ text: 'Hello, World!' }],
-      },
+      type: ELEMENT_H2, // Heading with emoji
+      children: [
+        { text: '🌳 ' }, // Emoji
+        { text: 'Blocks' }, // Heading text
+      ],
+    },
+    {
+      type: ELEMENT_PARAGRAPH, // Paragraph for introductory text
+      children: [
+        { text: 'Easily create headings of various levels, from H1 to H6, to structure your content and make it more organized.' },
+      ],
+    },
+    {
+      type: ELEMENT_BLOCKQUOTE, // Blockquote element
+      children: [
+        { text: 'Create blockquotes to emphasize important information or highlight quotes from external sources.' },
+      ],
+    },
+    {
+      type: ELEMENT_CODE_BLOCK, // Code block element
+      children: [
+        {
+          type: ELEMENT_CODE_LINE, // Each line in a code block should be a separate child with type `ELEMENT_CODE_LINE`
+          children: [{ text: '// Use code blocks to showcase code snippets' }],
+        },
+        {
+          type: ELEMENT_CODE_LINE,
+          children: [{ text: 'function greet() {' }],
+        },
+        {
+          type: ELEMENT_CODE_LINE,
+          children: [{ text: '  console.info(\'Hello World!\');' }],
+        },
+        {
+          type: ELEMENT_CODE_LINE,
+          children: [{ text: '}' }],
+        },
+      ],
+    },
+    // You can add other elements like Excalidraw here
     {
       type: ELEMENT_EXCALIDRAW,
       children: [{ text: '' }],
@@ -308,7 +377,6 @@ const initialValue = [
         },
       },
     },
-    // other initial values...
   ];
 export function PlateEditor() {
     return (
