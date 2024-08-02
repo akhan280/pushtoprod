@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import Editor from "@/components/editor";
 import Header from "../../../../../components/dialog/header";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../../../../components/ui/breadcrumb";
+import React from "react";
 
 export default async function ProjectPage({ params }: { params: { id: string } }) {
 
