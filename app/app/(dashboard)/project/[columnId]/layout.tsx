@@ -9,7 +9,7 @@ export default async function ProjectLayout({ ideas, development, toLaunch, para
     throw ('No column found')
   }
 
-  console.log('Rending the ProjectLayout')
+  console.log('Rendering the ProjectLayout')
 
   return (
     <div className="flex flex-col justify-center items-center place-items-center">
