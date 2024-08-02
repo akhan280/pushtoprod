@@ -89,7 +89,6 @@ export const updateProjectField = async (projectId: string, key: string, value: 
 }
 
 
-
 export const createProject = async (projectData: Omit<Project, 'id'>) => {
   const session = await getSession();
   if (!session?.id) {
@@ -186,6 +185,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
                 image: true,
                 createdAt: true,
                 updatedAt: true,
+                paid: true,
               },
             },
           },
@@ -197,6 +197,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
     const transformedProjects: Project[] = projects?.map((project) => ({
       ...project,
       collaborators: project.collaborators.map((collaborator) => ({
+        user: {
         id: collaborator.user.id,
         email: collaborator.user.email,
         name: collaborator.user.name,
@@ -205,6 +206,8 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
         image: collaborator.user.image,
         createdAt: collaborator.user.createdAt,
         updatedAt: collaborator.user.updatedAt,
+        paid: collaborator.user.paid,
+        }
       })),
       notes: project.notes ?? null,
       technologies: project.technologies ?? null,
@@ -232,40 +235,84 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
   }
 };
 
+export const getSingularProject = async (projectId: string): Promise<{ project: Project | null, error: string | null }> => {
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
 
-// export const addUser = async (userData: {
-//   id: string;
-//   name?: string;
-//   username?: string;
-//   email: string;
-//   gh_username?: string;
-//   image?: string;
-// }) => {
-//   try {
-//     const newUser = await prisma.user.create({
-//       data: {
-//         id: userData.id, // Ensure the user is created with the specified UUID
-//         name: userData.name,
-//         username: userData.username,
-//         email: userData.email,
-//         gh_username: userData.gh_username,
-//         image: userData.image,
-//       },
-//     });
-//     return {
-//       user: newUser,
-//       error: null,
-//     };
-//   } catch (error: unknown) {
-//     if (error instanceof PrismaClientKnownRequestError) {
-//       return {
-//         user: null,
-//         error: error.message,
-//       };
-//     }
-//     return {
-//       user: null,
-//       error: "An unexpected error occurred",
-//     };
-//   }
-// };
+  try {
+    const project = await prisma.project.findUnique({
+      where: {
+        id: decodeURIComponent(projectId),
+      },
+      include: {
+        collaborators: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                email: true,
+                gh_username: true,
+                image: true,
+                createdAt: true,
+                updatedAt: true,
+                paid: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!project) {
+      return {
+        project: null,
+        error: "Project not found",
+      };
+    }
+
+    const transformedProject: Project = {
+      ...project,
+      collaborators: project.collaborators.map((collaborator) => ({
+        user: {
+          id: collaborator.user.id,
+          email: collaborator.user.email,
+          name: collaborator.user.name,
+          username: collaborator.user.username,
+          gh_username: collaborator.user.gh_username,
+          image: collaborator.user.image,
+          createdAt: collaborator.user.createdAt,
+          updatedAt: collaborator.user.updatedAt,
+          paid: collaborator.user.paid,
+        },
+      })),
+      notes: project.notes ?? null,
+      technologies: project.technologies ?? null,
+      githuburl: project.githuburl ?? null,
+      columnId: project.columnId as ColumnId,
+    };
+
+    return {
+      project: transformedProject,
+      error: null,
+    };
+
+  } catch (error: unknown) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        project: null,
+        error: error.message,
+      };
+    }
+    return {
+      project: null,
+      error: "An unexpected error occurred",
+    };
+  }
+};
