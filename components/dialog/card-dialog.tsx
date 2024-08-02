@@ -1,4 +1,5 @@
 "use client";
+
 import { IdeasDialog } from "./ideas-dialog";
 import useMainStore from "../../lib/hooks/use-main-store";
 import { DevelopmentDialog } from "./development-dialog";
@@ -24,63 +25,55 @@ export default function DialogLayout() {
   const handleProjectCreation = async (type: string) => {
     setLoading(true);
 
-      const columnId = type as ColumnId;
-      const emptyProject: Project = {
-        id: uuidv4(),
-        title: "Untitled",
-        description: "none",
-        notes: "none", 
-        collaborators: [],
-        technologies: "none", 
-        githuburl: "empty", 
-        columnId: columnId,
-      };
-      console.log(`[Dialog Layout Empty Project] ${emptyProject}`)
+    const columnId = type as ColumnId;
+    const emptyProject: Project = {
+      id: uuidv4(),
+      title: "Untitled",
+      description: "none",
+      notes: "none",
+      collaborators: [],
+      technologies: "none",
+      githuburl: "empty",
+      columnId: columnId,
+    };
+
+    try {
       const result = await createProject(emptyProject);
 
-      try{
-        if (result.project) {
-          const project: ProjectMovement = {
-            ...result.project,
-            previous: columnId as ColumnId, 
-            next: columnId as ColumnId,
-          };
+      if (result.project) {
+        const project: ProjectMovement = {
+          ...result.project,
+          previous: columnId as ColumnId,
+          next: columnId as ColumnId,
+        };
 
-          addProject(project);
-          setSelectedProject(project);
-          setRequestAdd(""); 
+        addProject(project);
+        setSelectedProject(project);
+        setRequestAdd("");
 
-          console.log("PROJECT CREATED:", project?.id)
-
-          if (type == "development" || type == "to-launch"){
-            router.push(`/project/${type}/${project?.id}`);
-          }
+        if (type === "development" || type === "to-launch") {
+          router.push(`/project/${type}/${project.id}`);
         }
-        else {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: "Failed to create project.",
-            action: <ToastAction altText="Try again" onClick={()=> handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
-          });
-          console.error("Failed to create project", result.error);
-        }
-      }
-      catch(error){
+      } else {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: "Failed to create project.",
-          action: <ToastAction altText="Try again" onClick={()=> handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
+          action: <ToastAction altText="Try again" onClick={() => handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
         });
-        console.error("An error occurred during project creation:", error);
+        console.error("Failed to create project", result.error);
       }
-      setLoading(false);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Failed to create project.",
+        action: <ToastAction altText="Try again" onClick={() => handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
+      });
+      console.error("An error occurred during project creation:", error);
+    }
+    setLoading(false);
   };
-
-  if (requestedAdd && !selectedProject && !loading) {
-    handleProjectCreation(requestedAdd);
-  }
 
   const dummyPost = {
     id: "post1",
@@ -117,7 +110,7 @@ export default function DialogLayout() {
   return (
     <div>
       <div>
-      {(!dragged && (!selectedProject || !selectedProject.id)) && (
+        {((!selectedProject || !selectedProject.id)) && (
           <Dialog open={dialog} onOpenChange={showDialog}>
             <DialogContent className="bg-white sm:max-w-[425px]">
               <Header />
@@ -130,15 +123,11 @@ export default function DialogLayout() {
             </DialogContent>
           </Dialog>
         )}
-      {(requestedAdd === "ideas" || 
-        (selectedProject?.columnId === "ideas" && 
-        selectedProject.previous !== "development" && 
-        selectedProject.previous !== "to-launch")
-      ) && (
-        <div>
-          <IdeasDialog dummyPost={dummyPost} />
-        </div>
-      )}
+        {(selectedProject?.columnId === "ideas" && selectedProject.previous !== "development" && selectedProject.previous !== "to-launch" ) && (
+          <div>
+            <IdeasDialog dummyPost={dummyPost} />
+          </div>
+        )}
       </div>
     </div>
   );
