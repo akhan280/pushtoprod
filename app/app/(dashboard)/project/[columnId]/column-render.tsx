@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSelectedLayoutSegment } from "next/navigation";
+
+import { useRouter } from "next/router";
 import useMainStore from "../../../../../lib/hooks/use-main-store";
 import { getSingularProject } from "../../../../../lib/actions";
 import { ProjectMovement } from "@/lib/hooks/kanban-slice";
@@ -9,8 +10,13 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import Header from "../../../../../components/dialog/header";
 import Editor from "../../../../../components/editor";
 
-export default function ColumnRender() {
-    const segment = useSelectedLayoutSegment();
+export default function ColumnRender({ columnId, params }: { columnId: string, params: {id: string} }) {
+    const segment = params.id
+    const router = useRouter();
+
+    
+    
+    
     const { selectedProject, setSelectedProject } = useMainStore();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
