@@ -1,36 +1,28 @@
-   
-
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Editor from "@/components/editor";
+import Header from "../../../../../../components/dialog/header";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../../../../../components/ui/breadcrumb";
-import Header from "@/components/dialog/header";
-import useMainStore from "@/lib/hooks/use-main-store";
-import { ProjectMovement } from "@/lib/hooks/kanban-slice";
-import { ColumnId } from "@/components/kanban/kanban";
 
-export default async function ProjectDevelopmentPage({ params }: { params: { id: string } }) {
+export default async function ProjectPage({ params }: { params: { id: string } }) {
 
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
-  console.log("PARAMID", params.id)
+  console.log(params.id)
   const data = await prisma.project.findUnique({
     where: {
       id: decodeURIComponent(params.id),
     },
   });
-  console.log("data:", data)
-
   if (!data) {
-    console.log("not found")
     notFound();
   }
   const dummyPost = {
     id: "post1",
-    title: "Dummy Post",
+    title: "in launch ",
     description: "This is a dummy post",
     content: "Lorem ipsum dolor sit amet",
     slug: "dummy-post",
@@ -74,12 +66,8 @@ export default async function ProjectDevelopmentPage({ params }: { params: { id:
         </BreadcrumbItem>
     </BreadcrumbList>
     </Breadcrumb>
-    <Header></Header>
 
+    <Header></Header>
     hello world {data.columnId}, {data.columnId}, {data.description}, {data.githuburl}, {data.notes}, {data.technologies}, {data.title}
     <Editor post={dummyPost} />
     </div>)}
-function UseMainStore(): { selectedProject: any; } {
-    throw new Error("Function not implemented.");
-}
-

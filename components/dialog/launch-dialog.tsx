@@ -38,20 +38,6 @@ export function LaunchDialog({ dummyPost }: IdeasDialogProps) {
 
   return (
     <div>
-      {/* {requestedAdd ? (
-        <Dialog open={dialog} onOpenChange={showDialog}>
-        <DialogContent className="bg-white sm:max-w-[425px]">
-          <Header />
-          <DialogHeader>
-            <DialogTitle>We are launching</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-     
-      ) :  */}
         <Sheet open={dialog} onOpenChange={showDialog}>
         <SheetContent className="bg-white sm:max-w-[800px]" route ={selectedProject?.id!}>
           <Header />

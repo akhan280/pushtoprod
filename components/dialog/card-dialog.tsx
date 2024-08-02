@@ -11,21 +11,21 @@ import { ColumnId } from "../kanban/kanban";
 import { ProjectMovement } from "@/lib/hooks/kanban-slice";
 import { v4 as uuidv4 } from "uuid";
 import { Project } from "@/lib/types";
+import { toast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import Header from "./header";
 
 export default function DialogLayout() {
-  const { selectedProject, setSelectedProject, setRequestAdd, requestedAdd, dialog, addProject } = useMainStore();
+  const { selectedProject, showDialog, setSelectedProject, dragged, setRequestAdd, requestedAdd, dialog, addProject } = useMainStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  
-
-
   const handleProjectCreation = async (type: string) => {
     setLoading(true);
-  
+
       const columnId = type as ColumnId;
-  
-      const projectData: Project = {
+      const emptyProject: Project = {
         id: uuidv4(),
         title: "Untitled",
         description: "none",
@@ -35,10 +35,8 @@ export default function DialogLayout() {
         githuburl: "empty", 
         columnId: columnId,
       };
-     
-      console.log(`new proj is ${projectData}`)
-      const result = await createProject(projectData);
-      console.log("PROJECT awaiting:", result.project?.id)
+      console.log(`[Dialog Layout Empty Project] ${emptyProject}`)
+      const result = await createProject(emptyProject);
 
       try{
         if (result.project) {
@@ -54,24 +52,35 @@ export default function DialogLayout() {
 
           console.log("PROJECT CREATED:", project?.id)
 
-          router.push(`/project/${type}/${project?.id}`);
+          if (type == "development" || type == "to-launch"){
+            router.push(`/project/${type}/${project?.id}`);
+          }
         }
         else {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Failed to create project.",
+            action: <ToastAction altText="Try again" onClick={()=> handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
+          });
           console.error("Failed to create project", result.error);
         }
       }
       catch(error){
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Failed to create project.",
+          action: <ToastAction altText="Try again" onClick={()=> handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
+        });
         console.error("An error occurred during project creation:", error);
-
       }
       setLoading(false);
-    
   };
 
   if (requestedAdd && !selectedProject && !loading) {
     handleProjectCreation(requestedAdd);
   }
-
 
   const dummyPost = {
     id: "post1",
@@ -105,41 +114,22 @@ export default function DialogLayout() {
 
   console.log('card-dialog', selectedProject, "requestedAdd", requestedAdd, 'dialog', dialog);
 
-  useEffect(() => {
-    if (requestedAdd === "development") {
-      // Redirect to the new project route
-      router.push(`/project/development/${selectedProject?.id}`);
-    } else if (requestedAdd === "to-launch") {
-      // Redirect to the launch page or handle accordingly
-      router.push(`/project/to-launch/${selectedProject?.id}`);
-    } else if (requestedAdd === "ideas") {
-      // Redirect to the ideas page or handle accordingly
-      router.push(`/project/ideas/${selectedProject?.id}`);
-    }
-  }, [requestedAdd, selectedProject, router]);
-
-
   return (
     <div>
-
-      {(requestedAdd === "to-launch" || 
-        (selectedProject?.columnId === "to-launch")
-      ) && (
-        <div>
-          <LaunchDialog dummyPost={dummyPost} />
-        </div>
-      )}
-
-
-      {(requestedAdd === "development" || 
-        (selectedProject?.columnId === "development" && 
-        selectedProject.previous !== "to-launch")
-      ) && (
-        <div>
-          <DevelopmentDialog dummyPost={dummyPost} />
-        </div>
-      )}
-
+      <div>
+      {(!dragged && (!selectedProject || !selectedProject.id)) && (
+          <Dialog open={dialog} onOpenChange={showDialog}>
+            <DialogContent className="bg-white sm:max-w-[425px]">
+              <Header />
+              <DialogHeader>
+                <DialogTitle>Add</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        )}
       {(requestedAdd === "ideas" || 
         (selectedProject?.columnId === "ideas" && 
         selectedProject.previous !== "development" && 
@@ -149,7 +139,7 @@ export default function DialogLayout() {
           <IdeasDialog dummyPost={dummyPost} />
         </div>
       )}
-
+      </div>
     </div>
   );
 }
