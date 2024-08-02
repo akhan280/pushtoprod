@@ -55,7 +55,7 @@ export default function ColumnRender({ columnId }: { columnId: string}) {
     const dummyPost = {
         id: "post1",
         title: "Dummy Post",
-        description: "This is a dummy post",
+        description: "gg is a dummy post",
         content: "Lorem ipsum dolor sit amet",
         slug: "dummy-post",
         image: "https://example.com/image.png",
@@ -102,7 +102,7 @@ export default function ColumnRender({ columnId }: { columnId: string}) {
         
         <Header />
         
-        <Editor post={dummyPost} />
+        {/* <Editor post={dummyPost} /> */}
       </div>
     );
 }
