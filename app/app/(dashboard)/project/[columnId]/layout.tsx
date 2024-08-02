@@ -1,22 +1,21 @@
 "use server"
-import { getSession } from "@/lib/auth";
-import { notFound, redirect } from "next/navigation";
-import { ReactNode } from "react";
 import ColumnRender from "./column-render";
 
 
-export default async function ProjectLayout({ children, params }: { children: ReactNode, params: { columnId: string }  }) {
+export default async function ProjectLayout({ ideas, development, toLaunch, params }: { ideas: React.ReactNode, development: React.ReactNode, toLaunch: React.ReactNode, params: { columnId: string }  }) {
+  const { columnId } = params; 
 
-  const { columnId } = params; // Extract columnId from params
-  const session = await getSession();
-  if (!session) {
-    redirect("/login");
+  if (!columnId) {
+    throw ('No column found')
   }
+
+  console.log('Rending the ProjectLayout')
 
   return (
     <div className="flex flex-col justify-center items-center place-items-center">
-      <ColumnRender columnId={columnId} />
-      {children}
+      {columnId === "ideas" && ideas}
+      {columnId === "development" && development}
+      {columnId === "toLaunch" && toLaunch}
     </div>
     );
 }

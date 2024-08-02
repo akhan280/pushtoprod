@@ -331,6 +331,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     }
 
     if (newColumn === "development" || newColumn === "to-launch") {
+      console.log('[On Drag End] Routing to:', `/project/${newColumn}/${project.id}`)
       router.push(`/project/${newColumn}/${project.id}`)
     }
 
