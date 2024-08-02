@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import { useRouter } from "next/router";
 import useMainStore from "../../../../../lib/hooks/use-main-store";
 import { getSingularProject } from "../../../../../lib/actions";
 import { ProjectMovement } from "@/lib/hooks/kanban-slice";
@@ -10,50 +8,41 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import Header from "../../../../../components/dialog/header";
 import Editor from "../../../../../components/editor";
 
-export default function ColumnRender({ columnId, params }: { columnId: string, params: {id: string} }) {
-    const segment = params.id
-    const router = useRouter();
-
-    
-    
-    
+export default function ColumnRender({ columnId }: { columnId: string}) {
+    const segment = columnId
     const { selectedProject, setSelectedProject } = useMainStore();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!segment) {
-            setError('An error occurred: No segment found');
-            setLoading(false);
-            return;
-        }
-
-        const fetchProject = async () => {
-            try {
-                const data = await getSingularProject(segment);
-                if (data?.error) {
-                    setError('An error occurred while fetching the project');
-                } else if (data?.project) {
-                    const projectMovement: ProjectMovement = {
-                        ...data.project,
-                        previous: data.project.columnId,
-                        next: data.project.columnId,
-                    };
-                    setSelectedProject(projectMovement);
-                }
-            } catch (err) {
-                setError('An unexpected error occurred');
-            } finally {
-                setLoading(false);
+  
+      const fetchProject = async () => {
+        try {
+            const data = await getSingularProject(segment);
+            if (data?.error) {
+                setError('An error occurred while fetching the project');
+            } else if (data?.project) {
+                const projectMovement: ProjectMovement = {
+                    ...data.project,
+                    previous: data.project.columnId,
+                    next: data.project.columnId,
+                };
+                setSelectedProject(projectMovement);
             }
-        };
-
-        if (!selectedProject || !selectedProject.id) {
-            fetchProject();
-        } else {
+        } catch (err) {
+            setError('An unexpected error occurred');
+        } finally {
             setLoading(false);
         }
-    }, [segment, selectedProject, setSelectedProject]);
+      };
+
+      if (!selectedProject || !selectedProject.id) {
+          console.log('')
+          fetchProject();
+      } else {
+          setLoading(false);
+      }
+    }, [selectedProject, setSelectedProject]);
 
     if (loading) {
         return <div>Loading...</div>;
