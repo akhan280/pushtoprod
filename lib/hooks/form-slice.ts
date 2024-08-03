@@ -1,24 +1,35 @@
 
 import { StateCreator } from 'zustand';
 import { KanbanSlice, ProjectMovement } from './kanban-slice';
-import { updateEditor, updateProjectField } from '../actions';
+import { updateEditor, updateExalidraw, updateProjectField } from '../actions';
 import { toast } from '../../components/ui/use-toast';
 
-type FormStore = {};
+type FormStore = {
+  excalidraw: any;
+  editor: any;
+
+
+};
 
 type FormActions = {
   setProjectProperty: <K extends keyof ProjectMovement>(key: K, value: ProjectMovement[K]) => Promise<any>;
   setEditorProperty: (editor: any) => void;
+  setExcalidrawProperty: (excalidraw: any) => void;
 };
 
 export type FormSlice = FormStore & FormActions & Partial<KanbanSlice>;
 
 export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
 
+  excalidraw: null, 
+  editor: null, 
+
+  
+
   setEditorProperty: async (editor: any) => {
     console.log('[FORM SLICE] Updating Editor', editor)
     await updateEditor(editor, get().selectedProject?.id!)
-    console.log('hi')
+
 
     if (!updateEditor) {
       toast({
@@ -28,6 +39,23 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
       });
     }
   },
+
+  setExcalidrawProperty: async (excalidraw: any) => { 
+    console.log('[FORM SLICE] Updating Excalidraw', excalidraw)
+    await updateExalidraw(excalidraw, get().selectedProject?.id!)
+    if (!updateExalidraw) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
+    }
+    
+
+
+  },
+
+
 
   setProjectProperty: async (key, value)  => {
     console.log(`Changing ${key} to ${value}`)

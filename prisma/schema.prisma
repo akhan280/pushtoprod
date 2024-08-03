@@ -46,6 +46,7 @@ model Project {
   githuburl     String?
   columnId      String
   textEditor    Json?
+  excalidrawEditor    Json?
   collaborators ProjectCollaborator[]
 }
 

@@ -120,9 +120,10 @@ export default function Editor({ post }: { post: PostWithSite }) {
           ) {
             return;
           }
-          startTransitionSaving(async () => {
-            await updatePost(data);
-          });
+         //TODO:
+          // startTransitionSaving(async () => {
+          //   await updatePost(data);
+          // });
         }}
       />
     </div>
