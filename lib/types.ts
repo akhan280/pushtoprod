@@ -27,6 +27,7 @@ export type Project = {
   githuburl: string | null;
   columnId: string;
   textEditor?: any;
+  excalidrawEditor?: any;
 }
 
 

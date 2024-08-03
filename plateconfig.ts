@@ -273,12 +273,12 @@ export const plugins = createPlugins(
   }
 );
 
-export const initialValue = [
+export const editorInitialValue = [
     {
       type: ELEMENT_H2,
       children: [
         { text: '🌳 ' },
-        { text: 'Blocks' },
+        { text: 'Untitled' },
       ],
     },
     {
@@ -314,6 +314,11 @@ export const initialValue = [
         },
       ],
     },
+    
+  ];
+
+  export const excalidrawInitialValue = [
+  
     {
       type: ELEMENT_EXCALIDRAW,
       children: [{ text: '' }],

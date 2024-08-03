@@ -105,11 +105,17 @@ export default function DialogLayout() {
     },
   };
 
+  // const openDialog = () => {
+  //   console.log("Opening dialog...");
+  //   showDialog(true);
+  // };
+
+
   console.log('card-dialog', selectedProject, "requestedAdd", requestedAdd, 'dialog', dialog);
 
   return (
     <div>
-      <div>
+      
         {((!selectedProject || !selectedProject.id)) && (
           <Dialog open={dialog} onOpenChange={showDialog}>
             <DialogContent className="bg-white sm:max-w-[425px]">
@@ -123,12 +129,19 @@ export default function DialogLayout() {
             </DialogContent>
           </Dialog>
         )}
-        {(selectedProject?.columnId === "ideas" && selectedProject.previous !== "development" && selectedProject.previous !== "to-launch" ) && (
-          <div>
-            <IdeasDialog dummyPost={dummyPost} />
-          </div>
+        {(selectedProject?.columnId === "ideas" && (selectedProject?.previous != "development" && selectedProject?.previous != "to-launch")) && (
+           
+  
+               <IdeasDialog dummyPost={dummyPost} />
+              
+              
+
+          
         )}
-      </div>
+       
+      
+
+      
     </div>
   );
 }

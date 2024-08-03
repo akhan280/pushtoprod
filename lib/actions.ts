@@ -352,7 +352,7 @@ export const updateEditor = async (editor: any, projectId: string) => {
 }
 
 
-export const getEditorContent = async (projectId: string) => {
+export const updateExalidraw = async (excalidraw: any, projectId: string) => {
   console.log("[COL ID] is:", projectId);
 
   const session = await getSession();
@@ -364,24 +364,26 @@ export const getEditorContent = async (projectId: string) => {
   }
 
   try {
-    const response = await prisma.project.findUnique({
-      where: {
-        id: projectId,
-      },
-      select: {
-        textEditor: true,
-      },
-    });
+    console.log("[updateExalidraw Server Action]", excalidraw);
 
-    return {
-      project: response?.textEditor || null,
-      error: null,
-    };
+    const response = await prisma.project.update({
+      where: {
+        id: projectId
+      },
+      data: {
+        excalidrawEditor: excalidraw
+      }
+      
+      
+    })
+
+    console.log("[updateEditor Server Action]", response);
+
+
+    return true;
   } catch (error: any) {
-    console.log('[An error occurred fetching the editor content]', error);
-    return {
-      project: null,
-      error: error.message || 'Unknown error',
-    };
+    console.log('[An error occured saving the editor]', error)
+    return false;
   }
-};
+}
+
