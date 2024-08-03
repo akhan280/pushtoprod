@@ -31,43 +31,79 @@ export function FixedToolbarButtons() {
         {!readOnly && (
           <>
             <ToolbarGroup noSeparator>
-              <InsertDropdownMenu />
-              <TurnIntoDropdownMenu />
+            <InsertDropdownMenu />
+            <TurnIntoDropdownMenu />
+          </ToolbarGroup>
 
-            </ToolbarGroup>
+          <ToolbarGroup>
+            <MarkToolbarButton nodeType={MARK_BOLD} tooltip="Bold (⌘+B)">
+              <Icons.bold />
+            </MarkToolbarButton>
+            <MarkToolbarButton nodeType={MARK_ITALIC} tooltip="Italic (⌘+I)">
+              <Icons.italic />
+            </MarkToolbarButton>
+            <MarkToolbarButton
+              nodeType={MARK_UNDERLINE}
+              tooltip="Underline (⌘+U)"
+            >
+              <Icons.underline />
+            </MarkToolbarButton>
 
-            <ToolbarGroup>
-              <MarkToolbarButton nodeType={MARK_BOLD} tooltip="Bold (⌘+B)">
-                <Icons.bold />
-              </MarkToolbarButton>
-              <MarkToolbarButton nodeType={MARK_ITALIC} tooltip="Italic (⌘+I)">
-                <Icons.italic />
-              </MarkToolbarButton>
-              <MarkToolbarButton
-                nodeType={MARK_UNDERLINE}
-                tooltip="Underline (⌘+U)"
-              >
-                <Icons.underline />
-              </MarkToolbarButton>
+            <MarkToolbarButton
+              nodeType={MARK_STRIKETHROUGH}
+              tooltip="Strikethrough (⌘+⇧+M)"
+            >
+              <Icons.strikethrough />
+            </MarkToolbarButton>
+            <MarkToolbarButton nodeType={MARK_CODE} tooltip="Code (⌘+E)">
+              <Icons.code />
+            </MarkToolbarButton>
+          </ToolbarGroup>
 
-              <MarkToolbarButton
-                nodeType={MARK_STRIKETHROUGH}
-                tooltip="Strikethrough (⌘+⇧+M)"
-              >
-                <Icons.strikethrough />
-              </MarkToolbarButton>
-              <MarkToolbarButton nodeType={MARK_CODE} tooltip="Code (⌘+E)">
-                <Icons.code />
-              </MarkToolbarButton>
-            </ToolbarGroup>
-          </>
-        )}
+          <ToolbarGroup>
+            <ColorDropdownMenu nodeType={MARK_COLOR} tooltip="Text Color">
+              <Icons.color className={iconVariants({ variant: 'toolbar' })} />
+            </ColorDropdownMenu>
+            <ColorDropdownMenu
+              nodeType={MARK_BG_COLOR}
+              tooltip="Highlight Color"
+            >
+              <Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+            </ColorDropdownMenu>
+          </ToolbarGroup>
 
-        <div className="grow" />
+          <ToolbarGroup>
+            <AlignDropdownMenu />
 
-        <ToolbarGroup noSeparator>
-          <ModeDropdownMenu />
-        </ToolbarGroup>
+            <LineHeightDropdownMenu />
+
+            <IndentListToolbarButton nodeType={ListStyleType.Disc} />
+            <IndentListToolbarButton nodeType={ListStyleType.Decimal} />
+
+            <OutdentToolbarButton />
+            <IndentToolbarButton />
+          </ToolbarGroup>
+
+          <ToolbarGroup>
+            <LinkToolbarButton />
+
+            <ToggleToolbarButton />
+
+            <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
+
+            <TableDropdownMenu />
+
+            <EmojiDropdownMenu />
+
+            <MoreDropdownMenu />
+          </ToolbarGroup>
+
+          <div className="grow" />
+
+          <ToolbarGroup noSeparator>
+            <CommentToolbarButton />
+            <ModeDropdownMenu />
+          </ToolbarGroup>
       </div>
     </div>
   );

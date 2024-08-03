@@ -52,7 +52,6 @@ export function withTooltip<
       return (
         <Tooltip {...tooltipProps}>
           <TooltipTrigger asChild>{component}</TooltipTrigger>
-
           <TooltipPortal>
             <TooltipContent {...tooltipContentProps}>{tooltip}</TooltipContent>
           </TooltipPortal>

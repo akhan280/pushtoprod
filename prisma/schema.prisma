@@ -45,6 +45,7 @@ model Project {
   technologies  String?
   githuburl     String?
   columnId      String
+  textEditor    Json?
   collaborators ProjectCollaborator[]
 }
 

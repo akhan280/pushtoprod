@@ -3,7 +3,6 @@
 // import { cn, withRef } from '@udecode/cn';
 // import { PlateElement } from '@udecode/plate-common';
 // import { getMentionOnSelectItem } from '@udecode/plate-mention';
-
 // import { MENTIONABLES } from '@/lib/plate/demo/values/mentionables';
 
 // import {

@@ -15,7 +15,7 @@ import {
 } from './inline-combobox';
 
 export const EmojiInputElement = withRef<typeof PlateElement>(
-  ({ className, ...props }, ref) => {
+  ({ className, ...props }, ref) => {w
     const { children, editor, element } = props;
     const [value, setValue] = useState('');
     const debouncedValue = useDebounce(value, 100);
