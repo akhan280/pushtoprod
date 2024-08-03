@@ -31,15 +31,14 @@ export default async function ProjectLayout({
         {columnId === "ideas" && ideas}
         {columnId === "development" && development}
         <PlateEditor></PlateEditor>
-        
         {columnId === "toLaunch" && toLaunch}
       </div>
 
 
       <div className="w-100">
-        <Sidebar />
-        
+        <Sidebar />     
       </div>
+
     </div>
   );
 }

@@ -316,3 +316,72 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
     };
   }
 };
+
+
+export const updateEditor = async (editor: any, projectId: string) => {
+  console.log("[COL ID] is:", projectId);
+
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    console.log("[updateEditor Server Action]", editor);
+
+    const response = await prisma.project.update({
+      where: {
+        id: projectId
+      },
+      data: {
+        textEditor: editor
+      }
+    })
+
+    console.log("[updateEditor Server Action]", response);
+
+
+    return true;
+  } catch (error: any) {
+    console.log('[An error occured saving the editor]', error)
+    return false;
+  }
+}
+
+
+export const getEditorContent = async (projectId: string) => {
+  console.log("[COL ID] is:", projectId);
+
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    const response = await prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+      select: {
+        textEditor: true,
+      },
+    });
+
+    return {
+      project: response?.textEditor || null,
+      error: null,
+    };
+  } catch (error: any) {
+    console.log('[An error occurred fetching the editor content]', error);
+    return {
+      project: null,
+      error: error.message || 'Unknown error',
+    };
+  }
+};

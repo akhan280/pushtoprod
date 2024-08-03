@@ -14,8 +14,6 @@ import useMainStore from "../../lib/hooks/use-main-store";
 import {useRouter} from "next/navigation";
 
 
-
-
 export type ProjectType = "Project";
 export interface ProjectDragData {
   type: ProjectType;

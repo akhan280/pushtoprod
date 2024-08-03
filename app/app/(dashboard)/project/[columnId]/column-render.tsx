@@ -19,6 +19,7 @@ export default function ColumnRender({ columnId }: { columnId: string}) {
       const fetchProject = async () => {
         try {
             const data = await getSingularProject(segment);
+            console.log('[Fetched Project]', data)
             if (data?.error) {
                 setError('An error occurred while fetching the project');
             } else if (data?.project) {

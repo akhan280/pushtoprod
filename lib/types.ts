@@ -26,6 +26,7 @@ export type Project = {
   technologies: string | null;
   githuburl: string | null;
   columnId: string;
+  textEditor?: any;
 }
 
 
