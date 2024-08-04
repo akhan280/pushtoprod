@@ -7,12 +7,12 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 export default async function ProjectLayout({
   ideas,
   development,
-  toLaunch,
+  "to-launch": toLaunch,
   params,
 }: {
   ideas: React.ReactNode;
   development: React.ReactNode;
-  toLaunch: React.ReactNode;
+  "to-launch": React.ReactNode;
   params: { columnId: string };
 }) {
   const { columnId } = params;
@@ -30,9 +30,13 @@ export default async function ProjectLayout({
       <div className="flex-1 p-4">
         {columnId === "ideas" && ideas}
         {columnId === "development" && development}
+        {columnId === "to-launch" && toLaunch}
         <PlateEditor></PlateEditor>
-        {columnId === "toLaunch" && toLaunch}
+
+        
+        
       </div>
+      
 
 
       <div className="w-100">
