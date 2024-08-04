@@ -1,8 +1,12 @@
 "use client";
 
-import { Step, type StepItem, Stepper, useStepper } from "@/components/stepper";
-import { Button } from "@/components/ui/button";
+
+import React, { useState } from "react";
 import {useRouter} from "next/navigation";
+import { Button } from "../../../ui/button";
+import { StepItem } from "./types";
+import { Step, Stepper, useStepper } from ".";
+import useMainStore from "../../../../lib/hooks/use-main-store";
 
 const steps = [
 	{ label: "Step 1" },
@@ -10,27 +14,45 @@ const steps = [
 	{ label: "Step 3" },
 ] satisfies StepItem[];
 
+export default function StepperClickableSteps({
+	deploy,
+	finalize,
+	market,
+  }: {
+	deploy: React.ReactNode;
+	finalize: React.ReactNode;
+	market: React.ReactNode;
+  }) {
+	
+    const {step, setLaunchStep} = useMainStore()
+	const [currentStepContent, setCurrentStepContent] = useState<React.ReactNode>(null);
 
-
-export default function StepperClickableSteps() {
-    const router = useRouter();
-    // const 
 
 	return (
 		<div className="flex w-full flex-col gap-4">
 			<Stepper
-				initialStep={0}
+
+				initialStep={1}
 				steps={steps}
 				onClickStep={(step, setStep) => {
-                    if (step === 1){
-                        router.push('/tofinalize')
-
-                    }
-					
 					setStep(step);
+					setLaunchStep(step);
 				}}
-			>
-			
+			>	
+				
+				<Step key={1} label={steps[0].label}>
+				{deploy}
+				</Step>
+
+				<Step key={2} label={steps[1].label}>
+				{finalize}
+				</Step>
+
+				<Step key={3} label={steps[2].label}>
+				{market}
+				</Step>
+
+
 				<Footer />
 			</Stepper>
 		</div>

@@ -64,12 +64,11 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
   const onProjectClick = (project: Project) => {
     if (project.columnId === "development" || project.columnId === "to-launch") {
       console.log('[On Drag End] Routing to:', `/project/${project.columnId}/${project.id}`);
-      router.push(`/project/${project.columnId}/${project.id}`);
-      
+      const route = project.columnId === "to-launch" ? `/project/toLaunch/${project.id}` : `/project/${project.columnId}/${project.id}`;
+      router.push(route);
     }
-    showDialog(true)
+    showDialog(true);
   };
-
   
   return (
     <Card

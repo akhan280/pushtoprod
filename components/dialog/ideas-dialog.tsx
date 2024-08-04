@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import Header from "./header";
+import Header from "../projects/header";
 
 type IdeasDialogProps = {
   dummyPost: any;

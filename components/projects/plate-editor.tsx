@@ -30,12 +30,6 @@ export function PlateEditor() {
     setActiveTab(value);
   };
 
-
-  
-  
-
-  
-
   const handleEditorChange = (newValue: Value) => {
     if (selectedProject) {
       const serializedValue = JSON.stringify(newValue);
@@ -49,8 +43,6 @@ export function PlateEditor() {
       const serializedValue = JSON.stringify(newValue);
       console.log('rendering', serializedValue);
       setExcalidrawProperty(serializedValue);
-      
-
     }
   };
 
@@ -61,9 +53,6 @@ export function PlateEditor() {
   const deserializedInitialValue: Value = selectedProject.textEditor
     ? JSON.parse(selectedProject.textEditor)
     : defaultInitialValue;
-
-
-    
 
     // console.log("des",deserializedExcalidrawInitialValue)
 

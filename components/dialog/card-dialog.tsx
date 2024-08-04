@@ -2,8 +2,6 @@
 
 import { IdeasDialog } from "./ideas-dialog";
 import useMainStore from "../../lib/hooks/use-main-store";
-import { DevelopmentDialog } from "./development-dialog";
-import { LaunchDialog } from "./launch-dialog";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Description } from "@radix-ui/react-toast";
@@ -15,7 +13,7 @@ import { Project } from "@/lib/types";
 import { toast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
-import Header from "./header";
+import Header from "../projects/header";
 
 export default function DialogLayout() {
   const { selectedProject, showDialog, setSelectedProject, dragged, setRequestAdd, requestedAdd, dialog, addProject } = useMainStore();
@@ -51,10 +49,13 @@ export default function DialogLayout() {
         setSelectedProject(project);
         setRequestAdd("");
 
-        if (type === "development" || type === "to-launch") {
-          router.push(`/project/${type}/${project.id}`);
+        if (type === "development"){
+          router.push(`/project/development/${project.id}`);
         }
-      } else {
+        else if (type === "to-launch") {
+          router.push(`/project/toLaunch/${project.id}`);
+        }
+       else {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -63,6 +64,7 @@ export default function DialogLayout() {
         });
         console.error("Failed to create project", result.error);
       }
+    }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -130,18 +132,8 @@ export default function DialogLayout() {
           </Dialog>
         )}
         {(selectedProject?.columnId === "ideas" && (selectedProject?.previous != "development" && selectedProject?.previous != "to-launch")) && (
-           
-  
-               <IdeasDialog dummyPost={dummyPost} />
-              
-              
-
-          
-        )}
-       
-      
-
-      
+               <IdeasDialog dummyPost={dummyPost} />    
+        )}    
     </div>
   );
 }

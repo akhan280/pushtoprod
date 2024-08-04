@@ -1,48 +1,59 @@
-"use server";
+"use client";
+import React from "react";
 import Sidebar from "@/components/projects/sidebar";
 import { PlateEditor } from "@/components/projects/plate-editor";
-import ColumnRender from "./column-render";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
-export default async function ProjectLayout({
+export default function ProjectLayout({
   ideas,
   development,
-  "to-launch": toLaunch,
+  toLaunch,
   params,
 }: {
   ideas: React.ReactNode;
   development: React.ReactNode;
-  "to-launch": React.ReactNode;
+  toLaunch: React.ReactNode;
   params: { columnId: string };
 }) {
   const { columnId } = params;
 
   if (!columnId) {
-    throw "No column found";
+    throw new Error("No column found");
   }
 
   console.log("Rendering the ProjectLayout");
 
+  const renderContent = () => {
+    switch (columnId) {
+      case "ideas":
+        return (
+          <>
+            {ideas}
+            <PlateEditor />
+          </>
+        );
+      case "development":
+        return (
+          <>
+            {development}
+            <PlateEditor />
+          </>
+        );
+      case "toLaunch":
+        return toLaunch
+      default:
+        return null;
+    }
+  };
+
   return (
-    
     <div className="flex">
-
       <div className="flex-1 p-4">
-        {columnId === "ideas" && ideas}
-        {columnId === "development" && development}
-        {columnId === "to-launch" && toLaunch}
-        <PlateEditor></PlateEditor>
-
-        
-        
+        {renderContent()}
       </div>
-      
-
-
       <div className="w-100">
-        <Sidebar />     
+        <Sidebar />
       </div>
-
     </div>
   );
 }
