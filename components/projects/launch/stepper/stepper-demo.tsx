@@ -1,6 +1,8 @@
+import React from "react";
 
-import { Step, type StepItem, Stepper, useStepper } from "@/components/stepper";
-import { Button } from "@/components/ui/button";
+
+import { Step, type StepItem, Stepper, useStepper } from ".";
+import { Button } from "../../components/ui/button"
 
 const steps = [
 	{ label: "Step 1" },

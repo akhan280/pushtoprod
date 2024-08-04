@@ -5,7 +5,7 @@ import useMainStore from "../../../../../lib/hooks/use-main-store";
 import { getSingularProject } from "../../../../../lib/actions";
 import { ProjectMovement } from "@/lib/hooks/kanban-slice";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../../../../components/ui/breadcrumb";
-import Header from "../../../../../components/dialog/header";
+import Header from "../../../../../components/projects/header";
 import Editor from "../../../../../components/editor";
 
 export default function ColumnRender({ columnId }: { columnId: string}) {

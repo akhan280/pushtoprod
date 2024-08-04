@@ -2,19 +2,19 @@
 import { StateCreator } from 'zustand';
 import { KanbanSlice, ProjectMovement } from './kanban-slice';
 import { updateEditor, updateExalidraw, updateProjectField } from '../actions';
-import { toast } from '../../components/ui/use-toast';
+import { toast } from '../../components/ui/use-toast'; 
 
 type FormStore = {
   excalidraw: any;
   editor: any;
-
-
+  step: number;
 };
 
 type FormActions = {
   setProjectProperty: <K extends keyof ProjectMovement>(key: K, value: ProjectMovement[K]) => Promise<any>;
   setEditorProperty: (editor: any) => void;
   setExcalidrawProperty: (excalidraw: any) => void;
+  setLaunchStep: (step: number) => void;
 };
 
 export type FormSlice = FormStore & FormActions & Partial<KanbanSlice>;
@@ -23,8 +23,7 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
 
   excalidraw: null, 
   editor: null, 
-
-  
+  step: 1,
 
   setEditorProperty: async (editor: any) => {
     console.log('[FORM SLICE] Updating Editor', editor)
@@ -50,12 +49,7 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
         description: "There was a problem with your request.",
       });
     }
-    
-
-
   },
-
-
 
   setProjectProperty: async (key, value)  => {
     console.log(`Changing ${key} to ${value}`)
@@ -74,4 +68,8 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
     
     return "success"
   },
+
+  setLaunchStep: async (newStep: number) => {
+    set({step: newStep})
+  }
 });
