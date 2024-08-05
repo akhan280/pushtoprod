@@ -51,9 +51,12 @@ export default function ProjectLayout({
       <div className="flex-1 p-4">
         {renderContent()}
       </div>
-      <div className="w-100">
-        <Sidebar />
-      </div>
+      {/* Conditionally render the sidebar only for "ideas" and "development" */}
+      {(columnId === "ideas" || columnId === "development") && (
+        <div className="w-100">
+          <Sidebar />
+        </div>
+      )}
     </div>
   );
 }

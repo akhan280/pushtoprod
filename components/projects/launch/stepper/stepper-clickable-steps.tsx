@@ -1,8 +1,6 @@
 "use client";
 
-
 import React, { useState } from "react";
-import {useRouter} from "next/navigation";
 import { Button } from "../../../ui/button";
 import { StepItem } from "./types";
 import { Step, Stepper, useStepper } from ".";
@@ -18,43 +16,41 @@ export default function StepperClickableSteps({
 	deploy,
 	finalize,
 	market,
-  }: {
+}: {
 	deploy: React.ReactNode;
 	finalize: React.ReactNode;
 	market: React.ReactNode;
-  }) {
-	
-    const {step, setLaunchStep} = useMainStore()
+}) {
+
+	const { step, setLaunchStep } = useMainStore();
 	const [currentStepContent, setCurrentStepContent] = useState<React.ReactNode>(null);
 
-
 	return (
-		<div className="flex w-full flex-col gap-4">
-			<Stepper
+		<div className="flex flex-col gap-4"> {/* Full width container */}
+			<div className="w-full mx-auto"> {/* Center and constrain the width of the Stepper */}
+				<Stepper
+					initialStep={0}
+					steps={steps}
+					onClickStep={(step, setStep) => {
+						setStep(step);
+						setLaunchStep(step);
+					}}
+				>
+					<Step key={0} label={steps[0].label}>
+						{deploy}
+					</Step>
 
-				initialStep={1}
-				steps={steps}
-				onClickStep={(step, setStep) => {
-					setStep(step);
-					setLaunchStep(step);
-				}}
-			>	
-				
-				<Step key={1} label={steps[0].label}>
-				{deploy}
-				</Step>
+					<Step key={1} label={steps[1].label}>
+						{finalize}
+					</Step>
 
-				<Step key={2} label={steps[1].label}>
-				{finalize}
-				</Step>
+					<Step key={2} label={steps[2].label}>
+						{market}
+					</Step>
 
-				<Step key={3} label={steps[2].label}>
-				{market}
-				</Step>
-
-
-				<Footer />
-			</Stepper>
+					<Footer />
+				</Stepper>
+			</div>
 		</div>
 	);
 }
@@ -69,6 +65,7 @@ const Footer = () => {
 		isLastStep,
 		isOptionalStep,
 	} = useStepper();
+
 	return (
 		<>
 			{hasCompletedAllSteps && (

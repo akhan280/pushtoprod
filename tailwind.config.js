@@ -241,6 +241,7 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        
         // Additional Tremor-specific color schemes
         tremor: {
           brand: {
