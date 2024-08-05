@@ -22,8 +22,9 @@ export default async function ToLaunchLayout({
 
 
   return (
-    <div className="flex flex-col">
-        <StepperClickableSteps deploy = {deploy} finalize = {finalize} market = {market}/>
+    <div className="flex flex-col items-center"> {/* Center content vertically and horizontally */}
+        <StepperClickableSteps deploy={deploy} finalize={finalize} market={market} />
     </div>
+
   );
 }
