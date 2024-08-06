@@ -7,16 +7,19 @@ import { Step, Stepper, useStepper } from ".";
 import useMainStore from "../../../../lib/hooks/use-main-store";
 
 const steps = [
-	{ label: "Step 1" },
-	{ label: "Step 2" },
-	{ label: "Step 3" },
+	{ label: "Start" },
+	{ label: "Finalize" },
+	{ label: "Deploy" },
+	{ label: "Market" },
 ] satisfies StepItem[];
 
 export default function StepperClickableSteps({
+	start,
 	deploy,
 	finalize,
 	market,
 }: {
+	start: React.ReactNode;
 	deploy: React.ReactNode;
 	finalize: React.ReactNode;
 	market: React.ReactNode;
@@ -37,7 +40,7 @@ export default function StepperClickableSteps({
 					}}
 				>
 					<Step key={0} label={steps[0].label}>
-						{deploy}
+						{start}
 					</Step>
 
 					<Step key={1} label={steps[1].label}>
@@ -45,6 +48,10 @@ export default function StepperClickableSteps({
 					</Step>
 
 					<Step key={2} label={steps[2].label}>
+						{deploy}
+					</Step>
+
+					<Step key={3} label={steps[3].label}>
 						{market}
 					</Step>
 

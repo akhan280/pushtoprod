@@ -3,12 +3,13 @@
 
 
 import React from "react"
-export default function FinalizeLaunchRenderer() {
+import  Header from "@/components/projects/header"
+export default function LaunchRenderer() {
 
 
     return (
         <div>
-           hi, in finalize
+           <Header partial={true}/>
         
         </div>
     )

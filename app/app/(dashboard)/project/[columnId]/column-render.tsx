@@ -101,7 +101,7 @@ export default function ColumnRender({ columnId }: { columnId: string}) {
           </BreadcrumbList>
         </Breadcrumb>
         
-        <Header />
+        <Header partial={true} />
         
         {/* <Editor post={dummyPost} /> */}
       </div>
