@@ -23,7 +23,7 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
 
   excalidraw: null, 
   editor: null, 
-  step: 1,
+  step: 0,
 
   setEditorProperty: async (editor: any) => {
     console.log('[FORM SLICE] Updating Editor', editor)
