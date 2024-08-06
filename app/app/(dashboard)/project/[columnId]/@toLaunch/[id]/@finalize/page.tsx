@@ -9,7 +9,8 @@ export default function LaunchRenderer() {
 
     return (
         <div>
-           <Header partial={true}/>
+           <Header partial={false}/>
+            
         
         </div>
     )
