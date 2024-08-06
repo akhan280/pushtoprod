@@ -29,23 +29,20 @@ export default function StepperClickableSteps({
 	const [currentStepContent, setCurrentStepContent] = useState<React.ReactNode>(null);
 
 	return (
-		<div className="flex flex-col gap-4"> {/* Full width container */}
-			<div className="w-full mx-auto"> {/* Center and constrain the width of the Stepper */}
-				<Stepper
-					initialStep={0}
-					steps={steps}
-					onClickStep={(step, setStep) => {
-						setStep(step);
-						setLaunchStep(step);
-					}}
-				>
-					<Step key={0} label={steps[0].label}>
-						{start}
-					</Step>
-
-					<Step key={1} label={steps[1].label}>
-						{finalize}
-					</Step>
+		<div className="flex w-full flex-col gap-4">
+			<Stepper
+ 
+				initialStep={1}
+				steps={steps}
+				onClickStep={(step, setStep) => {
+					setStep(step);
+					setLaunchStep(step);
+				}}
+			>	
+				
+				<Step key={1} label={steps[0].label}>
+				{deploy}
+				</Step>
 
 					<Step key={2} label={steps[2].label}>
 						{deploy}
