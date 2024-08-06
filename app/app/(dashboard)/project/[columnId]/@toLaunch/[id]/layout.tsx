@@ -11,10 +11,12 @@ import StepperClickableSteps from '../../../../../../../components/projects/laun
 
 
 export default async function ToLaunchLayout({
+  start,
   deploy,
   finalize,
   market,
 }: {
+  start: React.ReactNode
   deploy: React.ReactNode;
   finalize: React.ReactNode;
   market: React.ReactNode;
@@ -22,8 +24,8 @@ export default async function ToLaunchLayout({
 
 
   return (
-    <div className="flex flex-col items-center"> {/* Center content vertically and horizontally */}
-        <StepperClickableSteps deploy={deploy} finalize={finalize} market={market} />
+    <div> {/* Center content vertically and horizontally */}
+        <StepperClickableSteps start = {start} deploy={deploy} finalize={finalize} market={market} />
     </div>
 
   );

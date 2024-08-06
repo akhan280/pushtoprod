@@ -25,6 +25,7 @@ export default function ProjectLayout({
 
   const renderContent = () => {
     switch (columnId) {
+      
       case "ideas":
         return (
           <>

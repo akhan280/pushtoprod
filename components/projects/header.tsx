@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 type ColumnId = "ideas" | "development" | "to-launch";
 
-export default function Header() {
+export default function Header({partial} : {partial: boolean}) {
   const [loading, setLoading] = useState(false);
   const {
     selectedProject,
@@ -51,49 +51,11 @@ export default function Header() {
   ];
 
 
-//   useEffect(() => {
-//     if (selectedProject) {
-//         populateProject()
-//       form.reset({
-//         title: selectedProject.title,
-//         description: selectedProject.description,
-//         notes: selectedProject.notes!,
-//         technologies: selectedProject.technologies!,
-//         githuburl: selectedProject.githuburl!,
-//         columnId: selectedProject.columnId as ColumnId,
-//       });
-//     }
-//   }, [selectedProject]);
-
 const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(["react", "angular"]);
 
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form values:", values); // Add this line for debugging
-    setLoading(true);
-
-    if (dragged) {
-      console.log("Saving project, not creating new", values);
-      showDialog(false);
-      showDraggedDialog(false);
-    } else {
-      const newProject: Project = {
-        id: uuidv4(),
-        ...values,
-      };
-      const result = await createProject(newProject);
-      if (result.error) {
-        console.error("Error creating project:", result.error);
-      } else {
-        console.log("Project created:", result.project);
-        addProject(newProject);
-        showDialog(false);
-      }
-    }
-    setLoading(false);
-  }
-
   return (
+    partial ? 
+    (
     <div className="border border-b-green-100">
 
       <Input value={selectedProject?.title || ""} 
@@ -161,74 +123,13 @@ const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(["react",
       value={selectedProject?.githuburl || ""}
       onChange={(e) => setProjectProperty("githuburl", e.target.value)}
       />
-
-      
-      {/* <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input
-                id="title"
-                {...form.register("title")}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
-              <Input
-                id="description"
-                {...form.register("description")}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="notes" className="text-right">
-                Notes
-              </Label>
-              <Input
-                id="notes"
-                {...form.register("notes")}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="technologies" className="text-right">
-                Technologies
-              </Label>
-              <Input
-                id="technologies"
-                {...form.register("technologies")}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="githuburl" className="text-right">
-                GitHub URL
-              </Label>
-              <Input
-                id="githuburl"
-                {...form.register("githuburl")}
-                className="col-span-3"
-              />
-            </div>
-            <Input id="columnId" type="hidden" {...form.register("columnId")} />
-          </div>
-          <DialogFooter>
-            {!loading ? (
-              <Button variant={"outline"} className="z-20" type="submit">
-                {dragged ? "Save" : "Submit"}
-              </Button>
-            ) : (
-              <ButtonLoading />
-            )}
-          </DialogFooter>
-        </form>
-      </Form> */}
     </div>
+    )
+    :
+    (
+    <div>
+
+    </div>
+    )
   );
 }

@@ -36,6 +36,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.44.4",
+    "@tabler/icons-react": "^3.11.0",
     "@tremor/react": "^3.11.1",
     "@udecode/cn": "^33.0.0",
     "@udecode/plate-alignment": "^36.0.11",

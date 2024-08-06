@@ -121,7 +121,7 @@ export default function DialogLayout() {
         {((!selectedProject || !selectedProject.id)) && (
           <Dialog open={dialog} onOpenChange={showDialog}>
             <DialogContent className="bg-white sm:max-w-[425px]">
-              <Header />
+              <Header partial={true} />
               <DialogHeader>
                 <DialogTitle>Add</DialogTitle>
                 <DialogDescription>
