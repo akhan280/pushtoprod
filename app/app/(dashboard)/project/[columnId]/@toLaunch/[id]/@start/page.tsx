@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react"
-import { Button } from "@/components/ui/button"
-import { MultiStepLoader } from "@/components/ui/multi-step-loader"
+import {useStepper} from "../../../../../../../../components/projects/launch/stepper"
+import {Button} from "../../../../../../../../components/ui/button"
+import {MultiStepLoader} from "../../../../../../../../components/ui/multi-step-loader"
+
 
 export default function StartRenderer() {
     const loadingStates = [
@@ -14,6 +16,12 @@ export default function StartRenderer() {
 
     ];
 
+    const {
+        nextStep,
+        prevStep,
+        resetSteps,
+      } = useStepper();
+    
 
     return (
         <div className="container mx-auto p-4">
@@ -28,9 +36,10 @@ export default function StartRenderer() {
                         Confirm your project details, add it to your portfolio, and generate copy & creatives to market on all major platforms.
                     </p>
                     <div className="flex items-center mt-4">
-                    <Button>
+                    <Button onClick={nextStep}>
                         Start 
                     </Button>
+                    
                     <span className="ml-2 text-xs text-tremor-content-muted">Takes about 5 minutes</span>
                     </div>
                 </div>
