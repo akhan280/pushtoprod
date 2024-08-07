@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { createProject } from "@/lib/actions";
 import { Dialog, DialogContent, } from "../ui/dialog";
 import Image from "next/image";
-import { ButtonLoading } from "../ui/button-loading";
+import { ButtonLoading } from "../ui/loading-ui/button-loading";
 
 export default function DialogLayout() {
   const {selectedProject,showDialog, setRequestAdd, requestedAdd, dialog} = useMainStore();

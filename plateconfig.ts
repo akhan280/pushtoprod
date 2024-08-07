@@ -74,7 +74,6 @@ import { withPlaceholders } from '@/components/plate-ui/placeholder';
 import { withDraggables } from '@/components/plate-ui/with-draggables';
 import { EmojiInputElement } from '@/components/plate-ui/emoji-input-element';
 
-
 export const plugins = createPlugins(
   [
     createParagraphPlugin(),
