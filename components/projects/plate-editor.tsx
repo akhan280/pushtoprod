@@ -2,20 +2,23 @@
 import { plugins, editorInitialValue as defaultInitialValue, excalidrawInitialValue} from '@/plateconfig';
 import useMainStore from '../../lib/hooks/use-main-store';
 import { DndProvider } from 'react-dnd/dist/core/DndProvider';
-import { TooltipProvider } from '../plate-ui/tooltip';
+
 import { CommentsProvider } from '@udecode/plate-comments';
-import { serializeAsJSON } from "@excalidraw/excalidraw";
+
 import { Plate, PlateStoreState, Value } from '@udecode/plate-common';
-import { FixedToolbar } from '../plate-ui/fixed-toolbar';
-import { FixedToolbarButtons } from '../plate-ui/fixed-toolbar-buttons';
-import { Editor } from '../plate-ui/editor';
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
-import { FloatingToolbar } from '../plate-ui/floating-toolbar';
-import { FloatingToolbarButtons } from '../plate-ui/floating-toolbar-buttons';
-import { CommentsPopover } from '../plate-ui/comments-popover';
+
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CommentsPopover } from '../ui/plate-ui/comments-popover';
+import { FloatingToolbar } from '../ui/plate-ui/floating-toolbar';
+import { FloatingToolbarButtons } from '../ui/plate-ui/floating-toolbar-buttons';
+import { Editor } from '../ui/plate-ui/editor';
+import { FixedToolbar } from '../ui/plate-ui/fixed-toolbar';
+import { FixedToolbarButtons } from '../ui/plate-ui/fixed-toolbar-buttons';
+import { TooltipProvider } from '../ui/plate-ui/tooltip';
 
 // Combine the editors into a single component with tabs
 export function PlateEditor() {
