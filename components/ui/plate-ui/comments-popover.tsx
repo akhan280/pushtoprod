@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { cn } from '@udecode/cn';
+import { cn, PortalBody } from '@udecode/cn';
 import {
   CommentProvider,
   CommentsPositioner,
@@ -10,12 +10,11 @@ import {
   useFloatingCommentsContentState,
   useFloatingCommentsState,
 } from '@udecode/plate-comments';
-import { PortalBody } from '@udecode/plate-common';
-
-import { CommentCreateForm } from './comment-create-form';
+import { popoverVariants } from './popover';
 import { CommentItem } from './comment-item';
 import { CommentReplyItems } from './comment-reply-items';
-import { popoverVariants } from './popover';
+import { CommentCreateForm } from './comment-create-form';
+
 
 export type FloatingCommentsContentProps = {
   disableForm?: boolean;

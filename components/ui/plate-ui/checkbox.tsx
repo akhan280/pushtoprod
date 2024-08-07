@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { cn, withRef } from '@udecode/cn';
-import { Icons } from '../icons';
+import { Icons } from '../../icons';
 
 // import { Icons } from '@/components/icons';
 
