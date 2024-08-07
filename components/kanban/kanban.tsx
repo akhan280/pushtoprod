@@ -25,7 +25,7 @@ import useMainStore from "../../lib/hooks/use-main-store";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
-import { ButtonLoading } from "../ui/button-loading";
+import { ButtonLoading } from "../ui/loading-ui/button-loading";
 import AddNewProject from "../add-new-project";
 const defaultCols = [
   {id: "ideas" as const, title: "Ideas"},

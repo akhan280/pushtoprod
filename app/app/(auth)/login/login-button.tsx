@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingDots from "@/components/icons/loading-dots";
+import LoadingDots from "@/components/loaders/loading-dots";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Input } from "../../../../components/ui/input";
