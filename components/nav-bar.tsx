@@ -9,7 +9,6 @@ import {
   Layout,
   LayoutDashboard,
   Megaphone,
-  Menu,
   Newspaper,
   Settings,
   FileCode,
@@ -26,7 +25,6 @@ import {
   useSelectedLayoutSegments,
 } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { ny } from '../lib/utils'
 import { buttonVariants } from './ui/button'
 import { Separator } from './ui/separator'
