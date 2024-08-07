@@ -42,7 +42,7 @@ model Project {
   title         String?  @default("Untitled Project")
   description   String?  @default("description")
   tags          String[] @default([])
-  technologies  String?
+  technologies  Technology[] @relation("ProjectTechnologies")
   githuburl     String?
   websiteurl    String?
   columnId      String
@@ -51,6 +51,12 @@ model Project {
   collaborators ProjectCollaborator[]
 }
 
+model Technology {
+  id        String  @id @default(cuid())
+  name      String
+  logo      String
+  projects  Project[] @relation("ProjectTechnologies") // Define the other side of the relation
+}
 
 // many to many table for projects and collaborates
 model ProjectCollaborator {

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import GithubProperty from "./properties/github-property";
 import WebsiteProperty from "./properties/website-property";
 import TagProperty from "./properties/tag-property";
+import CollaboratorProperty from "./properties/collaborator-property";
 
 export default function Sidebar() {
   return (
@@ -24,8 +25,7 @@ export default function Sidebar() {
             <TagProperty/>
           </div>
           <div className="flex justify-between items-center space-x-4">
-            <span>Members</span>
-            <Button variant="outline">Add members</Button>
+            <CollaboratorProperty/>
           </div>
           <div className="flex justify-between items-center">
             <span>Teams</span>
