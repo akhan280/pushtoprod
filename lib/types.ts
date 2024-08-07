@@ -21,7 +21,7 @@ export type Project = {
   id: string;
   title: string | null;
   description: string | null;
-  notes: string | null;
+  tags: string[] | [];
   collaborators: Collaborator[];
   technologies: string | null;
   githuburl: string | null;

@@ -90,6 +90,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^1.0.0",
     "date-fns": "^2.30.0",
+    "emblor": "^1.4.4",
     "focus-trap-react": "^10.2.3",
     "framer-motion": "^10.16.4",
     "gray-matter": "^4.0.3",
