@@ -25,6 +25,8 @@ import useMainStore from "../../lib/hooks/use-main-store";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
+import { ButtonLoading } from "../ui/button-loading";
+import AddNewProject from "../add-new-project";
 
 
 const defaultCols = [
@@ -44,16 +46,16 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const { selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog } = useMainStore();
+  const { selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog, loading, setLoading } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    
-    setProjects(fetchedProjects);
+    setLoading(false)
     console.log('Projects', fetchedProjects)
+    setProjects(fetchedProjects);
   }, [fetchedProjects, setProjects]);
 
   const sensors = useSensors(
@@ -77,6 +79,14 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   return (
     
     <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}onDragOver={onDragOver}>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <ButtonLoading />
+        </div>
+      )}
+      
+      <>
+      <AddNewProject></AddNewProject>
       <BoardContainer>
         <SortableContext items={columnsId}>
           {columns
@@ -114,6 +124,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
           </DragOverlay>,
           document.body
         )}
+      </>
+
     </DndContext>
   );
 

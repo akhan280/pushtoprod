@@ -10,6 +10,7 @@ export type ProjectMovement = Project & {
 type KanbanStore = {
   dialog: boolean;
   dragged: boolean;
+  loading: boolean;
   requestedAdd: string | null;
   projects: Project[];
   selectedProject: ProjectMovement | null;
@@ -20,6 +21,7 @@ type KanbanActions = {
   showDraggedDialog: (dragged: boolean) => void;
   addProject: (project: Project) => void;
   setProjects: (projects: Project[]) => void;
+  setLoading: (loading: boolean) => void;
   setSelectedProject: (project: ProjectMovement | null) => void;
   setRequestAdd: (requestedAdd: string) => void;
 };
@@ -31,6 +33,11 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
   dialog: false,
   dragged: false,
   requestedAdd: '',
+  loading: false,
+  
+  setLoading: (loading: boolean) => {
+    set({loading: true});
+  },
 
   selectedProject: null,
 

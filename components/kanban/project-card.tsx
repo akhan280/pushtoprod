@@ -1,13 +1,10 @@
 "use client"
 
-import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cva } from "class-variance-authority";
 import { CheckCheck, ExpandIcon, GripVertical } from "lucide-react";
-import { ColumnId } from "./kanban";
 import { Badge } from "../ui/badge";
 import { Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
@@ -27,14 +24,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const {setNodeRef, attributes, listeners, transform, transition, isDragging, } = useSortable({
     id: project.id,
     data: {
       type: "Project",
@@ -45,33 +35,21 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
     },
   });
 
-  const {showDialog, setSelectedProject, setRequestAdd, requestedAdd} = useMainStore();
+  const {showDialog, setSelectedProject, setRequestAdd, requestedAdd, loading, setLoading} = useMainStore();
   const router = useRouter();
-  const style = {
-    transition,
-    transform: CSS.Translate.toString(transform),
-  };
-
-  const variants = cva("", {
-    variants: {
-      dragging: {
-        over: "ring-2 opacity-30",
-        overlay: "ring-2 ring-primary",
-      },
-    },
-  });
+  const style = {transition, transform: CSS.Translate.toString(transform)};
+  const variants = cva("", {variants: {dragging: {over: "ring-2 opacity-30", overlay: "ring-2 ring-primary"}}});
 
   const onProjectClick = (project: Project) => {
     setSelectedProject({...project, previous: column, next: column})
-    setRequestAdd("ideas")
-    
-    console.log('[Project Card]', project, requestedAdd)
     if (project.columnId === "development" || project.columnId === "to-launch") {
+      setLoading(true)
       console.log('[On Drag End] Routing to:', `/project/${project.columnId}/${project.id}`);
       const route = project.columnId === "to-launch" ? `/project/toLaunch/${project.id}` : `/project/${project.columnId}/${project.id}`;
+      setLoading(false);
       router.push(route);
     }
-    
+    setRequestAdd("ideas")
     showDialog(true);
   };
   
