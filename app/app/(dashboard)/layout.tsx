@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         </Suspense>
-      <div className="min-h-screen dark:bg-black md:pl-32">{children}</div>
+      <div className="min-h-screen dark:bg-black">{children}</div>
       <div><Navbar></Navbar></div>
 
       </TooltipProvider>

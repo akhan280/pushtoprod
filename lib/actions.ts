@@ -98,8 +98,7 @@ export const createProject = async (projectData: Omit<Project, 'id'>) => {
     };
   }
 
-  console.log("PJS", projectData)
-  
+  console.log("Projects", projectData)
 
   try {
     const userId = session.id;
@@ -109,10 +108,6 @@ export const createProject = async (projectData: Omit<Project, 'id'>) => {
       data: {
         title: projectData.title,
         description: projectData.description,
-        technologies: projectData.technologies,
-        githuburl: projectData.githuburl,
-        websiteurl: projectData.websiteurl,
-        tags: projectData.tags,
         columnId: projectData.columnId,
       }
     });

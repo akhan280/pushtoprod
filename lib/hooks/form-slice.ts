@@ -62,7 +62,6 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
       throw new Error(`Invalid key: ${key}`);
     }
     // call server action
-
     (modifiedProject as ProjectMovement)[key] = value;
     set({ selectedProject: modifiedProject });
     updateProjectField(modifiedProject.id, key, value as string)

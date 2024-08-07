@@ -45,7 +45,7 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
     },
   });
 
-  const {showDialog, setSelectedProject} = useMainStore();
+  const {showDialog, setSelectedProject, setRequestAdd, requestedAdd} = useMainStore();
   const router = useRouter();
   const style = {
     transition,
@@ -62,11 +62,16 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
   });
 
   const onProjectClick = (project: Project) => {
+    setSelectedProject({...project, previous: column, next: column})
+    setRequestAdd("ideas")
+    
+    console.log('[Project Card]', project, requestedAdd)
     if (project.columnId === "development" || project.columnId === "to-launch") {
       console.log('[On Drag End] Routing to:', `/project/${project.columnId}/${project.id}`);
       const route = project.columnId === "to-launch" ? `/project/toLaunch/${project.id}` : `/project/${project.columnId}/${project.id}`;
       router.push(route);
     }
+    
     showDialog(true);
   };
   
@@ -76,7 +81,7 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => {setSelectedProject({...project, previous: column, next: column}), onProjectClick(project)}}
+      onClick={() => {onProjectClick(project)}}
       className={variants({
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
