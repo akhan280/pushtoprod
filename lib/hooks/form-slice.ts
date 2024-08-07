@@ -54,6 +54,7 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
   setProjectProperty: async (key, value)  => {
     console.log(`Changing ${key} to ${value}`)
     const modifiedProject = get().selectedProject;
+    console.log('modifiedProject', modifiedProject)
     if (!modifiedProject) {
       throw new Error('No project selected');
     }

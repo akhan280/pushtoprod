@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import GithubProperty from "./properties/githubproperty";
+import WebsiteProperty from "./properties/websiteproperty";
 
 export default function Sidebar() {
   return (
@@ -10,12 +12,12 @@ export default function Sidebar() {
         <CardHeader className="text-lg font-semibold">Properties</CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <span>Status</span>
-            <Badge variant="outline">Backlog</Badge>
+            {/* <span>Status</span>
+            <Badge variant="outline">Backlog</Badge> */}
+            <GithubProperty/>
           </div>
           <div className="flex justify-between items-center">
-            <span>Priority</span>
-            <Badge variant="outline">No priority</Badge>
+            <WebsiteProperty/>
           </div>
           <div className="flex justify-between items-center">
             <span>Lead</span>
