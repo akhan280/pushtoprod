@@ -12,8 +12,6 @@ import {
   useSensor,
   useSensors,
   KeyboardSensor,
-  Announcements,
-  UniqueIdentifier,
   TouchSensor,
   MouseSensor,
   PointerSensor,
@@ -26,24 +24,13 @@ import { Column, Project } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
 import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
-import DialogLayout from "../dialog/card-dialog";
-import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 
 
 const defaultCols = [
-  {
-    id: "ideas" as const,
-    title: "Ideas",
-  },
-  {
-    id: "development" as const,
-    title: "Development",
-  },
-  {
-    id: "to-launch" as const,
-    title: "Ready to Launch",
-  },
+  {id: "ideas" as const, title: "Ideas"},
+  {id: "development" as const, title: "Development"},
+  {id: "to-launch" as const, title: "Ready to Launch"},
 ] satisfies Column[];
 
 export type ColumnId = (typeof defaultCols)[number]["id"];
@@ -66,17 +53,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   useEffect(() => {
     
     setProjects(fetchedProjects);
-    console.log('projecst', fetchedProjects)
+    console.log('Projects', fetchedProjects)
   }, [fetchedProjects, setProjects]);
-  // useEffect(() => {
-  //   async function fetchProjects() {
-  //     const proj = await KanbanFetcher();
-  //     setProjects(proj);
-  //     console.log('projects', projects);
-  //   }
-
-  //   fetchProjects();
-  // }, [setProjects]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -96,124 +74,9 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     })
   );
 
-  
-  function getDraggingProjectData(projectId: UniqueIdentifier, columnId: ColumnId) {
-    const projectsInColumn = projects?.filter((project) => project.columnId === columnId) ?? [];
-    const projectPosition = projectsInColumn.findIndex((project) => project.id === projectId);
-    const column = columns.find((col) => col.id === columnId);
-    return {
-      projectsInColumn,
-      projectPosition,
-      column,
-    };
-  }
-
-  const announcements: Announcements = {
-    onDragStart({ active }) {
-      if (!hasDraggableData(active)) return;
-      if (active.data.current?.type === "Column") {
-        const startColumnIdx = columnsId.findIndex((id) => id === active.id);
-        const startColumn = columns[startColumnIdx];
-        return `Picked up Column ${startColumn?.title} at position: ${
-          startColumnIdx + 1
-        } of ${columnsId.length}`;
-      } else if (active.data.current?.type === "Project") {
-        pickedUpProjectColumn.current = active.data.current.project.columnId;
-        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
-          active.id,
-          pickedUpProjectColumn.current!
-        );
-        return `Picked up Project ${
-          active.data.current.project.title
-        } at position: ${projectPosition + 1} of ${
-          projectsInColumn.length
-        } in column ${column?.title}`;
-      }
-    },
-    onDragOver({ active, over }) {
-      if (!hasDraggableData(active) || !hasDraggableData(over)) return;
-
-      if (
-        active.data.current?.type === "Column" &&
-        over.data.current?.type === "Column"
-      ) {
-        const overColumnIdx = columnsId.findIndex((id) => id === over.id);
-        return `Column ${active.data.current.column.title} was moved over ${
-          over.data.current.column.title
-        } at position ${overColumnIdx + 1} of ${columnsId.length}`;
-      } else if (
-        active.data.current?.type === "Project" &&
-        over.data.current?.type === "Project"
-      ) {
-        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
-          over.id,
-          over.data.current.project.columnId
-        );
-        if (over.data.current.project.columnId !== pickedUpProjectColumn.current) {
-          return `Project ${
-            active.data.current.project.title
-          } was moved over column ${column?.title} in position ${
-            projectPosition + 1
-          } of ${projectsInColumn.length}`;
-        }
-        return `Project was moved over position ${projectPosition + 1} of ${
-          projectsInColumn.length
-        } in column ${column?.title}`;
-      }
-    },
-    onDragEnd({ active, over }) {
-      if (!hasDraggableData(active) || !hasDraggableData(over)) {
-        pickedUpProjectColumn.current = null;
-        return;
-      }
-      if (
-        active.data.current?.type === "Column" &&
-        over.data.current?.type === "Column"
-      ) {
-        const overColumnPosition = columnsId.findIndex((id) => id === over.id);
-        return `Column ${
-          active.data.current.column.title
-        } was dropped into position ${overColumnPosition + 1} of ${
-          columnsId.length
-        }`;
-      } else if (
-        active.data.current?.type === "Project" &&
-        over.data.current?.type === "Project"
-      ) {
-        const { projectsInColumn, projectPosition, column } = getDraggingProjectData(
-          over.id,
-          over.data.current.project.columnId
-        );
-        if (over.data.current.project.columnId !== pickedUpProjectColumn.current) {
-          return `Project was dropped into column ${column?.title} in position ${
-            projectPosition + 1
-          } of ${projectsInColumn.length}`;
-        }
-
-        return `Project was dropped into position ${projectPosition + 1} of ${
-          projectsInColumn.length
-        } in column ${column?.title}`;
-      }
-      pickedUpProjectColumn.current = null;
-    },
-    onDragCancel({ active }) {
-      pickedUpProjectColumn.current = null;
-      if (!hasDraggableData(active)) return;
-      return `Dragging ${active.data.current?.type} cancelled.`;
-    },
-  };
-
   return (
     
-    <DndContext
-      accessibility={{
-        announcements,
-      }}
-      sensors={sensors}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-    >
+    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}onDragOver={onDragOver}>
       <BoardContainer>
         <SortableContext items={columnsId}>
           {columns
@@ -255,21 +118,17 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   );
 
   function onDragStart(event: DragStartEvent) {
-    console.log(hasDraggableData(event.active))
     if (!hasDraggableData(event.active)) return;
-    
     const data = event.active.data.current;
     if (data?.type === "Column") {
       setActiveColumn(data.column);
       return;
     }
 
-    console.log('data type', data?.type)
     if (data?.type === "Project") {
       console.log('[OnDrag Start] Dragging project')
       setActiveProject(data.project);
       console.log('[OnDrag Start]', activeProject)
-
       return;
     }
   }
@@ -284,23 +143,19 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     const { active, over } = event;
 
     if (!over) return;
-    if (!over.data || !over.data.current ) return; //!over.data.current.project
+    if (!over.data || !over.data.current ) return;
 
     const activeId = active.id;
     const overId = over.id;
-    
     const project = event.active.data.current!.project;
     const previousColumn = pickedUpProjectColumn.current;
     const newColumn = project.columnId;
 
     if (!newColumn) {
-      console.log('[Kanban] newColumn is null', newColumn);
-      console.log('[Kanban] newColumn is null; projects', projects);
+      console.log('[Kanban] newColumn is null; projects', newColumn,  projects);
       const currentProject = projects.find((proj) => proj.id === project.id);
     
-      if (currentProject && previousColumn !== null) {
-        currentProject.columnId = previousColumn;
-      }
+      if (currentProject && previousColumn !== null) { currentProject.columnId = previousColumn }
       console.log('[Kanban] newColumn is null; currentProject', currentProject);
     }
     
@@ -308,16 +163,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     console.log('[Kanban] Previous Column:', pickedUpProjectColumn.current);
     console.log('[Kanban] New Column:', newColumn);
     
-    if (newColumn !== previousColumn ) {
-        showDialog(true)
-    }
-      
-    const projectMovement = { 
-      next: newColumn,
-      previous: previousColumn,
-      ...project,
-    }
-
+    if (newColumn !== previousColumn ) { showDialog(true) }
+    const projectMovement = {next: newColumn, previous: previousColumn, ...project}
     setSelectedProject(projectMovement)
 
     // TODO: on the current index, it will save to db
@@ -360,8 +207,6 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         setProjects(reorderedProjects);
       }
     }
-    
-    
   }
 
   function onDragOver(event: DragOverEvent) {

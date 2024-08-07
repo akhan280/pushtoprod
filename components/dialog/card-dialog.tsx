@@ -12,79 +12,32 @@ import { v4 as uuidv4 } from "uuid";
 import { Project } from "@/lib/types";
 import { toast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import Header from "../projects/header";
+import Image from "next/image";
+import { ButtonLoading } from "../ui/button-loading";
 
 export default function DialogLayout() {
-  const { selectedProject, showDialog, setSelectedProject, dragged, setRequestAdd, requestedAdd, dialog, addProject } = useMainStore();
+  const {
+    selectedProject,
+    showDialog,
+    setSelectedProject,
+    dragged,
+    setRequestAdd,
+    requestedAdd,
+    dialog,
+    addProject,
+  } = useMainStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleProjectCreation = async (type: string) => {
-    setLoading(true);
-
-    const columnId = type as ColumnId;
-    const emptyProject: Project = {
-      id: uuidv4(),
-      title: "Untitled",
-      description: "none",
-      notes: "none",
-      collaborators: [],
-      technologies: "none",
-      githuburl: "empty",
-      columnId: columnId,
-    };
-
-    try {
-      const result = await createProject(emptyProject);
-
-      if (result.project) {
-        const project: ProjectMovement = {
-          ...result.project,
-          previous: columnId as ColumnId,
-          next: columnId as ColumnId,
-        };
-
-        addProject(project);
-        setSelectedProject(project);
-        setRequestAdd("");
-
-        if (type === "development"){
-          router.push(`/project/development/${project.id}`);
-        }
-        else if (type === "to-launch") {
-          router.push(`/project/toLaunch/${project.id}`);
-        }
-       else {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "Failed to create project.",
-          action: <ToastAction altText="Try again" onClick={() => handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
-        });
-        console.error("Failed to create project", result.error);
-      }
-    }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Failed to create project.",
-        action: <ToastAction altText="Try again" onClick={() => handleProjectCreation(requestedAdd!)}>Try again</ToastAction>,
-      });
-      console.error("An error occurred during project creation:", error);
-    }
-    setLoading(false);
-  };
-
-  const dummyPost = {
-    id: "post1",
-    title: "Dummy Post",
-    description: "This is a dummy post",
-    content: "Lorem ipsum dolor sit amet",
-    slug: "dummy-post",
-    image: "https://example.com/image.png",
-    imageBlurhash: "U29nQ=fQfQfQfQfQfQfQfQfQfQfQfQfQfQfQ",
+  const dummyPost = {id: "post1", title: "Dummy Post", description: "This is a dummy post", content: "Lorem ipsum dolor sit amet",  slug: "dummy-post", image: "https://example.com/image.png", imageBlurhash: "U29nQ=fQfQfQfQfQfQfQfQfQfQfQfQfQfQfQ",
     createdAt: new Date(),
     updatedAt: new Date(),
     published: true,
@@ -107,33 +60,73 @@ export default function DialogLayout() {
     },
   };
 
-  // const openDialog = () => {
-  //   console.log("Opening dialog...");
-  //   showDialog(true);
-  // };
-
-
-  console.log('card-dialog', selectedProject, "requestedAdd", requestedAdd, 'dialog', dialog);
-
   return (
     <div>
-      
-        {((!selectedProject || !selectedProject.id)) && (
-          <Dialog open={dialog} onOpenChange={showDialog}>
-            <DialogContent className="bg-white sm:max-w-[425px]">
-              <Header partial={true} />
-              <DialogHeader>
-                <DialogTitle>Add</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're done.
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        )}
-        {(selectedProject?.columnId === "ideas" && (selectedProject?.previous != "development" && selectedProject?.previous != "to-launch")) && (
-               <IdeasDialog dummyPost={dummyPost} />    
-        )}    
+      {(!selectedProject || !selectedProject.id) && (
+        <Dialog open={dialog} onOpenChange={showDialog}>
+          <DialogContent className="bg-white sm:max-w-[420px] ">
+            {/* <Header partial={true} /> */}
+            {loading ? (
+              <ButtonLoading></ButtonLoading>
+            ) : (
+              <>
+                <Image
+                  height={30}
+                  width={410}
+                  loading="eager"
+                  src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/ideas.png"
+                  alt="ideas"
+                  className="rounded-3xl transition-all duration-300 hover:opacity-90 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
+                  onClick={() => {
+
+                    setLoading(true);
+                    setRequestAdd("ideas");
+                    setLoading(false);
+                    
+                  }}
+                />
+                <Image
+                  height={30}
+                  width={410}
+                  loading="eager"
+                  src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/development.png"
+                  alt="development"
+                  className="rounded-3xl transition-all duration-300 hover:opacity-90 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
+                  onClick = { async () => {
+
+                    setLoading(true);
+                    console.log("Image rendering");
+                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "",  githuburl: "",  columnId: "development", tags: [], websiteurl: ""});
+                    console.log("Data returned", data);
+                    router.push(`/project/development/${data.project?.id}`);
+                    setLoading(false);
+
+                  }}
+                />
+                <Image
+                  height={30}
+                  width={410}
+                  loading="eager"
+                  src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/launch.png"
+                  alt="launch"
+                  className="rounded-3xl transition-all duration-300 hover:opacity-90 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
+                  onClick={async () => {
+
+                    setLoading(true);
+                    console.log("Image rendering");
+                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "", githuburl: "", columnId: "development", tags: [], websiteurl: ""});
+                    console.log("Data returned", data);
+                    router.push(`/project/toLaunch/${data.project?.id}`);
+                    setLoading(false);
+
+                  }}
+                />
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
+      {(requestedAdd === "ideas" || selectedProject?.columnId === "ideas") && <IdeasDialog dummyPost={dummyPost} />}
     </div>
   );
 }

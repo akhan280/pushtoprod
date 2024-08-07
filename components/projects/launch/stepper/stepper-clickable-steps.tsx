@@ -49,7 +49,7 @@ export default function StepperClickableSteps({
         </Step>
 
         <Step key={2} label={steps[2].label}>
-          {deploy}
+          {finalize}
         </Step>
 
         <Step key={3} label={steps[3].label}>
