@@ -3,11 +3,13 @@ import { StateCreator } from 'zustand';
 import { KanbanSlice, ProjectMovement } from './kanban-slice';
 import { updateEditor, updateExalidraw, updateProjectField } from '../actions';
 import { toast } from '../../components/ui/use-toast'; 
+import { Technology } from '../types';
 
 type FormStore = {
   excalidraw: any;
   editor: any;
   step: number;
+  technologies: Technology[] | null;
 };
 
 type FormActions = {
@@ -15,6 +17,7 @@ type FormActions = {
   setEditorProperty: (editor: any) => void;
   setExcalidrawProperty: (excalidraw: any) => void;
   setLaunchStep: (step: number) => void;
+  setTechnologies: (technologies: Technology[]) => void;
 };
 
 export type FormSlice = FormStore & FormActions & Partial<KanbanSlice>;
@@ -24,11 +27,15 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
   excalidraw: null, 
   editor: null, 
   step: 0,
+  technologies: [],
+
+  setTechnologies: (technologies: Technology[]) => {
+    set({technologies: technologies})
+  },
 
   setEditorProperty: async (editor: any) => {
     console.log('[FORM SLICE] Updating Editor', editor)
     await updateEditor(editor, get().selectedProject?.id!)
-
 
     if (!updateEditor) {
       toast({

@@ -13,7 +13,7 @@ type KanbanStore = {
   loading: boolean;
   requestedAdd: string | null;
   projects: Project[];
-  selectedProject: ProjectMovement | null;
+  selectedProject: ProjectMovement;
 };
 
 type KanbanActions = {
@@ -22,7 +22,7 @@ type KanbanActions = {
   addProject: (project: Project) => void;
   setProjects: (projects: Project[]) => void;
   setLoading: (loading: boolean) => void;
-  setSelectedProject: (project: ProjectMovement | null) => void;
+  setSelectedProject: (project: ProjectMovement) => void;
   setRequestAdd: (requestedAdd: string) => void;
 };
 
@@ -39,7 +39,19 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
     set({loading: loading});
   },
 
-  selectedProject: null,
+  selectedProject: {
+    id: '',
+    title: '',
+    description: '',
+    tags: [],
+    collaborators: [],
+    technologies: [],
+    githuburl: '',
+    websiteurl: '',
+    columnId: '',
+    previous: '',
+    next: ''
+  },
 
   addProject: (project: Project) => {
     set({requestedAdd: null})
@@ -67,7 +79,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
     set({requestedAdd})
   },
 
-  setSelectedProject: (project: ProjectMovement | null) => {
+  setSelectedProject: (project: ProjectMovement) => {
     console.log('[Kanban Slice] Selected Project', project)
 
     if (project?.previous === project?.next) {

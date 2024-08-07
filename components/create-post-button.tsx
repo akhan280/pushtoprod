@@ -4,8 +4,8 @@ import { useTransition } from "react";
 import { createPost } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
-import LoadingDots from "@/components/loaders/loading-dots";
 import va from "@vercel/analytics";
+import LoadingDots from "./ui/loading-ui/loading-dots";
 
 export default function CreatePostButton() {
   const router = useRouter();

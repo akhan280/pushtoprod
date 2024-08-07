@@ -1,6 +1,5 @@
 "use server"
 import prisma from "@/lib/prisma";
-import { Post, Site } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { withPostAuth, withSiteAuth } from "./auth";
 import { getSession } from "@/lib/auth";
@@ -13,14 +12,169 @@ import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Project } from "./types";
+import { Project, Technology } from "./types";
 import { ColumnId } from "@/components/kanban/kanban";
-
+import { ProjectMovement } from "./hooks/kanban-slice";
 // const nanoid = customAlphabet(
 //   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 //   7,
 // );
 
+
+export async function PopulateSupabase() {
+  const data = {
+    tech1: {
+      name: 'C++',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/sign/technology-logos/c++-1.png',
+      description: 'C++ is a general-purpose programming language created as an extension of the C programming language, or "C with Classes". It has imperative, object-oriented and generic programming features, while also providing facilities for low-level memory manipulation.'
+    },
+    tech2: {
+      name: 'C',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/c.png',
+      description: 'C is a general-purpose programming language that was developed to provide low-level access to memory and language constructs that map efficiently to machine instructions, making it suitable for system programming like operating system or compiler development.'
+    },
+    tech3: {
+      name: 'CSS',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/css.png',
+      description: 'CSS (Cascading Style Sheets) is a stylesheet language used to describe the presentation of a document written in HTML or XML. CSS describes how elements should be rendered on screen, on paper, in speech, or on other media.'
+    },
+    tech4: {
+      name: 'Firebase',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/firebase.png',
+      description: 'Firebase is a platform developed by Google for creating mobile and web applications. It offers a real-time database, authentication, hosting, cloud functions, and other backend services to simplify the development process.'
+    },
+    tech5: {
+      name: 'HTML',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/html.png',
+      description: 'HTML (HyperText Markup Language) is the standard markup language used for creating web pages. It describes the structure of a web page and its contents, including text, images, links, and other multimedia elements.'
+    },
+    tech6: {
+      name: 'Java',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/java.png',
+      description: 'Java is a high-level, class-based, object-oriented programming language designed to have as few implementation dependencies as possible. It is intended to let application developers write once, run anywhere (WORA), meaning that compiled Java code can run on all platforms that support Java without the need for recompilation.'
+    },
+    tech7: {
+      name: 'JavaScript',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/javascript.png',
+      description: 'JavaScript is a versatile programming language that conforms to the ECMAScript specification. It is used alongside HTML and CSS to create dynamic web pages, and it is a core technology of the World Wide Web.'
+    },
+    tech8: {
+      name: 'Java',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/java.png',
+      description: 'Java is a high-level, class-based, object-oriented programming language designed to have as few implementation dependencies as possible. It is intended to let application developers write once, run anywhere (WORA), meaning that compiled Java code can run on all platforms that support Java without the need for recompilation.'
+    },
+    tech9: {
+      name: 'MongoDB',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/mongodb.png',
+      description: 'MongoDB is a document-oriented NoSQL database used for high-volume data storage. Instead of using tables and rows as in traditional relational databases, MongoDB makes use of collections and documents.'
+    },
+    tech10: {
+      name: 'Next.js',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/next.png',
+      description: 'Next.js is a React framework that enables functionality such as server-side rendering and generating static websites for React-based web applications. It is designed to provide an out-of-the-box experience for building web applications with React.'
+    },
+    tech11: {
+      name: 'Python',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/python.png',
+      description: 'Python is an interpreted, high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation. It provides constructs that enable clear programming on both small and large scales.'
+    },
+    tech12: {
+      name: 'PHP',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/php.png',
+      description: 'PHP is a popular general-purpose scripting language that is especially suited to web development. It was originally created by Danish-Canadian programmer Rasmus Lerdorf in 1994. The PHP reference implementation is now produced by The PHP Group.'
+    },
+    tech13: {
+      name: 'Node.js',
+      logo: 'https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/nodejs.png',
+      description: 'Node.js is an open-source, cross-platform, back-end JavaScript runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser. It is used to build scalable network applications.'
+    },
+  };
+
+  for (const tech of Object.values(data)) {
+    try {
+      const response = await prisma.technology.create({
+        data: tech,
+      });
+      console.log(`Inserted technology: ${tech.name}`);
+    } catch (error) {
+      console.error(`Error inserting technology: ${tech.name}`, error);
+    }
+  }
+}
+
+export async function getAllTechnologies(): Promise<Technology[]> {
+    try {
+      console.log('[Server Action] Fetching All Technologies')
+      const response = await prisma.technology.findMany({});
+      return response;
+    } catch (error) {
+      console.error(`Error inserting technology:`, error);
+      return [];
+    }
+}
+
+
+export async function updateProjectTechnologies(projectId: string, technology: Technology) {
+
+  try {
+    const updatedProject = await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        technologies: {
+          connectOrCreate: {
+            where: { id: technology.id },
+            create: {
+              id: technology.id,
+              name: technology.name,
+              logo: technology.logo,
+              description: technology.description,
+            },
+          },
+        },
+      },
+      include: {
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+        technologies: true,
+      },
+    }) ;
+    return updatedProject;
+  } catch (error) {
+    console.error("Error updating project technologies:", error);
+  }
+}
+
+export async function removeTechnology(projectId: string, technology: Technology){
+  try {
+    const updatedProject = await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        technologies: {
+          disconnect: {
+            id: technology.id,
+          },
+        },
+      },
+      include: {
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+        technologies: true,
+      },
+    });
+    return updatedProject;
+  } catch (error) {
+    console.error("Error removing technology from project:", error);
+    throw new Error("Failed to remove technology");
+  }
+}
+
+//TODO: MAKE ASYNC
 
 export const getUser = async (email: string | null) => {
   const session = await getSession();

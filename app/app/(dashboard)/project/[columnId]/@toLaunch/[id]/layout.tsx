@@ -1,7 +1,6 @@
 
 "use server";
 // import Sidebar from "@/components/projects/sidebar";
-// import { PlateEditor } from "@/components/projects/plate-editor";
 // import ColumnRender from "./column-render";
 // import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import React from 'react';

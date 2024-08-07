@@ -44,15 +44,6 @@ export default function Header({ partial }: { partial: boolean }) {
     setProjectProperty
   } = useMainStore();
 
-  const frameworksList = [
-    { value: "react", label: "React" },
-    { value: "angular", label: "Angular" },
-    { value: "vue", label: "Vue" },
-    { value: "svelte", label: "Svelte" },
-    { value: "ember", label: "Ember" },
-  ];
-
-  const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(["react", "angular"]);
 
   return (
     partial ?
@@ -74,37 +65,6 @@ export default function Header({ partial }: { partial: boolean }) {
             rows={1}
           />
 
-          <MultiSelect
-            options={frameworksList}
-            onValueChange={setSelectedFrameworks}
-            defaultValue={selectedFrameworks}
-            placeholder="Select frameworks"
-            variant="inverted"
-            animation={2}
-            maxCount={3}
-          />
-
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold">Selected Frameworks:</h2>
-            <ul className="list-disc list-inside">
-              {selectedFrameworks.map((framework) => (
-                <li key={framework}>{framework}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-row px-2">
-            <label className="w-1/4 text-gray-500">{"technologies"}</label>
-            <div className="w-3/4">
-              <AutosizeTextarea
-                placeholder="technologies"
-                className="bg-transparent border-0 outline-0 text-bold text-md overflow-auto resize-y hover:bg-[#F3F3F3] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
-                value={selectedProject?.technologies || ""}
-                onChange={(e) => setProjectProperty("technologies", e.target.value)}
-              />
-            </div>
-
-          </div>
           <AutosizeTextarea
             placeholder="githuburl"
             className="bg-transparent border-0 outline-0 py-8 text-bold text-md focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
