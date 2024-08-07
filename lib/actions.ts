@@ -21,38 +21,41 @@ import { ColumnId } from "@/components/kanban/kanban";
 //   7,
 // );
 
-export const updateProjectStatus = async (id: string, columnId: string) => {
 
-  console.log("[COL ID] is:", columnId);
-
+export const getUser = async (email: string | null) => {
   const session = await getSession();
   if (!session?.id) {
     return {
-      project: null,
+      user: null,
       error: "Not authenticated",
     };
   }
 
   try {
-    const project = await prisma.project.update({
-      where: {
-        id: id,
-      },
-      data: {
-        columnId: columnId
-      }
-    })
+    let user = null;
+
+    if (email) {
+      user = await prisma.user.findUnique({
+        where: { email },
+      });
+    }
+
     
-    console.log("[PROJECT STATUS] is:", project)
-    return {project: project, error: null}
+
+    if (!user) {
+      return { user: null, error: "User not found" };
+    }
+
+    console.log("[USER STATUS] is:", user);
+    return { user, error: null };
   } catch (error: any) {
-    console.error("Error updating project:", error);
+    console.error("Error retrieving user:", error);
     return {
-      project: null,
+      user: null,
       error: "An unexpected error occurred",
     };
   }
-}
+};
 
 
 export const updateProjectField = async (projectId: string, key: string, value: string) => {
@@ -185,7 +188,9 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
               },
             },
           },
+
         },
+        technologies: true,
       },
     });
 
@@ -264,6 +269,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
             },
           },
         },
+        technologies: true,
       },
     });
 

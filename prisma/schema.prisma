@@ -14,7 +14,7 @@ generator client {
 model User {
   id            String    @id @default(cuid()) @unique
   name          String?
-  username      String?
+  username      String?    @unique
   email         String?    @unique
   gh_username   String?
   image         String?
