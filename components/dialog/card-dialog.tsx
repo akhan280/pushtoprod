@@ -4,36 +4,13 @@ import { IdeasDialog } from "./ideas-dialog";
 import useMainStore from "../../lib/hooks/use-main-store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Description } from "@radix-ui/react-toast";
 import { createProject } from "@/lib/actions";
-import { ColumnId } from "../kanban/kanban";
-import { ProjectMovement } from "@/lib/hooks/kanban-slice";
-import { v4 as uuidv4 } from "uuid";
-import { Project } from "@/lib/types";
-import { toast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import Header from "../projects/header";
+import { Dialog, DialogContent, } from "../ui/dialog";
 import Image from "next/image";
 import { ButtonLoading } from "../ui/button-loading";
 
 export default function DialogLayout() {
-  const {
-    selectedProject,
-    showDialog,
-    setSelectedProject,
-    dragged,
-    setRequestAdd,
-    requestedAdd,
-    dialog,
-    addProject,
-  } = useMainStore();
+  const {selectedProject,showDialog, setRequestAdd, requestedAdd, dialog} = useMainStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -77,13 +54,7 @@ export default function DialogLayout() {
                   src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/ideas.png"
                   alt="ideas"
                   className="rounded-3xl transition-all duration-300 hover:opacity-90 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
-                  onClick={() => {
-
-                    setLoading(true);
-                    setRequestAdd("ideas");
-                    setLoading(false);
-                    
-                  }}
+                  onClick={() => { setRequestAdd("ideas") }}
                 />
                 <Image
                   height={30}
@@ -95,11 +66,9 @@ export default function DialogLayout() {
                   onClick = { async () => {
 
                     setLoading(true);
-                    console.log("Image rendering");
                     const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "",  githuburl: "",  columnId: "development", tags: [], websiteurl: ""});
-                    console.log("Data returned", data);
-                    router.push(`/project/development/${data.project?.id}`);
                     setLoading(false);
+                    router.push(`/project/development/${data.project?.id}`);
 
                   }}
                 />
@@ -113,11 +82,9 @@ export default function DialogLayout() {
                   onClick={async () => {
 
                     setLoading(true);
-                    console.log("Image rendering");
                     const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "", githuburl: "", columnId: "development", tags: [], websiteurl: ""});
-                    console.log("Data returned", data);
-                    router.push(`/project/toLaunch/${data.project?.id}`);
                     setLoading(false);
+                    router.push(`/project/toLaunch/${data.project?.id}`);
 
                   }}
                 />
