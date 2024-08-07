@@ -27,8 +27,6 @@ import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ButtonLoading } from "../ui/button-loading";
 import AddNewProject from "../add-new-project";
-
-
 const defaultCols = [
   {id: "ideas" as const, title: "Ideas"},
   {id: "development" as const, title: "Development"},
@@ -149,9 +147,10 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
     console.log('[Kanban] Drag end', activeColumn);
     console.log('[Kanban] Drag end', event);
 
+    setLoading(true);
+
     setActiveColumn(null);
     setActiveProject(null);
-
     const { active, over } = event;
 
     if (!over) return;
@@ -219,6 +218,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
         setProjects(reorderedProjects);
       }
     }
+    setLoading(false);
+
   }
 
   function onDragOver(event: DragOverEvent) {

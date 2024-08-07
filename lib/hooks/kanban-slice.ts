@@ -36,7 +36,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
   loading: false,
   
   setLoading: (loading: boolean) => {
-    set({loading: true});
+    set({loading: loading});
   },
 
   selectedProject: null,

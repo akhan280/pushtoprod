@@ -41,15 +41,15 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
   const variants = cva("", {variants: {dragging: {over: "ring-2 opacity-30", overlay: "ring-2 ring-primary"}}});
 
   const onProjectClick = (project: Project) => {
+    setLoading(true)
     setSelectedProject({...project, previous: column, next: column})
     if (project.columnId === "development" || project.columnId === "to-launch") {
-      setLoading(true)
       console.log('[On Drag End] Routing to:', `/project/${project.columnId}/${project.id}`);
       const route = project.columnId === "to-launch" ? `/project/toLaunch/${project.id}` : `/project/${project.columnId}/${project.id}`;
-      setLoading(false);
       router.push(route);
     }
     setRequestAdd("ideas")
+    setLoading(false);
     showDialog(true);
   };
   
