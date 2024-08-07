@@ -41,7 +41,7 @@ model Project {
   id            String   @id @default(uuid())
   title         String?  @default("Untitled Project")
   description   String?  @default("description")
-  notes         String?
+  tags          String[] @default([])
   technologies  String?
   githuburl     String?
   websiteurl    String?
@@ -50,6 +50,7 @@ model Project {
   excalidrawEditor    Json?
   collaborators ProjectCollaborator[]
 }
+
 
 // many to many table for projects and collaborates
 model ProjectCollaborator {

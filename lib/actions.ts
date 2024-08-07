@@ -109,10 +109,10 @@ export const createProject = async (projectData: Omit<Project, 'id'>) => {
       data: {
         title: projectData.title,
         description: projectData.description,
-        notes: projectData.notes,
         technologies: projectData.technologies,
         githuburl: projectData.githuburl,
         websiteurl: projectData.websiteurl,
+        tags: projectData.tags,
         columnId: projectData.columnId,
       }
     });
@@ -210,10 +210,10 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
         paid: collaborator.user.paid,
         }
       })),
-      notes: project.notes ?? null,
       technologies: project.technologies ?? null,
       githuburl: project.githuburl ?? null,
       websiteurl: project.websiteurl ?? null,
+      tags: project.tags ?? [],
       columnId: project.columnId as ColumnId,  
     }));
 
@@ -294,10 +294,10 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
           paid: collaborator.user.paid,
         },
       })),
-      notes: project.notes ?? null,
       technologies: project.technologies ?? null,
       githuburl: project.githuburl ?? null,
       websiteurl: project.websiteurl ?? null,
+      tags: project.tags ?? [],
       columnId: project.columnId as ColumnId,
     };
 

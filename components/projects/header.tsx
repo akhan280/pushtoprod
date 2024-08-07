@@ -14,6 +14,7 @@ import { Input } from "../ui/input";
 import { MultiSelect } from "../multi-select";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
+import TagProperty from "./properties/tagproperty";
 
 
 const formSchema = z.object({
@@ -75,17 +76,7 @@ export default function Header({ partial }: { partial: boolean }) {
             rows={1}
           />
 
-          <div className="flex flex-row px-2">
-            <label className="w-1/4 text-gray-500">{"notes"}</label>
-            <div className="w-3/4">
-              <AutosizeTextarea
-                placeholder="notes"
-                className="bg-transparent border-0 outline-0 text-bold text-md overflow-auto resize-y hover:bg-[#F3F3F3] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
-                value={selectedProject?.notes || ""}
-                onChange={(e) => setProjectProperty("notes", e.target.value)}
-              />
-            </div>
-          </div>
+
 
           <MultiSelect
             options={frameworksList}

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import GithubProperty from "./properties/githubproperty";
 import WebsiteProperty from "./properties/websiteproperty";
+import TagProperty from "./properties/tagproperty";
 
 export default function Sidebar() {
   return (
@@ -20,8 +21,7 @@ export default function Sidebar() {
             <WebsiteProperty/>
           </div>
           <div className="flex justify-between items-center">
-            <span>Lead</span>
-            <Button variant="outline">Add lead</Button>
+            <TagProperty/>
           </div>
           <div className="flex justify-between items-center space-x-4">
             <span>Members</span>
