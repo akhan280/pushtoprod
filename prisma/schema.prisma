@@ -12,25 +12,25 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid()) @unique
-  name          String?
-  username      String?    @unique
-  email         String?    @unique
-  gh_username   String?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sites         Site[]
-  posts         Post[]
-  projects      ProjectCollaborator[]
-  paid          Boolean    @default(false)
+  id          String                @id @unique @default(cuid())
+  name        String?
+  username    String?               @unique
+  email       String?               @unique
+  gh_username String?
+  image       String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  accounts    Account[]
+  sites       Site[]
+  posts       Post[]
+  projects    ProjectCollaborator[]
+  paid        Boolean               @default(false)
 }
 
 model Account {
-  id                       String  @id @default(cuid())
-  userId                   String
-  type                     String
+  id     String @id @default(cuid())
+  userId String
+  type   String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -38,30 +38,31 @@ model Account {
 }
 
 model Project {
-  id            String   @id @default(uuid())
-  title         String?  @default("Untitled Project")
-  description   String?  @default("description")
-  tags          String[] @default([])
-  technologies  Technology[] @relation("ProjectTechnologies")
-  githuburl     String?
-  websiteurl    String?
-  columnId      String
-  textEditor    Json?
-  excalidrawEditor    Json?
-  collaborators ProjectCollaborator[]
+  id               String                @id @default(uuid())
+  title            String?               @default("Untitled Project")
+  description      String?               @default("description")
+  tags             String[]              @default([])
+  technologies     Technology[]          @relation("ProjectTechnologies")
+  githuburl        String?
+  websiteurl       String?
+  columnId         String
+  textEditor       Json?
+  excalidrawEditor Json?
+  collaborators    ProjectCollaborator[]
 }
 
 model Technology {
-  id        String  @id @default(cuid())
-  name      String
-  logo      String
-  projects  Project[] @relation("ProjectTechnologies") // Define the other side of the relation
+  id       String    @id @default(cuid())
+  name     String
+  logo     String
+  description String
+  projects Project[] @relation("ProjectTechnologies")
 }
 
 // many to many table for projects and collaborates
 model ProjectCollaborator {
-  userId    String 
-  projectId String
+  userId     String
+  projectId  String
   assignedAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)

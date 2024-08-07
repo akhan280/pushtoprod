@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Sidebar from "@/components/projects/sidebar";
-import { PlateEditor } from "@/components/projects/plate-editor";
+import { PlateEditor } from "@/components/projects/plate";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default function ProjectLayout({
@@ -37,7 +37,7 @@ export default function ProjectLayout({
         return (
           <>
             {development}
-            <PlateEditor />
+            {/* <PlateEditor /> */}
           </>
         );
       case "toLaunch":

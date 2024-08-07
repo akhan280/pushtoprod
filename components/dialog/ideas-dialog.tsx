@@ -12,7 +12,7 @@ type IdeasDialogProps = {
   dummyPost: any;
 };
 
-import { PlateEditor } from "../projects/plate-editor";
+import { PlateEditor } from "../projects/plate";
 
 export function IdeasDialog({ dummyPost }: IdeasDialogProps) {
   const { dialog, showDialog, requestedAdd, dragged, selectedProject } = useMainStore();

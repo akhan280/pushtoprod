@@ -5,10 +5,10 @@ import { createSite } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { cn } from "@/lib/utils";
-import LoadingDots from "@/components/loaders/loading-dots";
 import { useModal } from "./provider";
 import va from "@vercel/analytics";
 import { useEffect, useState } from "react";
+import LoadingDots from "../ui/loading-ui/loading-dots";
 
 export default function CreateSiteModal() {
   const router = useRouter();

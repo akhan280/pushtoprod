@@ -1,6 +1,5 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { ColumnId } from "../components/kanban/kanban";
-import { Technology } from "@prisma/client";
 
 export type User = {
   id: string;
@@ -13,6 +12,14 @@ export type User = {
   updatedAt: Date;
   paid: boolean;
 }
+
+export type Technology = {
+  id: string;
+  logo: string;
+  name: string;
+  description: string;
+}
+
 
 export type Collaborator =  {
   user: User;
