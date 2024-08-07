@@ -14,7 +14,7 @@ import { Input } from "../ui/input";
 import { MultiSelect } from "../multi-select";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import TagProperty from "./properties/tagproperty";
+import TagProperty from "./properties/tag-property";
 
 
 const formSchema = z.object({
@@ -52,7 +52,6 @@ export default function Header({ partial }: { partial: boolean }) {
     { value: "ember", label: "Ember" },
   ];
 
-
   const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(["react", "angular"]);
 
   return (
@@ -66,7 +65,6 @@ export default function Header({ partial }: { partial: boolean }) {
             className="bg-transparent border-0 outline-0 py-8 text-bold text-[40px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
           ></Input>
 
-
           <AutosizeTextarea
             placeholder="description"
             wrap="hard"
@@ -75,8 +73,6 @@ export default function Header({ partial }: { partial: boolean }) {
             onChange={(e) => setProjectProperty("description", e.target.value)}
             rows={1}
           />
-
-
 
           <MultiSelect
             options={frameworksList}
@@ -165,9 +161,6 @@ export default function Header({ partial }: { partial: boolean }) {
               </div>
             </div>
           </Card>
-
-
-
         </div>
       )
   );

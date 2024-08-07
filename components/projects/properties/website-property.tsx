@@ -1,20 +1,8 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import useMainStore from "@/lib/hooks/use-main-store";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-    DropdownMenuPortal
-} from "@/components/ui/dropdown-menu"
-
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { updateProjectField } from "@/lib/actions";
 
 export default function WebsiteProperty() {
     const { selectedProject, setProjectProperty } = useMainStore();

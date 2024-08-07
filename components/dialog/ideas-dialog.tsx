@@ -16,14 +16,6 @@ import { PlateEditor } from "../projects/plate-editor";
 
 export function IdeasDialog({ dummyPost }: IdeasDialogProps) {
   const { dialog, showDialog, requestedAdd, dragged, selectedProject } = useMainStore();
-  // showDialog(true)
-
-  // useEffect(() => {
-  //   console.log('[ideas] Effect Triggered');
-  //   console.log('[ideas] Selected Project:', selectedProject);
-  //   console.log('[ideas] Requested Add:', requestedAdd);
-  //   console.log('[ideas] Dialog Open:', dialog);
-  //   console.log('[ideas] Dragged State:', dragged);
 
   return (
     <div>
