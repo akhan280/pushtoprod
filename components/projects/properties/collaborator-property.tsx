@@ -16,29 +16,22 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { updateProjectField } from "@/lib/actions";
 import { Collaborator, User } from "@/lib/types";
+import { getUser } from "@/lib/actions";
 
 export default function CollaboratorProperty() {
     const { selectedProject, setProjectProperty } = useMainStore();
     const [inputValue, setInputValue] = useState("");
 
-    const handleInvite = () => {
-        //TODO:
-        //Find user using username? or email??
-        const newUser: User = {
-            id: uuid(),
-            name: inputValue, // You might replace this with a name from input
-            username: inputValue, // You might replace this with a username from input
-            email: null,
-            gh_username: null,
-            image: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            paid: false,
-        };
+    const handleInvite = async () => {
+        const { user, error } = await getUser(inputValue);
 
-        // Create a new collaborator with the new user
+        if (error || !user) {
+            console.error("User not found or error occurred:", error);
+            return;
+          }
+
         const newCollaborator: Collaborator = {
-            user: newUser,
+            user: user,
         };
 
         // Add the new collaborator to the existing collaborators

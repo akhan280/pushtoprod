@@ -1,5 +1,6 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { ColumnId } from "../components/kanban/kanban";
+import { Technology } from "@prisma/client";
 
 export type User = {
   id: string;
@@ -23,7 +24,7 @@ export type Project = {
   description: string | null;
   tags: string[] | [];
   collaborators: Collaborator[];
-  technologies: string | null;
+  technologies: Technology[];
   githuburl: string | null;
   websiteurl: string | null; 
   columnId: string;
