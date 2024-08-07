@@ -104,8 +104,6 @@ const Home: React.FC<HomeProps> = () => {
 
 export default Home;
 
-
-
 interface Item {
     id: number;
     name: string;

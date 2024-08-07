@@ -24,7 +24,6 @@ export function IdeasDialog({ dummyPost }: IdeasDialogProps) {
           <SheetHeader>
             <Header partial={true}></Header>
           </SheetHeader>
-          {/* {!dragged && <Editor post={dummyPost} />} */}
             <PlateEditor></PlateEditor>
         </SheetContent>
       </Sheet>

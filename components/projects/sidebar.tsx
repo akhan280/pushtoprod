@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import GithubProperty from "./properties/github-property";
-import WebsiteProperty from "./properties/websiteproperty";
+import WebsiteProperty from "./properties/website-property";
 import TagProperty from "./properties/tag-property";
 
 export default function Sidebar() {
