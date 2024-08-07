@@ -25,6 +25,7 @@ export type Project = {
   collaborators: Collaborator[];
   technologies: string | null;
   githuburl: string | null;
+  websiteurl: string | null; 
   columnId: string;
   textEditor?: any;
   excalidrawEditor?: any;
