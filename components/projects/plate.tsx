@@ -43,6 +43,8 @@ export function PlateEditor() {
   const currentPath = usePathname();
   const [activeTab, setActiveTab] = useState("editor");
 
+  
+
   const handleEditorChange = (newValue: Value) => {
     if (selectedProject) {
       const serializedValue = JSON.stringify(newValue);
