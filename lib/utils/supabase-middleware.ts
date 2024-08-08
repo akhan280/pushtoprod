@@ -63,8 +63,7 @@ export async function updateSession(request: NextRequest, hostname: string, path
     }
 
     // Rewrite URL for app domain
-    console.log("Rewriting URL for app domain");
-    console.log(path, request.url);
+    console.log(`Redirecting to: ${new URL(`/app${path === "/" ? "" : path}`, request.url).href}`);
     return NextResponse.rewrite(
       new URL(`/app${path === "/" ? "" : path}`, request.url)
     );
