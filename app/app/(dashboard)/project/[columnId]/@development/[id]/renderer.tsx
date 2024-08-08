@@ -94,6 +94,7 @@ export default function DevelopmentRender() {
           </TabsList>
 
           <TabsContent value="technologies">
+            <TechnologiesContext variant="icon" technologies={selectedProject.technologies}></TechnologiesContext>
             <TechnologiesContext variant="iconWithText" technologies={selectedProject.technologies}></TechnologiesContext>
             <TechnologySearch />
           </TabsContent>

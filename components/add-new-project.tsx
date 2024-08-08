@@ -11,7 +11,7 @@ export default function AddNewProject() {
   const [selectedValue, setSelectedValue] = useState("");
 
   function handleValueChange() {
-    PopulateSupabase();
+    // PopulateSupabase();
     showDialog(true);
     setSelectedProject(null);
     setSelectedValue("");
