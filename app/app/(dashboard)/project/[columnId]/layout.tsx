@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Sidebar from "@/components/projects/sidebar";
 import { PlateEditor } from "@/components/projects/plate";

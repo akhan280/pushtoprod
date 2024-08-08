@@ -28,16 +28,12 @@ import { TechnologiesContext, TechnologySearch } from "../../../../../../../comp
 import { FixedToolbarButtons } from "../../../../../../../components/ui/plate-ui/fixed-toolbar-buttons";
 import { Editor } from "../../../../../../../components/ui/plate-ui/editor";
 import { TooltipProvider } from "../../../../../../../components/ui/plate-ui/tooltip";
-import { ExcalidrawCanvas } from "../../../../../../../components/excalidraw/excalidraw";
+import { ExcalidrawCanvas } from "../../../../../../../components/projects/excalidraw/excalidraw";
 
 // Combine the editors into a single component with tabs
 export default function DevelopmentRender() {
   const {
     selectedProject,
-    setEditorProperty,
-    setExcalidrawProperty,
-    editor,
-    excalidraw,
   } = useMainStore();
   const router = useRouter();
   const currentPath = usePathname();
@@ -49,36 +45,9 @@ export default function DevelopmentRender() {
     setActiveTab(value);
   };
 
-  const handleExcalidrawChange = (newValue: Value) => {
-    if (selectedProject) {
-      const serializedValue = JSON.stringify(newValue);
-      console.log("rendering", serializedValue);
-      setExcalidrawProperty(serializedValue);
-    }
-  };
-
   if (!selectedProject) {
     return null;
   }
-
-  const deserializedInitialValue: Value = selectedProject.textEditor
-    ? JSON.parse(selectedProject.textEditor)
-    : defaultInitialValue;
-
-    
-
-  const deserializedExcalidrawInitialValue: Value =
-    selectedProject.excalidrawEditor
-      ? JSON.parse(selectedProject.excalidrawEditor)
-      : excalidrawInitialValue;
-
-      const handleEditorChange = (newValue: Value) => {
-        if (selectedProject) {
-          const serializedValue = JSON.stringify(newValue);
-          console.log("rendering", serializedValue);
-          setEditorProperty(serializedValue);
-        }
-      };
 
   return (
     <>
@@ -101,24 +70,9 @@ export default function DevelopmentRender() {
           </TabsContent>
 
           <TabsContent value="editor">
-          <DndProvider backend={HTML5Backend}>
-          <CommentsProvider users={{}} myUserId="1">
-            <Plate
-              onChange={handleEditorChange}
-              plugins={plugins}
-              initialValue={deserializedInitialValue}
-            >
-              <FixedToolbar>
-                <FixedToolbarButtons />
-              </FixedToolbar>
-              <Editor />
-              <FloatingToolbar>
-                <FloatingToolbarButtons />
-              </FloatingToolbar>
-              <CommentsPopover />
-            </Plate>
-          </CommentsProvider>
-        </DndProvider>
+
+            <PlateEditor></PlateEditor>
+
           </TabsContent>
 
           <TabsContent value="excalidraw">

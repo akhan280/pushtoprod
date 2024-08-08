@@ -20,37 +20,30 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+
 import { CommentsPopover } from "../ui/plate-ui/comments-popover";
 import { FloatingToolbar } from "../ui/plate-ui/floating-toolbar";
 import { FloatingToolbarButtons } from "../ui/plate-ui/floating-toolbar-buttons";
 import { Editor } from "../ui/plate-ui/editor";
 import { FixedToolbar } from "../ui/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "../ui/plate-ui/fixed-toolbar-buttons";
-import { TooltipProvider } from "../ui/plate-ui/tooltip";
-import { TechnologySearch } from "./technologies";
+import { updateEditor } from "../../lib/actions";
+import { select } from "slate";
+
 
 // Combine the editors into a single component with tabs
 export function PlateEditor() {
   const {
     selectedProject,
-    setEditorProperty,
-    setExcalidrawProperty,
     editor,
-    excalidraw,
+    setSelectedProject
   } = useMainStore();
-  const router = useRouter();
-  const currentPath = usePathname();
-  const [activeTab, setActiveTab] = useState("editor");
 
-  
-
-  const handleEditorChange = (newValue: Value) => {
-    if (selectedProject) {
+  const handleEditorChange = async (newValue: Value) => {
       const serializedValue = JSON.stringify(newValue);
-      console.log("rendering", serializedValue);
-      setEditorProperty(serializedValue);
-    }
+      console.log('[Editor] Setting data', serializedValue);
+      const data = await updateEditor(serializedValue, selectedProject.id);
+      setSelectedProject({ ...data.project!, next: selectedProject.next, previous: selectedProject.previous });
   };
 
   if (!selectedProject) {

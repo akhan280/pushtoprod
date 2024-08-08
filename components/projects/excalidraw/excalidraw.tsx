@@ -1,6 +1,6 @@
 "use client"
 import dynamic from "next/dynamic";
-import useMainStore from "../../lib/hooks/use-main-store";
+import useMainStore from "../../../lib/hooks/use-main-store";
 import initialData from "./initial-data";
 
 const ExcalidrawWithClientOnly = dynamic(

@@ -497,16 +497,24 @@ export const updateEditor = async (editor: any, projectId: string) => {
       },
       data: {
         textEditor: editor
-      }
+      },
+      include: {
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+        technologies: true,
+      },
     })
 
     console.log("[updateEditor Server Action]", response);
 
 
-    return true;
+    return { project: response };
   } catch (error: any) {
     console.log('[An error occured saving the editor]', error)
-    return false;
+    return { success: false, error: 'Failed to update Excalidraw data' };
   }
 }
 
@@ -517,13 +525,21 @@ export async function updateExcalidrawData(projectId: string, data: ImportedData
   try {
     const serializedData = JSON.stringify(data);
 
-    await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id: projectId },
       data: {
         excalidrawEditor: serializedData,
       },
+      include: {
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+        technologies: true,
+      },
     });
-    return { success: true };
+    return { project: project };
   } catch (error) {
     console.error('Failed to update Excalidraw data:', error);
     return { success: false, error: 'Failed to update Excalidraw data' };
