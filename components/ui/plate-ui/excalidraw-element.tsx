@@ -15,7 +15,7 @@ export const ExcalidrawElement = withRef<typeof PlateElement>(
     return (
       <PlateElement ref={ref} {...props}>
         <div contentEditable={false}>
-          <div className="h-[600px]">
+          <div className="h-[800px]">
             {Excalidraw && (
               <Excalidraw {...nodeProps} {...(excalidrawProps as any)} />
             )}

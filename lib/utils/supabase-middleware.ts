@@ -1,10 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import prisma from "@/lib/prisma";
 
 export async function updateSession(request: NextRequest, hostname: string, path: string) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,82 +11,85 @@ export async function updateSession(request: NextRequest, hostname: string, path
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
+          supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
-          )
+          );
         },
       },
     }
-  )
+  );
 
   // IMPORTANT: Avoid writing any logic between createServerClient and
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) {
-    console.log("[MIDDLEWARE] User ID:", user.id);
-  }
+  const { data: { user } } = await supabase.auth.getUser();
 
   console.log("[MIDDLEWARE] User Data:", user?.role);
-  // console.log("Hostname & Root Domain", hostname, process.env.NEXT_PUBLIC_ROOT_DOMAIN);
 
+  // Handle requests for the app subdomain
   if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
+
+    // Case 1: If the user is authenticated but unpaid, redirect to checkout
+    if (user && path !== "/checkout") {
+      const { data, error } = await supabase
+        .from("User")
+        .select("paid")
+        .eq("id", user.id)
+        .single();
+      
+      console.log('[MIDDLEWARE] User paid status', data?.paid);
+
+      if (error || !data?.paid) {
+        console.log(request.url, hostname);
+        return NextResponse.redirect(new URL("/checkout", request.url));
+      }
+    }
+
+    // If no user session, redirect to login
     if (!user && path !== "/login") {
       console.log("No user session, redirecting to login");
       return NextResponse.redirect(new URL("/login", request.url));
-    } else if (user && path == "/login") {
+    } 
+    // If user is already logged in, redirect to home
+    else if (user && path == "/login") {
       console.log("User already logged in, redirecting to home");
       return NextResponse.redirect(new URL("/", request.url));
     }
+
+    // Rewrite URL for app domain
     console.log("Rewriting URL for app domain");
-    console.log(path, request.url)
+    console.log(path, request.url);
     return NextResponse.rewrite(
-      new URL(`/app${path === "/" ? "" : path}`, request.url),
+      new URL(`/app${path === "/" ? "" : path}`, request.url)
     );
   }
 
-  if (
-    hostname === "localhost:3000" ||
-    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-  ) {
+  // Handle requests for the main domain or localhost
+  if (hostname === "localhost:3000" || hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
 
+    // If user is authenticated, rewrite to app path
     if (user) {
-      console.log('This is auth user with root')
+      console.log('Authenticated user with root domain');
       return NextResponse.rewrite(
-        new URL(`/app${path === "/" ? "" : path}`, request.url),
+        new URL(`/app${path === "/" ? "" : path}`, request.url)
       );
     }
+
+    // Rewrite URL for home path
     console.log("Rewriting URL for home");
     return NextResponse.rewrite(
-      new URL(`/home${path === "/" ? "" : path}`, request.url),
+      new URL(`/home${path === "/" ? "" : path}`, request.url)
     );
-  } 
+  }
 
-    return NextResponse.rewrite(new URL(`/${hostname}${path}`, request.url));
-
-
-
-  // if (
-  //   !user &&
-  //   !request.nextUrl.pathname.startsWith('/login') &&
-  //   !request.nextUrl.pathname.startsWith('/auth')
-  // ) {
-  //   // no user, potentially respond by redirecting the user to the login page
-  //   const url = request.nextUrl.clone()
-  //   url.pathname = '/login'
-  //   return NextResponse.redirect(url)
-  // }
+  // Default rewrite for other cases
+  return NextResponse.rewrite(new URL(`/${hostname}${path}`, request.url));
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
@@ -102,6 +104,5 @@ export async function updateSession(request: NextRequest, hostname: string, path
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
 
-  return supabaseResponse
+  return supabaseResponse;
 }
-
