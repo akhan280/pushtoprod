@@ -23,6 +23,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@18.3.1)
+      '@excalidraw/excalidraw':
+        specifier: ^0.17.6
+        version: 0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.52.1(react@18.3.1))
@@ -263,6 +266,9 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      index.css:
+        specifier: link:@excalidraw/excalidraw/index.css
+        version: link:@excalidraw/excalidraw/index.css
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -353,6 +359,9 @@ importers:
       tailwind-merge:
         specifier: ^2.0.0
         version: 2.0.0
+      types:
+        specifier: link:@excalidraw/excalidraw/types
+        version: link:@excalidraw/excalidraw/types
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
@@ -788,6 +797,12 @@ packages:
 
   '@excalidraw/excalidraw@0.16.4':
     resolution: {integrity: sha512-x56YTb5jmHAJ9SP2R81ywU28Y+QlOgjmCYHVMgHKPhh1hwKzimt+Z+iz/Rf2x1JpQOJRYbfeoxiGPQNhnYwGWQ==}
+    peerDependencies:
+      react: ^17.0.2 || ^18.2.0
+      react-dom: ^17.0.2 || ^18.2.0
+
+  '@excalidraw/excalidraw@0.17.6':
+    resolution: {integrity: sha512-fyCl+zG/Z5yhHDh5Fq2ZGmphcrALmuOdtITm8gN4d8w4ntnaopTXcTfnAAaU3VleDC6LhTkoLOTG6P5kgREiIg==}
     peerDependencies:
       react: ^17.0.2 || ^18.2.0
       react-dom: ^17.0.2 || ^18.2.0
@@ -7156,6 +7171,11 @@ snapshots:
   '@eslint/js@8.53.0': {}
 
   '@excalidraw/excalidraw@0.16.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@excalidraw/excalidraw@0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
