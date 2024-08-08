@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+"use client"
 import { Button } from "@/components/ui/button";
 import useMainStore from "@/lib/hooks/use-main-store";
 import {

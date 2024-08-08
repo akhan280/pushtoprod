@@ -14,8 +14,8 @@ type FormStore = {
 
 type FormActions = {
   setProjectProperty: <K extends keyof ProjectMovement>(key: K, value: ProjectMovement[K]) => Promise<any>;
-  setEditorProperty: (editor: any) => void;
-  setExcalidrawProperty: (excalidraw: any) => void;
+  // setEditorProperty: (editor: any) => void;
+  // setExcalidrawProperty: (excalidraw: any) => void;
   setLaunchStep: (step: number) => void;
   setTechnologies: (technologies: Technology[]) => void;
 };
@@ -33,30 +33,32 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
     set({technologies: technologies})
   },
 
-  setEditorProperty: async (editor: any) => {
-    console.log('[FORM SLICE] Updating Editor', editor)
-    await updateEditor(editor, get().selectedProject?.id!)
+  // setEditorProperty: async (editor: any) => {
+  //   console.log('[FORM SLICE] Updating Editor', editor)
+  //   await updateEditor(editor, get().selectedProject?.id!)
 
-    if (!updateEditor) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      });
-    }
-  },
+  //   if (!updateEditor) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Uh oh! Something went wrong.",
+  //       description: "There was a problem with your request.",
+  //     });
+  //   }
 
-  setExcalidrawProperty: async (excalidraw: any) => { 
-    console.log('[FORM SLICE] Updating Excalidraw', excalidraw)
-    await updateExalidraw(excalidraw, get().selectedProject?.id!)
-    if (!updateExalidraw) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      });
-    }
-  },
+
+  // },
+
+  // setExcalidrawProperty: async (excalidraw: any) => { 
+  //   console.log('[FORM SLICE] Updating Excalidraw', excalidraw)
+  //   await updateExalidraw(excalidraw, get().selectedProject?.id!)
+  //   if (!updateExalidraw) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Uh oh! Something went wrong.",
+  //       description: "There was a problem with your request.",
+  //     });
+  //   }
+  // },
 
   setProjectProperty: async (key, value)  => {
     console.log(`Changing ${key} to ${value}`)

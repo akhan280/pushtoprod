@@ -2,7 +2,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { AppState } from '@excalidraw/excalidraw/types/types';
-import { updateExcalidrawData } from '../../lib/actions';
+import { updateExcalidrawData } from '../../../lib/actions';
+import useMainStore from '../../../lib/hooks/use-main-store';
+import { previous } from 'slate';
 
 interface ExcalidrawWrapperProps {
   projectId: string;
@@ -10,6 +12,9 @@ interface ExcalidrawWrapperProps {
 }
 
 const ExcalidrawWrapper: React.FC<ExcalidrawWrapperProps> = ({ projectId, initialData }) => {
+
+  const {selectedProject, setSelectedProject} = useMainStore();
+
   const [excalidrawData, setExcalidrawData] = useState(() => {
     try {
       const parsedData = JSON.parse(initialData);
@@ -36,14 +41,15 @@ const ExcalidrawWrapper: React.FC<ExcalidrawWrapperProps> = ({ projectId, initia
     
     setExcalidrawData({ elements, appState: minimalAppState });
   }, []);
-
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      updateExcalidrawData(projectId, excalidrawData);
+    const debounce = setTimeout(async () => {
+      console.log('[Excalidraw] Setting data', excalidrawData);
+      const data = await updateExcalidrawData(projectId, excalidrawData);
+      setSelectedProject({ ...data.project!, next: selectedProject.next, previous: selectedProject.previous });
     }, 300);
 
     return () => clearTimeout(debounce);
-  }, [excalidrawData, projectId]);
+  }, [excalidrawData]);
 
   return (
     <div style={{ height: "500px", width: "100%" }}>

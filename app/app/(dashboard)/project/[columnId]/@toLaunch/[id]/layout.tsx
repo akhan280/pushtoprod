@@ -14,17 +14,19 @@ export default async function ToLaunchLayout({
   deploy,
   finalize,
   market,
+  params
 }: {
   start: React.ReactNode
   deploy: React.ReactNode;
   finalize: React.ReactNode;
   market: React.ReactNode;
+  params: {id: string}
 }) {
 
 
   return (
     <div> {/* Center content vertically and horizontally */}
-        <StepperClickableSteps start = {start} deploy={deploy} finalize={finalize} market={market} />
+        <StepperClickableSteps start = {start} deploy={deploy} finalize={finalize} market={market} params = {params.id} />
     </div>
 
   );
