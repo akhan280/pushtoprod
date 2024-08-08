@@ -28,6 +28,7 @@ import { TechnologiesContext, TechnologySearch } from "../../../../../../../comp
 import { FixedToolbarButtons } from "../../../../../../../components/ui/plate-ui/fixed-toolbar-buttons";
 import { Editor } from "../../../../../../../components/ui/plate-ui/editor";
 import { TooltipProvider } from "../../../../../../../components/ui/plate-ui/tooltip";
+import { ExcalidrawCanvas } from "../../../../../../../components/excalidraw/excalidraw";
 
 // Combine the editors into a single component with tabs
 export default function DevelopmentRender() {
@@ -101,34 +102,28 @@ export default function DevelopmentRender() {
 
           <TabsContent value="editor">
           <DndProvider backend={HTML5Backend}>
-      <CommentsProvider users={{}} myUserId="1">
-        <Plate
-          onChange={handleEditorChange}
-          plugins={plugins}
-          initialValue={deserializedInitialValue}
-        >
-          <FixedToolbar>
-            <FixedToolbarButtons />
-          </FixedToolbar>
-          <Editor />
-          <FloatingToolbar>
-            <FloatingToolbarButtons />
-          </FloatingToolbar>
-          <CommentsPopover />
-        </Plate>
-      </CommentsProvider>
-    </DndProvider>
+          <CommentsProvider users={{}} myUserId="1">
+            <Plate
+              onChange={handleEditorChange}
+              plugins={plugins}
+              initialValue={deserializedInitialValue}
+            >
+              <FixedToolbar>
+                <FixedToolbarButtons />
+              </FixedToolbar>
+              <Editor />
+              <FloatingToolbar>
+                <FloatingToolbarButtons />
+              </FloatingToolbar>
+              <CommentsPopover />
+            </Plate>
+          </CommentsProvider>
+        </DndProvider>
           </TabsContent>
 
           <TabsContent value="excalidraw">
             
-            <Plate
-              onChange={handleExcalidrawChange}
-              plugins={plugins}
-              initialValue={deserializedExcalidrawInitialValue}
-            >
-              <Editor />
-            </Plate>
+            <ExcalidrawCanvas/>
 
           </TabsContent>
         </Tabs>

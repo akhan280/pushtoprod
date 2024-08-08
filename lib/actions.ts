@@ -15,6 +15,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Project, Technology } from "./types";
 import { ColumnId } from "@/components/kanban/kanban";
 import { ProjectMovement } from "./hooks/kanban-slice";
+import { ImportedDataState } from "@excalidraw/excalidraw/types/data/types";
 // const nanoid = customAlphabet(
 //   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 //   7,
@@ -510,38 +511,23 @@ export const updateEditor = async (editor: any, projectId: string) => {
 }
 
 
-export const updateExalidraw = async (excalidraw: any, projectId: string) => {
-  console.log("[COL ID] is:", projectId);
-
-  const session = await getSession();
-  if (!session?.id) {
-    return {
-      project: null,
-      error: "Not authenticated",
-    };
-  }
-
+export async function updateExcalidrawData(projectId: string, data: ImportedDataState) {
+  console.log('[Server Action] Updating Excalidraw Data', projectId, data);
+  
   try {
-    console.log("[updateExalidraw Server Action]", excalidraw);
+    const serializedData = JSON.stringify(data);
 
-    const response = await prisma.project.update({
-      where: {
-        id: projectId
-      },
+    await prisma.project.update({
+      where: { id: projectId },
       data: {
-        excalidrawEditor: excalidraw
-      }
-      
-      
-    })
-
-    console.log("[updateEditor Server Action]", response);
-
-
-    return true;
-  } catch (error: any) {
-    console.log('[An error occured saving the editor]', error)
-    return false;
+        excalidrawEditor: serializedData,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to update Excalidraw data:', error);
+    return { success: false, error: 'Failed to update Excalidraw data' };
   }
 }
+
 
