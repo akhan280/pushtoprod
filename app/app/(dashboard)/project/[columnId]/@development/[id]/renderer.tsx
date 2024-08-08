@@ -64,10 +64,20 @@ export default function DevelopmentRender() {
     ? JSON.parse(selectedProject.textEditor)
     : defaultInitialValue;
 
+    
+
   const deserializedExcalidrawInitialValue: Value =
     selectedProject.excalidrawEditor
       ? JSON.parse(selectedProject.excalidrawEditor)
       : excalidrawInitialValue;
+
+      const handleEditorChange = (newValue: Value) => {
+        if (selectedProject) {
+          const serializedValue = JSON.stringify(newValue);
+          console.log("rendering", serializedValue);
+          setEditorProperty(serializedValue);
+        }
+      };
 
   return (
     <>
@@ -89,7 +99,24 @@ export default function DevelopmentRender() {
           </TabsContent>
 
           <TabsContent value="editor">
-            <PlateEditor></PlateEditor>
+          <DndProvider backend={HTML5Backend}>
+      <CommentsProvider users={{}} myUserId="1">
+        <Plate
+          onChange={handleEditorChange}
+          plugins={plugins}
+          initialValue={deserializedInitialValue}
+        >
+          <FixedToolbar>
+            <FixedToolbarButtons />
+          </FixedToolbar>
+          <Editor />
+          <FloatingToolbar>
+            <FloatingToolbarButtons />
+          </FloatingToolbar>
+          <CommentsPopover />
+        </Plate>
+      </CommentsProvider>
+    </DndProvider>
           </TabsContent>
 
           <TabsContent value="excalidraw">
