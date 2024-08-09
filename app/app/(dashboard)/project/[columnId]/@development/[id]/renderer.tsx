@@ -31,7 +31,8 @@ import { TooltipProvider } from "../../../../../../../components/ui/plate-ui/too
 import { ExcalidrawCanvas } from "../../../../../../../components/projects/excalidraw/excalidraw";
 // import { PrismaEditor } from "../../../../../../../components/projects/prisma/editor/prisma-editor"
 import PrismaEditor from "../../../../../../../components/projects/database-editors/prisma/prisma-editor"
-import Diagram from "@/components/projects/prisma/diagram/diagram";
+import MermaidEditor from "../../../../../../../components/projects/database-editors/mermaid/mermaid-editor"
+import { DatabaseVisualizers } from "@/components/projects/database-editors/database-visualizers";
 // Combine the editors into a single component with tabs
 export default function DevelopmentRender() {
   const {
@@ -64,7 +65,7 @@ export default function DevelopmentRender() {
             <TabsTrigger value="technologies">Technologies</TabsTrigger>
             <TabsTrigger value="editor">Main Editor</TabsTrigger>
             <TabsTrigger value="excalidraw">Excalidraw</TabsTrigger>
-            <TabsTrigger value="prisma">Prisma</TabsTrigger>
+            <TabsTrigger value="databases">Databases</TabsTrigger>
           </TabsList>
 
           <TabsContent value="technologies">
@@ -80,8 +81,9 @@ export default function DevelopmentRender() {
             <ExcalidrawCanvas/>
           </TabsContent>
 
-          <TabsContent value="prisma">
-            <PrismaEditor></PrismaEditor>
+          <TabsContent value="databases">
+        
+            <DatabaseVisualizers/>
             {/* <Diagram></Diagram> */}
           </TabsContent>
 

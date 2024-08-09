@@ -113,6 +113,8 @@
     "next-themes": "^0.3.0",
     "novel": "^0.1.22",
     "openai-edge": "^1.2.2",
+    "panzoom": "^9.4.3",
+    "pinch-zoom-js": "^2.3.5",
     "prismjs": "^1.29.0",
     "random": "^4.1.0",
     "react": "^18.3.1",
