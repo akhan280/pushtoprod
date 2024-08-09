@@ -30,7 +30,7 @@ import { Editor } from "../../../../../../../components/ui/plate-ui/editor";
 import { TooltipProvider } from "../../../../../../../components/ui/plate-ui/tooltip";
 import { ExcalidrawCanvas } from "../../../../../../../components/projects/excalidraw/excalidraw";
 // import { PrismaEditor } from "../../../../../../../components/projects/prisma/editor/prisma-editor"
-import PrismaEditor from "../../../../../../../components/projects/prisma/editor/prisma-editor"
+import PrismaEditor from "../../../../../../../components/projects/database-editors/prisma/prisma-editor"
 import Diagram from "@/components/projects/prisma/diagram/diagram";
 // Combine the editors into a single component with tabs
 export default function DevelopmentRender() {
