@@ -13,10 +13,10 @@ export default function OnboardingLayout({ survey, portfolioSetup, getStarted, e
     const [tab, setTab] = useState(0);
 
   const tabs = [
-    { id: 0, name: "Survey", component: survey },
-    { id: 1, name: "Portfolio Setup", component: portfolioSetup },
-    { id: 2, name: "Get Started", component: getStarted },
-    { id: 3, name: "Enable AI", component: enableAI },
+    { id: 0, name: "Get Started", component: getStarted },
+    { id: 1, name: "Survey", component: survey },
+    { id: 2, name: "Enable AI", component: enableAI },
+    { id: 3, name: "Portfolio Setup", component: portfolioSetup },
   ];
 
   return (
