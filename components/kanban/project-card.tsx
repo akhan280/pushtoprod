@@ -64,15 +64,17 @@ export function ProjectCard({ project, column, isOverlay }: ProjectCardProps) {
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
     >
-      <CardHeader className="px-3 py-3 space-between flex flex-row justify-center border-b-2 border-secondary relative">
-        <ExpandIcon></ExpandIcon>
-        <div>hi</div>
+      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap outline-blue-500">
         <Badge variant={"outline"} className="ml-auto font-semibold">
           Project
         </Badge>
+      </CardContent>
+      <CardHeader className="px-3 py-3 flex flex-col border-secondary relative">
+        <div className="text-lg">{project.title}</div>
+        <div className="text-sm text-zinc-600">{project.description}</div>
       </CardHeader>
       <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
-        {project.title}
+        collaborators
       </CardContent>
     </Card>
   );
