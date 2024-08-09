@@ -29,7 +29,9 @@ import { FixedToolbarButtons } from "../../../../../../../components/ui/plate-ui
 import { Editor } from "../../../../../../../components/ui/plate-ui/editor";
 import { TooltipProvider } from "../../../../../../../components/ui/plate-ui/tooltip";
 import { ExcalidrawCanvas } from "../../../../../../../components/projects/excalidraw/excalidraw";
-
+// import { PrismaEditor } from "../../../../../../../components/projects/prisma/editor/prisma-editor"
+import PrismaEditor from "../../../../../../../components/projects/prisma/editor/prisma-editor"
+import Diagram from "@/components/projects/prisma/diagram/diagram";
 // Combine the editors into a single component with tabs
 export default function DevelopmentRender() {
   const {
@@ -58,9 +60,11 @@ export default function DevelopmentRender() {
       >
         <Tabs defaultValue="technologies"  value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList>
+
              <TabsTrigger value="technologies">Technologies</TabsTrigger>
             <TabsTrigger value="editor">Main Editor</TabsTrigger>
             <TabsTrigger value="excalidraw">Excalidraw</TabsTrigger>
+            <TabsTrigger value="prisma">Prisma</TabsTrigger>
           </TabsList>
 
           <TabsContent value="technologies">
@@ -78,6 +82,14 @@ export default function DevelopmentRender() {
           <TabsContent value="excalidraw">
             
             <ExcalidrawCanvas/>
+
+          </TabsContent>
+
+          <TabsContent value="prisma">
+            <div>
+            <PrismaEditor></PrismaEditor>
+            {/* <Diagram></Diagram> */}
+            </div>
 
           </TabsContent>
         </Tabs>
