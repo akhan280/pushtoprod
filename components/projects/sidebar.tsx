@@ -7,8 +7,11 @@ import GithubProperty from "./properties/github-property";
 import WebsiteProperty from "./properties/website-property";
 import TagProperty from "./properties/tag-property";
 import CollaboratorProperty from "./properties/collaborator-property";
+import { TechnologiesContext } from "./technologies";
+import useMainStore from "@/lib/hooks/use-main-store";
 
 export default function Sidebar() {
+  const { selectedProject } = useMainStore();
   return (
     <div className="p-4 mt-10">
         <Card className="p-4">
@@ -30,8 +33,7 @@ export default function Sidebar() {
             <CollaboratorProperty/>
           </div>
           <div className="flex justify-between items-center">
-            <span>Teams</span>
-            <Badge variant="outline">Hyperfan20</Badge>
+          <TechnologiesContext variant="icon" technologies={selectedProject.technologies}></TechnologiesContext>
           </div>
           <div className="flex justify-between items-center">
             <span>Dates</span>
