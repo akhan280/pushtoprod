@@ -10,6 +10,7 @@ export type User = {
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
+  siteReferral: string[] | null;
   paid: boolean;
 }
 
