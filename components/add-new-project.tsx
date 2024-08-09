@@ -3,7 +3,6 @@ import { useState } from "react";
 import useMainStore from "../lib/hooks/use-main-store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Button } from "./ui/button";
-import { PopulateSupabase } from "../lib/actions";
 
 
 export default function AddNewProject() {

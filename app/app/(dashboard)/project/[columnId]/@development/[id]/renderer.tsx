@@ -59,9 +59,9 @@ export default function DevelopmentRender() {
         skipDelayDuration={0}
       >
         <Tabs defaultValue="technologies"  value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList>
 
-             <TabsTrigger value="technologies">Technologies</TabsTrigger>
+          <TabsList>
+            <TabsTrigger value="technologies">Technologies</TabsTrigger>
             <TabsTrigger value="editor">Main Editor</TabsTrigger>
             <TabsTrigger value="excalidraw">Excalidraw</TabsTrigger>
             <TabsTrigger value="prisma">Prisma</TabsTrigger>
@@ -69,29 +69,22 @@ export default function DevelopmentRender() {
 
           <TabsContent value="technologies">
             <TechnologiesContext variant="icon" technologies={selectedProject.technologies}></TechnologiesContext>
-            <TechnologiesContext variant="iconWithText" technologies={selectedProject.technologies}></TechnologiesContext>
             <TechnologySearch />
           </TabsContent>
 
           <TabsContent value="editor">
-
             <PlateEditor></PlateEditor>
-
           </TabsContent>
 
           <TabsContent value="excalidraw">
-            
             <ExcalidrawCanvas/>
-
           </TabsContent>
 
           <TabsContent value="prisma">
-            <div>
             <PrismaEditor></PrismaEditor>
             {/* <Diagram></Diagram> */}
-            </div>
-
           </TabsContent>
+
         </Tabs>
       </TooltipProvider>
     </>

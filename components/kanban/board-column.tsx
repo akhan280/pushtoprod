@@ -55,19 +55,17 @@ export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
   };
 
   const variants = cva(
-    "h-[450px] min-h-full w-[350px] max-w-full bg-primary-foreground flex flex-col flex-shrink-0 snap-center",
+    "h-[650px] min-h-full w-[400px] max-w-full bg-[#F8F8F8] flex flex-col flex-shrink-0 snap-center",
     {
       variants: {
         dragging: {
-          default: "border-2 border-transparent",
-          over: "ring-2 opacity-30",
-          overlay: "ring-2 ring-primary",
+          default: "border border-transparent",
+          over: "ring-2 opacity-30 rounded-full",
+          overlay: "ring-2 ring-primary rounded-full",
         },
       },
     }
   );
-
-  const {showDialog, showDraggedDialog, setSelectedProject} = useMainStore();
 
   return (
     <Card
@@ -77,7 +75,7 @@ export function BoardColumn({ column, projects, isOverlay }: BoardColumnProps) {
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
     >
-      <CardHeader className="p-4 font-semibold border-b-2 text-left flex flex-row space-between items-center">
+      <CardHeader className="p-4 font-semibold text-left flex flex-row space-between items-center">
         <span className="mr-auto"> {column.title}</span>
       </CardHeader>
       <ScrollArea>
