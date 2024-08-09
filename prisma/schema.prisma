@@ -24,6 +24,7 @@ model User {
   sites       Site[]
   posts       Post[]
   projects    ProjectCollaborator[]
+  siteReferral String[]
   paid        Boolean               @default(false)
 }
 

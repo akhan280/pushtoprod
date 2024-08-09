@@ -1,11 +1,12 @@
 
 import { StateCreator } from 'zustand';
 import { KanbanSlice, ProjectMovement } from './kanban-slice';
-import { updateEditor, updateExalidraw, updateProjectField } from '../actions';
+import { updateProjectField } from '../actions';
 import { toast } from '../../components/ui/use-toast'; 
 import { Technology } from '../types';
 
 type FormStore = {
+  onboardingStep: number;
   excalidraw: any;
   editor: any;
   step: number;
@@ -17,6 +18,7 @@ type FormActions = {
   // setEditorProperty: (editor: any) => void;
   // setExcalidrawProperty: (excalidraw: any) => void;
   setLaunchStep: (step: number) => void;
+  setOnboardingStep: (onboardingStep: number) => void;
   setTechnologies: (technologies: Technology[]) => void;
 };
 
@@ -28,6 +30,11 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
   editor: null, 
   step: 0,
   technologies: [],
+  onboardingStep: 0,
+
+  setOnboardingStep: (onboardingStep: number) => {
+      set({onboardingStep: onboardingStep})
+  },
 
   setTechnologies: (technologies: Technology[]) => {
     set({technologies: technologies})

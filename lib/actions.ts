@@ -212,6 +212,36 @@ export const getUser = async (email: string | null) => {
   }
 };
 
+export const updateUserField = async (userId: string, key: string, value: any) => {
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      user: null,
+      error: "Not authenticated",
+    };
+  }
+
+  console.log(`Updating user ${userId} with ${key} to ${value}`);
+
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        [key]: value,
+      },
+    });
+
+    return { user: user, error: null };
+  } catch (error: any) {
+    console.error("Error updating user:", error);
+    return {
+      user: null,
+      error: "An unexpected error occurred",
+    };
+  }
+};
 
 export const updateProjectField = async (projectId: string, key: string, value: string) => {
   
@@ -354,22 +384,23 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
       ...project,
       collaborators: project.collaborators.map((collaborator) => ({
         user: {
-        id: collaborator.user.id,
-        email: collaborator.user.email,
-        name: collaborator.user.name,
-        username: collaborator.user.username,
-        gh_username: collaborator.user.gh_username,
-        image: collaborator.user.image,
-        createdAt: collaborator.user.createdAt,
-        updatedAt: collaborator.user.updatedAt,
-        paid: collaborator.user.paid,
+          id: collaborator.user.id,
+          email: collaborator.user.email,
+          name: collaborator.user.name,
+          username: collaborator.user.username,
+          gh_username: collaborator.user.gh_username,
+          image: collaborator.user.image,
+          createdAt: collaborator.user.createdAt,
+          updatedAt: collaborator.user.updatedAt,
+          paid: collaborator.user.paid,
+          siteReferral: collaborator.user.siteReferral,
         }
       })),
       technologies: project.technologies ?? null,
       githuburl: project.githuburl ?? null,
       websiteurl: project.websiteurl ?? null,
       tags: project.tags ?? [],
-      columnId: project.columnId as ColumnId,  
+      columnId: project.columnId as ColumnId,
     }));
 
 
@@ -448,6 +479,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
+          siteReferral: collaborator.user.siteReferral,
         },
       })),
       technologies: project.technologies ?? null,
