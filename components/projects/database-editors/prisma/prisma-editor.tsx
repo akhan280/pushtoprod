@@ -32,6 +32,7 @@ const PrismaEditor: React.FC = () => {
     const modelRegex = /model\s+(\w+)\s*{([^}]*)}/gs;
     const fieldRegex = /(\w+)\s+([\w\[\]?]+)(\s*@[^(\n]*(\([^)]*\))?)?/g;
     const relationRegex = /@relation\s*\(([^)]+)\)/;
+    console.log("test")
   
     const models: Record<string, any[]> = {};
     const relations: Array<{from: string; to: string; fromField: string; toField: string; relationType: string}> = [];
