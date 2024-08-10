@@ -4,6 +4,7 @@
 import { toast } from "../../../../../../../components/ui/use-toast";
 import { getSingularProject } from "../../../../../../../lib/actions";
 import useMainStore from "../../../../../../../lib/hooks/use-main-store";
+import Header from "@/components/projects/header";
 
 export default function IdeasRenderer({ params }: { params: {id: string} }) {
 
@@ -38,6 +39,7 @@ export default function IdeasRenderer({ params }: { params: {id: string} }) {
   
     return (
         <div className="flex flex-col justify-center items-center place-items-center">
+            <Header partial={false}/>
       </div>
     );
 }
