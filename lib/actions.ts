@@ -175,6 +175,39 @@ export async function removeTechnology(projectId: string, technology: Technology
 }
 
 //TODO: MAKE ASYNC
+export const updateProjectStatus = async (id: string, columnId: string) => {
+
+  console.log("[COL ID] is:", columnId);
+
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    const project = await prisma.project.update({
+      where: {
+        id: id,
+      },
+      data: {
+        columnId: columnId
+      }
+    })
+    
+    console.log("[PROJECT STATUS] is:", project)
+    return {project: project, error: null}
+  } catch (error: any) {
+    console.error("Error updating project:", error);
+    return {
+      project: null,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
 
 export const getUser = async () => {
   const session = await getSession();
@@ -371,6 +404,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
                 updatedAt: true,
                 paid: true,
                 siteReferral: true,
+                site: true,
               },
             },
           },
@@ -394,6 +428,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
+          site: collaborator.user.site!,
           siteReferral: collaborator.user.siteReferral ?? [],
         }
       })),
@@ -453,6 +488,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
                 updatedAt: true,
                 paid: true,
                 siteReferral: true,
+                site: true,
               },
             },
           },
@@ -481,6 +517,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
+          site: collaborator.user.site!,
           siteReferral: collaborator.user.siteReferral,
         },
       })),

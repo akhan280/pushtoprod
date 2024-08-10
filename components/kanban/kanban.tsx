@@ -26,6 +26,7 @@ import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ButtonLoading } from "../ui/loading-ui/button-loading";
 import AddNewProject from "../add-new-project";
+import { updateProjectStatus } from "../../lib/actions";
 
 const defaultCols = [
   {id: "ideas" as const, title: "Ideas"},

@@ -13,7 +13,7 @@ export type User = {
   updatedAt: Date;
   siteReferral: string[] | null; 
   paid: boolean;
-  site: Site
+  site: Site | null
 }
 
 export type Technology = {
