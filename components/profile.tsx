@@ -1,14 +1,20 @@
+"use client"
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./logout-button";
+import useMainStore from "../lib/hooks/use-main-store";
+import { useEffect, useState } from "react";
 
 export default async function Profile() {
-  const session = await getSession();
-  if (!session?.id) {
-    redirect("/login");
-  }
+  const [id, setId] = useState('')
+  const {user} = useMainStore();
+
+  useEffect(() => {
+    console.log('User', user)
+    setId(user?.site.id)
+  },[user])
 
   return (
     <div className="flex flex-row ml-auto">
@@ -20,12 +26,15 @@ export default async function Profile() {
           src="https://illustrations.popsy.co/gray/timed-out-error.svg"
           width={40}
           height={40}
-          alt={session.email ?? "User avatar"}
+          alt={user?.email ?? "User avatar"}
           className="h-6 w-6 rounded-full"
         />
-        <span className="truncate text-sm font-medium">
-          {session.phone}
-        </span>
+        <Link href={`/site/${id}`}>
+          <span className="truncate text-sm font-medium">
+            Your Portfolio
+          </span>
+        </Link>
+    
       </Link>
       <LogoutButton />
     </div>

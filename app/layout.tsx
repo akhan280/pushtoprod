@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Providers } from "./providers";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
+import { Toaster } from "../components/ui/toaster";
 
 const title =
   "Push2Prod";
@@ -41,6 +42,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <Analytics />
+          <Toaster />
         </Providers>
       </body>
     </html>

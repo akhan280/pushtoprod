@@ -9,7 +9,7 @@ import { Dialog, DialogContent, } from "../ui/dialog";
 import Image from "next/image";
 import { ButtonLoading } from "../ui/loading-ui/button-loading";
 
-export default function DialogLayout() {
+export default function AddProjectDialog() {
   const {selectedProject,showDialog, setRequestAdd, requestedAdd, dialog} = useMainStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);

@@ -3,23 +3,25 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import SiteCard from "./site-card";
 import Image from "next/image";
+import NotFound from "../app/[domain]/[slug]/not-found";
 
-export default async function Sites({ limit }: { limit?: number }) {
+export default async function Sites() {
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
+
+  if (session.id !== process.env.ANIKET_ID && session.id !== process.env.AREEB_ID) {
+    return NotFound();
+  }
+
+
   const sites = await prisma.site.findMany({
-    where: {
-      user: {
-        id: session.id as string,
+      orderBy: {
+        createdAt: "asc",
       },
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-    ...(limit ? { take: limit } : {}),
-  });
+    })
+  
 
   return sites.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

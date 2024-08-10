@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import PlaceholderCard from "@/components/placeholder-card";
 import { KanbanBoard } from "../../../components/kanban/kanban";
-import { getProjects } from "../../../lib/actions";
-import DialogLayout from "../../../components/dialog/card-dialog";
+import { getProjects, getUser } from "../../../lib/actions";
+import AddProjectDialog from "../../../components/dialog/add-project-dialog";
 
 export default async function Overview() {
   const response = await getProjects();
   const projects = response.projects ?? [];
+  const data = await getUser();
 
   console.log("[Kanban] Fetched items", projects.length);
 
@@ -25,8 +26,8 @@ export default async function Overview() {
           }
         >
           <div className="min-h-screen">
-            <KanbanBoard fetchedProjects={projects} />
-            <DialogLayout></DialogLayout>
+            <KanbanBoard fetchedProjects={projects} fetchedUser = {data.user!} />
+            <AddProjectDialog></AddProjectDialog>
           </div>
         </Suspense>
       </div>

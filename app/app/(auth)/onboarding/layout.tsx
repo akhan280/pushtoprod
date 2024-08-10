@@ -1,7 +1,16 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import useMainStore from "../../../../lib/hooks/use-main-store";
+import { redirect, useSearchParams } from "next/navigation";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../../../../components/ui/alert";
+import { RocketIcon } from "lucide-react";
+import Image from "next/image";
+import logo from "../../../../public/logo.png"
 
 interface OnboardingLayoutProps {
   survey: React.ReactNode;
@@ -10,8 +19,15 @@ interface OnboardingLayoutProps {
   enableAI: React.ReactNode;
 }
 
-export default function OnboardingLayout({ survey, portfolioSetup, getStarted, enableAI }: OnboardingLayoutProps) {
-  const {onboardingStep, setOnboardingStep} = useMainStore();
+export default function OnboardingLayout({
+  survey,
+  portfolioSetup,
+  getStarted,
+  enableAI,
+}: OnboardingLayoutProps) {
+  const { onboardingStep, setOnboardingStep } = useMainStore();
+  const searchParams = useSearchParams();
+  const returning = searchParams.get("redirect");
 
   const tabs = [
     { id: 0, name: "Get Started", component: getStarted },
@@ -21,25 +37,24 @@ export default function OnboardingLayout({ survey, portfolioSetup, getStarted, e
   ];
 
   return (
-    <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="mb-4 flex justify-center space-x-4">
-        {tabs.map((tabItem) => (
-          <button
-            key={tabItem.id}
-            onClick={() => setOnboardingStep(tabItem.id)}
-            className={`px-4 py-2 rounded ${
-              onboardingStep === tabItem.id ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            {tabItem.name}
-          </button>
-        ))}
+    <>
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 mt-4 flex flex-col items-center">
+        <Image src={logo} width={80} height={80} alt="logo" draggable="false" />
+        {returning && (
+          <Alert className="max-w-lg mt-4">
+            <RocketIcon className="h-4 w-4" />
+            <AlertTitle>Welcome back!</AlertTitle>
+            <AlertDescription>
+              Let's get you set up
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
-      <div className="flex justify-center">
-        {tabs[onboardingStep]?.component}
+      <div className="flex min-h-full min-w-full flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
+        <div className="flex justify-center">
+          {tabs[onboardingStep]?.component}
+        </div>
       </div>
-    </div>
+    </>
   );
-};
-
-
+}

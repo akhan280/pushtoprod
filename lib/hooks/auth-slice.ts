@@ -6,7 +6,6 @@ type AuthStore = {
   phone: string;
   code: string;
   email: string;
-  name: string;
 };
 
 type AuthActions = {
@@ -21,7 +20,6 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   phone: '',
   code: '',
   email: '',
-  name: '',
   setPhone: (phone: string) => set(() => ({ phone })),
   setCode: (code: string) => set(() => ({ code })),
 

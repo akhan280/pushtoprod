@@ -51,6 +51,24 @@ export async function updateSession(request: NextRequest, hostname: string, path
       }
     }
 
+    const pathname = path.split('?')[0];
+
+    // Case 2: If the user is authenticated, paid, but hasn't done onboarding
+    if (user && pathname !== "/onboarding") {
+      const { data, error } = await supabase
+        .from("User")
+        .select("email")
+        .eq("id", user.id)
+        .single();
+      
+      console.log('[MIDDLEWARE] User email status', data?.email);
+
+      if (!data?.email) {
+        console.log(request.url, hostname);
+        return NextResponse.redirect(new URL("/onboarding?redirect=true", request.url));
+      }
+    }
+    
     // If no user session, redirect to login
     if (!user && path !== "/login") {
       console.log("No user session, redirecting to login");

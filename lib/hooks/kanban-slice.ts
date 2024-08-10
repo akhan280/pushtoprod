@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
-import { Project } from '../types';
+import { Project, User } from '../types';
 import { ColumnId } from '@/components/kanban/kanban';
+import { Prisma } from '@prisma/client';
 
 export type ProjectMovement = Project & {
   previous: string;
@@ -14,11 +15,13 @@ type KanbanStore = {
   requestedAdd: string | null;
   projects: Project[];
   selectedProject: ProjectMovement;
+  user: User,
 };
 
 type KanbanActions = {
   showDialog: (dialog: boolean) => void;
   showDraggedDialog: (dragged: boolean) => void;
+  setUser: (user: User) => void;
   addProject: (project: Project) => void;
   setProjects: (projects: Project[]) => void;
   setLoading: (loading: boolean) => void;
@@ -32,11 +35,43 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
   projects: [],
   dialog: false,
   dragged: false,
-  requestedAdd: '',
+  requestedAdd: null,
   loading: false,
-  
+  user: {
+    id: '',
+    name: '',
+    username: '',
+    email: '',
+    siteReferral: [],
+    paid: false,
+    site: {
+      id: '',
+      name: null,
+      description: null,
+      logo: null,
+      font: '',
+      image: null,
+      imageBlurhash: null,
+      subdomain: null,
+      customDomain: null,
+      message404: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: '',
+    },
+    gh_username: '',
+    image: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+    
+  setUser: (user: User) => {
+    console.log('[KANBAN SLICE] Setting User', user)
+    set({user: user})
+  },
+
   setLoading: (loading: boolean) => {
-    set({loading: loading});
+    set({loading});
   },
 
   selectedProject: {

@@ -20,13 +20,13 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { ProjectCard } from "./project-card";
 import { coordinateGetter } from "./containers-keyboard-preset";
 import { hasDraggableData } from "./utils";
-import { Column, Project } from "../../lib/types";
+import { Column, Project, User } from "../../lib/types";
 import useMainStore from "../../lib/hooks/use-main-store";
-import { updateProjectStatus } from "../../lib/actions";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ButtonLoading } from "../ui/loading-ui/button-loading";
 import AddNewProject from "../add-new-project";
+
 const defaultCols = [
   {id: "ideas" as const, title: "Ideas"},
   {id: "development" as const, title: "Development"},
@@ -37,14 +37,15 @@ export type ColumnId = (typeof defaultCols)[number]["id"];
 
 interface KanbanBoardProps {
   fetchedProjects: Project[];
+  fetchedUser: User;
 }
 
-export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
+export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpProjectColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const { selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog, loading, setLoading } = useMainStore();
+  const { user, setUser, selectedProject, setSelectedProject, showDialog, projects, setProjects, dragged, showDraggedDialog, loading, setLoading } = useMainStore();
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
@@ -53,6 +54,8 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
   useEffect(() => {
     setLoading(false)
     console.log('Projects', fetchedProjects)
+    console.log('Fetched User', fetchedUser)
+    setUser(fetchedUser);
     setProjects(fetchedProjects);
   }, [fetchedProjects, setProjects]);
 
@@ -118,7 +121,7 @@ export function KanbanBoard({ fetchedProjects }: KanbanBoardProps) {
                 ) ?? []}
               />
             )}
-            {activeProject && <ProjectCard project={activeProject} isOverlay />}
+            {activeProject && <ProjectCard project={activeProject} column={activeColumn} isOverlay />}
           </DragOverlay>,
           document.body
         )}

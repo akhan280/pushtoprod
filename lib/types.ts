@@ -1,5 +1,6 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { ColumnId } from "../components/kanban/kanban";
+import { Site } from "@prisma/client";
 
 export type User = {
   id: string;
@@ -10,8 +11,9 @@ export type User = {
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
-  siteReferral: string[] | null;
+  siteReferral: string[] | null; 
   paid: boolean;
+  site: Site
 }
 
 export type Technology = {
@@ -19,11 +21,6 @@ export type Technology = {
   logo: string;
   name: string;
   description: string;
-}
-
-
-export type Collaborator =  {
-  user: User;
 }
 
 export type Project = {
@@ -38,6 +35,10 @@ export type Project = {
   columnId: string;
   textEditor?: any;
   excalidrawEditor?: any;
+}
+
+export type Collaborator =  {
+  user: User;
 }
 
 

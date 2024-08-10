@@ -12,10 +12,10 @@ import { put } from "@vercel/blob";
 import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Project, Technology } from "./types";
 import { ColumnId } from "@/components/kanban/kanban";
 import { ProjectMovement } from "./hooks/kanban-slice";
 import { ImportedDataState } from "@excalidraw/excalidraw/types/data/types";
+import { Project, Technology, User } from "./types";
 // const nanoid = customAlphabet(
 //   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 //   7,
@@ -114,7 +114,6 @@ export async function getAllTechnologies(): Promise<Technology[]> {
     }
 }
 
-
 export async function updateProjectTechnologies(projectId: string, technology: Technology) {
 
   try {
@@ -177,9 +176,10 @@ export async function removeTechnology(projectId: string, technology: Technology
 
 //TODO: MAKE ASYNC
 
-export const getUser = async (email: string | null) => {
+export const getUser = async () => {
   const session = await getSession();
   if (!session?.id) {
+    console.log("[USER RETRIEVAL] Not authenticated");
     return {
       user: null,
       error: "Not authenticated",
@@ -187,24 +187,24 @@ export const getUser = async (email: string | null) => {
   }
 
   try {
-    let user = null;
-
-    if (email) {
-      user = await prisma.user.findUnique({
-        where: { email },
-      });
-    }
-
-    
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.id,
+      },
+      include: {
+        site: true,
+      },
+    });
 
     if (!user) {
+      console.log("[USER RETRIEVAL] User not found");
       return { user: null, error: "User not found" };
     }
 
-    console.log("[USER STATUS] is:", user);
+    console.log("[USER STATUS] Retrieved user:", user);
     return { user, error: null };
   } catch (error: any) {
-    console.error("Error retrieving user:", error);
+    console.error("[USER RETRIEVAL] Error retrieving user:", error);
     return {
       user: null,
       error: "An unexpected error occurred",
@@ -370,6 +370,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
                 createdAt: true,
                 updatedAt: true,
                 paid: true,
+                siteReferral: true,
               },
             },
           },
@@ -393,7 +394,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
-          siteReferral: collaborator.user.siteReferral,
+          siteReferral: collaborator.user.siteReferral ?? [],
         }
       })),
       technologies: project.technologies ?? null,
@@ -451,6 +452,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
                 createdAt: true,
                 updatedAt: true,
                 paid: true,
+                siteReferral: true,
               },
             },
           },

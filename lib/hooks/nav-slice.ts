@@ -17,6 +17,4 @@ export const createNavSlice: StateCreator<NavSlice> = (set, get) => ({
   setPreviousUrl: (previousUrl: string) => {
     set({previousUrl})
   },
-
-  
 });
