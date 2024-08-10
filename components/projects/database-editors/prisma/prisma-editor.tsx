@@ -352,6 +352,7 @@ const PrismaEditor: React.FC = () => {
         <div ref={mermaidRef}></div>
       </div>
     </div>
+
   </div>
   );
 };

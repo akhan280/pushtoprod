@@ -2,7 +2,7 @@ import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY || "")
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
@@ -16,7 +16,6 @@ export async function POST(req: Request) {
     );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    if (err! instanceof Error) console.log(err);
     console.log(`❌ Error message: ${errorMessage}`);
     return NextResponse.json(
       { message: `Webhook Error: ${errorMessage}` },
@@ -32,47 +31,38 @@ export async function POST(req: Request) {
     "payment_intent.canceled",
     "payment_intent.requires_action",
     "payment_intent.created",
+    "customer.subscription.created",
+    "customer.subscription.deleted",
+    "invoice.paid",
   ];
 
   if (permittedEvents.includes(event.type)) {
-    let data;
-
     try {
       switch (event.type) {
         case "payment_intent.created":
-          data = event.data.object as Stripe.PaymentIntent;
-          console.log(`💰 PaymentIntent Created: ${data.status}`);
-          console.log(data.metadata)
+          await handlePaymentIntentCreated(event.data.object as Stripe.PaymentIntent);
+          break;
+
+        case "payment_intent.succeeded":
+          await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
+          break;
 
         case "payment_intent.payment_failed":
-          data = event.data.object as Stripe.PaymentIntent;
-          console.log(`❌ Payment failed: ${data.last_payment_error?.message}`);
-          break;
         case "payment_intent.canceled":
-          data = event.data.object as Stripe.PaymentIntent;
-          console.log(`❌ Payment failed: ${data.last_payment_error?.message}`);
+          await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
           break;
-        case "payment_intent.succeeded":
-          data = event.data.object as Stripe.PaymentIntent;
-          console.log(`💰 PaymentIntent status: ${data.status}`);
 
-          if (!data.metadata.id) {
-            console.log('❌ [FATAL] USER DIDNT PASS IN AUTH')
-          } else {
-            console.log(`💰 PaymentIntent updating paid status: ${data.metadata}`);
-            await prisma.user.update({
-              where: {
-                id: data.metadata.id,
-              },
-              data: {
-                paid: true
-              },
-            });
-          }
-
+        case "customer.subscription.created":
+        case "invoice.paid":
+          await handleSubscriptionEvent(event);
           break;
+
+        case "customer.subscription.deleted":
+          await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+          break;
+
         default:
-          throw new Error(`Unhandled event: ${event.type}`);
+          console.log(`Unhandled event type ${event.type}`);
       }
     } catch (error) {
       console.log(error);
@@ -82,6 +72,90 @@ export async function POST(req: Request) {
       );
     }
   }
-  // Return a response to acknowledge receipt of the event.
+
   return NextResponse.json({ message: "Received" }, { status: 200 });
+}
+
+async function handlePaymentIntentCreated(paymentIntent: Stripe.PaymentIntent) {
+  console.log(`💰 PaymentIntent Created: ${paymentIntent.status}`);
+  console.log(paymentIntent.metadata);
+}
+
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  console.log(`💰 PaymentIntent status: ${paymentIntent.status}`);
+
+  if (!paymentIntent.metadata.userId) {
+    console.log('❌ [ERROR] User ID not found in payment intent metadata');
+    return;
+  }
+
+  console.log(`💰 PaymentIntent updating paid status: ${paymentIntent.metadata.userId}`);
+  await prisma.user.update({
+    where: {
+      id: paymentIntent.metadata.userId,
+    },
+    data: {
+      paid: true,
+    },
+  });
+}
+
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  console.log(`❌ Payment failed: ${paymentIntent.last_payment_error?.message}`);
+}
+
+async function handleSubscriptionEvent(event: Stripe.Event) {
+  let subscription: Stripe.Subscription;
+  let customerId: string;
+
+  if (event.type === "invoice.paid") {
+    const invoice = event.data.object as Stripe.Invoice;
+    subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+    customerId = invoice.customer as string;
+  } else {
+    subscription = event.data.object as Stripe.Subscription;
+    customerId = subscription.customer as string;
+  }
+
+  const customer = await stripe.customers.retrieve(customerId);
+
+  if (customer.deleted) {
+    console.log('❌ [ERROR] Customer has been deleted');
+    return;
+  }
+
+  const userId = (customer as Stripe.Customer).metadata?.userId;
+  if (!userId) {
+    console.log('❌ [ERROR] User ID not found in customer metadata');
+    return;
+  }
+
+  console.log(`🔔 Subscription event: Setting managedAI to true for user: ${userId}`);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { managedAI: true },
+  });
+}
+
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  const customerId = subscription.customer as string;
+  const customer = await stripe.customers.retrieve(customerId);
+
+  if (customer.deleted) {
+    console.log('❌ [ERROR] Customer has been deleted');
+    return;
+  }
+
+  const userId = (customer as Stripe.Customer).metadata?.userId;
+  if (!userId) {
+    console.log('❌ [ERROR] User ID not found in customer metadata');
+    return;
+  }
+
+  console.log(`🔔 Subscription canceled for user: ${userId}. managedAI status remains unchanged.`);
+  // If you want to update managedAI status on cancellation, uncomment the following:
+  await prisma.user.update({
+    where: { id: userId },
+    data: { managedAI: false },
+  });
 }

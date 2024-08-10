@@ -11,6 +11,7 @@ type FormStore = {
   editor: any;
   step: number;
   technologies: Technology[] | null;
+  mermaidSchema: string;
 };
 
 type FormActions = {
@@ -20,6 +21,7 @@ type FormActions = {
   setLaunchStep: (step: number) => void;
   setOnboardingStep: (onboardingStep: number) => void;
   setTechnologies: (technologies: Technology[]) => void;
+  setMermaidSchema: (mermaidSchema: string) => void;
 };
 
 export type FormSlice = FormStore & FormActions & Partial<KanbanSlice>;
@@ -31,7 +33,12 @@ export const createFormSlice: StateCreator<FormSlice> =  (set, get)  => ({
   step: 0,
   technologies: [],
   onboardingStep: 0,
+  mermaidSchema: '',
 
+  setMermaidSchema: (mermaidSchema: string) => {
+
+  },
+  
   setOnboardingStep: (onboardingStep: number) => {
       set({onboardingStep: onboardingStep})
   },

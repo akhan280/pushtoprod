@@ -1,6 +1,5 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
 import useMainStore from "../../../../../lib/hooks/use-main-store";
@@ -8,7 +7,7 @@ import { createClient } from "../../../../../lib/utils/supabase-client";
 import { User } from "@supabase/supabase-js";
 import { ButtonLoading } from "../../../../../components/ui/loading-ui/button-loading";
 import { toast } from "../../../../../components/ui/use-toast";
-
+import { useEffect, useState } from "react";
 
 const supabase = createClient();
 
@@ -42,6 +41,38 @@ export default function GetStarted() {
 
         console.log('[getStarted] Submitted', name, email)
 
+        // Validate input fields
+        if (!name) {
+            toast({
+                variant: "destructive",
+                title: "Name is required.",
+                description: "Please enter your name.",
+            });
+            setLoading(false);
+            return;
+        }
+
+        if (!email) {
+            toast({
+                variant: "destructive",
+                title: "Email is required.",
+                description: "Please enter your email.",
+            });
+            setLoading(false);
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast({
+                variant: "destructive",
+                title: "Invalid email format.",
+                description: "Please enter a valid email address.",
+            });
+            setLoading(false);
+            return;
+        }
+
         try {
             await setUserProperty("name", name, user?.id!);  
             await setUserProperty("email", email, user?.id!);
@@ -53,8 +84,8 @@ export default function GetStarted() {
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem. Try again",
-              });
-            }
+            });
+        }
         setLoading(false)
     };
 

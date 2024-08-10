@@ -1,15 +1,15 @@
 "use client";
 import { Button } from "../../../../../components/ui/button";
-import Image from "next/image";
-import logo from "../../../../../public/logo.png";
+import { useRouter } from "next/navigation";
 
 export default function CompletePage() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col">
         <div className="flex flex-col items-center gap-8">
             <div className="text-[52px]">Welcome to Push2Prod</div>
-            <Button className="w-48 rounded-full">Begin Usage</Button>
-
+            <Button onClick= {()=>{router.push(`/`)}}className="w-48 rounded-full">Begin Usage</Button>
         </div>
    
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">

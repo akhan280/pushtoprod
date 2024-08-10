@@ -2,16 +2,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import mermaid from 'mermaid';
+import { updateMermaidSchema } from '../../../../lib/actions';
+import useMainStore from '../../../../lib/hooks/use-main-store';
 
 const MermaidEditor: React.FC = () => {
-  const [schema, setSchema] = useState<string>(`graph TD
-    A[Start] --> B[End]`);
+
   const mermaidRef = useRef<HTMLDivElement>(null);
   const [debugLog, setDebugLog] = useState<string[]>([]);
+
 
   const addDebugLog = (message: string) => {
     setDebugLog(prevLogs => [...prevLogs, `[${new Date().toISOString()}] ${message}`]);
   };
+
+  const {selectedProject, setSelectedProject, mermaidSchema, setMermaidSchema} = useMainStore();
 
   useEffect(() => {
     addDebugLog('Component mounted');
@@ -20,18 +24,18 @@ const MermaidEditor: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    addDebugLog('Schema changed: ' + schema);
+    addDebugLog('Schema changed: ' + mermaidSchema);
     if (mermaidRef.current) {
       renderMermaidDiagram();
     } else {
       addDebugLog('mermaidRef is not available');
     }
-  }, [schema]);
+  }, [mermaidSchema]);
 
   const renderMermaidDiagram = () => {
     addDebugLog('Attempting to render Mermaid diagram');
     try {
-      mermaid.render('mermaid-diagram', schema).then(({ svg }) => {
+      mermaid.render('mermaid-diagram', mermaidSchema).then(({ svg }) => {
         if (mermaidRef.current) {
           mermaidRef.current.innerHTML = svg;
           addDebugLog('Mermaid diagram rendered successfully');
@@ -53,8 +57,13 @@ const MermaidEditor: React.FC = () => {
           <Editor
             height="100%"
             defaultLanguage="mermaid"
-            value={schema}
-            onChange={(value) => setSchema(value || '')}
+            value={selectedProject.mermaidSchema || ''}
+            onChange={ async (value) =>  {
+              setMermaidSchema(value || '')
+              const data = await updateMermaidSchema(selectedProject.id, value || '');
+              setSelectedProject({...data.project!, previous: selectedProject.previous, next: selectedProject.next})
+
+            }}
           />
         </div>
         <div className="w-1/2 h-full overflow-auto bg-gray-100 p-4">

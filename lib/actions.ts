@@ -617,4 +617,33 @@ export async function updateExcalidrawData(projectId: string, data: ImportedData
   }
 }
 
+export async function updateMermaidSchema(projectId: string, data: string) {
+  console.log('[Server Action] Updating Mermaid Data', projectId, data);
+  
+  try {
+    const project = await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        mermaidSchema: data,
+      },
+      include: {
+        collaborators: {
+          include: {
+            user: {
+              include: {
+                site: true,
+              }
+            },
+          },
+        },
+        technologies: true,
+      },
+    });
+    return { project: project };
+  } catch (error) {
+    console.error('Failed to update Mermaid data:', error);
+    return { success: false, error: 'Failed to update mermaid data' };
+  }
+}
+
 

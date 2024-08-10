@@ -85,7 +85,8 @@ export const createKanbanSlice: StateCreator<KanbanSlice> = (set, get) => ({
     websiteurl: '',
     columnId: '',
     previous: '',
-    next: ''
+    next: '',
+    mermaidSchema: '',
   },
 
   addProject: (project: Project) => {

@@ -30,6 +30,7 @@ export type Project = {
   tags: string[] | [];
   collaborators: Collaborator[];
   technologies: Technology[];
+  mermaidSchema: string | null;
   githuburl: string | null;
   websiteurl: string | null; 
   columnId: string;

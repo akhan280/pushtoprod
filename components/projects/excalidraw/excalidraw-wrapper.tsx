@@ -14,7 +14,6 @@ interface ExcalidrawWrapperProps {
 const ExcalidrawWrapper: React.FC<ExcalidrawWrapperProps> = ({ projectId, initialData }) => {
 
   const {selectedProject, setSelectedProject} = useMainStore();
-
   const [excalidrawData, setExcalidrawData] = useState(() => {
     try {
       const parsedData = JSON.parse(initialData);
