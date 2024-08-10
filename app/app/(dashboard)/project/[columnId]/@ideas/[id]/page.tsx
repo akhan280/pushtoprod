@@ -10,7 +10,7 @@ export default function IdeasRenderer({ params }: { params: {id: string} }) {
 
     const {selectedProject, setSelectedProject} = useMainStore();
 
-    console.log('[Path rending]', params)
+    console.log('[Path rendering]', params)
 
     if (params.id === "new") {
         return (

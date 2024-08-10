@@ -1,20 +1,15 @@
-"use client"
-import { getSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
+
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./logout-button";
-import useMainStore from "../lib/hooks/use-main-store";
-import { useEffect, useState } from "react";
+import { User } from "../lib/types";
 
-export default async function Profile() {
-  const [id, setId] = useState('')
-  const {user} = useMainStore();
 
-  useEffect(() => {
-    console.log('User', user)
-    setId(user?.site.id)
-  },[user])
+interface ProfileProps {
+  fetchedUser: User;
+}
+
+export default async function Profile({fetchedUser}: ProfileProps) {
 
   return (
     <div className="flex flex-row ml-auto">
@@ -26,10 +21,10 @@ export default async function Profile() {
           src="https://illustrations.popsy.co/gray/timed-out-error.svg"
           width={40}
           height={40}
-          alt={user?.email ?? "User avatar"}
+          alt={fetchedUser?.email ?? "User avatar"}
           className="h-6 w-6 rounded-full"
         />
-        <Link href={`/site/${id}`}>
+        <Link href={`/site/${fetchedUser.site?.id}`}>
           <span className="truncate text-sm font-medium">
             Your Portfolio
           </span>

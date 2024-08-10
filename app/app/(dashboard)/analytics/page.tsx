@@ -34,7 +34,7 @@ export default function Overview() {
             </div>
           }
         >
-          <Sites limit={4} />
+          <Sites />
         </Suspense>
       </div>
 

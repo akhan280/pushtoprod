@@ -352,12 +352,6 @@ const PrismaEditor: React.FC = () => {
         <div ref={mermaidRef}></div>
       </div>
     </div>
-    <div className="h-1/4 overflow-auto bg-black text-white p-2">
-      <h3 className="text-xl mb-2">Debug Log:</h3>
-      {debugLog.map((log, index) => (
-        <p key={index}>{log}</p>
-      ))}
-    </div>
   </div>
   );
 };

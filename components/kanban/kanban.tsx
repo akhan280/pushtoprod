@@ -58,7 +58,7 @@ export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
     console.log('Fetched User', fetchedUser)
     setUser(fetchedUser);
     setProjects(fetchedProjects);
-  }, [fetchedProjects, setProjects]);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

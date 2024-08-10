@@ -3,6 +3,7 @@ import PlaceholderCard from "@/components/placeholder-card";
 import { KanbanBoard } from "../../../components/kanban/kanban";
 import { getProjects, getUser } from "../../../lib/actions";
 import AddProjectDialog from "../../../components/dialog/add-project-dialog";
+import Profile from "../../../components/profile";
 
 export default async function Overview() {
   const response = await getProjects();
@@ -26,6 +27,9 @@ export default async function Overview() {
           }
         >
           <div className="min-h-screen">
+            <div className="flex flex-row ml-auto">
+               <Profile fetchedUser = {data.user!} />
+             </div>
             <KanbanBoard fetchedProjects={projects} fetchedUser = {data.user!} />
             <AddProjectDialog></AddProjectDialog>
           </div>

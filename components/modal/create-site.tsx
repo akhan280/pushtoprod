@@ -23,7 +23,7 @@ interface CreateSiteData {
 export default function CreateSiteModal() {
   const router = useRouter();
   const modal = useModal();
-  const { setSite } = useMainStore();
+  const { setSite, setOnboardingStep } = useMainStore();
 
   const [data, setData] = useState<CreateSiteData>({
     name: "",
@@ -67,12 +67,14 @@ export default function CreateSiteModal() {
         setSite(res)
         
         const { id } = res;
-        router.push(`/site/${id}`);
-
+        
         toast({
           variant: "default",
           title: "Site successfully created",
         });
+
+        setOnboardingStep(4);
+
         }
     })
   };
