@@ -245,7 +245,7 @@ export default function GithubProperty() {
             ) : (
                 <DropdownMenu>
                     <DropdownMenuTrigger>
-                        <Button>
+                        <Button className="flex items-center space-x-2 border  rounded-full px-4 py-2 hover:bg-gray-100">
                             <Image 
                                 src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/technology-logos/github.png?t=2024-08-10T02%3A46%3A23.041Z" 
                                 alt="GitHub Logo" 
