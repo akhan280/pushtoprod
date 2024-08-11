@@ -6,7 +6,8 @@ import { Project, Technology } from "../../../../lib/types";
   
   export interface Social {
     platform: string;
-    url: string;
+    url: string; //mailto: areebkhan280@gmail.com
+    display: boolean;
   }
   
   // Main interfaces
@@ -26,8 +27,6 @@ import { Project, Technology } from "../../../../lib/types";
   }
   
   export interface Contact {
-    phone?: string;
-    email: string;
     socials: Social[];
   }
   

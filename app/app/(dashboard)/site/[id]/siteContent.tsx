@@ -18,11 +18,28 @@ import {
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer } from "../types";
-import { GripVertical } from "lucide-react";
+import { Github, GripVertical, Instagram, Linkedin, Twitter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/plate-ui/avatar";
 import { Input } from "../../../../../components/ui/input";
 import { toast } from "sonner";
 import useMainStore from "../../../../../lib/hooks/use-main-store";
+import { PlateEditor } from "../../../../../components/projects/plate";
+import { Plate, Value } from "@udecode/plate-common";
+import { ELEMENT_PARAGRAPH } from "@udecode/plate-paragraph";
+import { FixedToolbar } from "../../../../../components/ui/plate-ui/fixed-toolbar";
+import { FixedToolbarButtons } from "../../../../../components/ui/plate-ui/fixed-toolbar-buttons";
+import { Editor } from "../../../../../components/ui/plate-ui/editor";
+import { FloatingToolbar } from "../../../../../components/ui/plate-ui/floating-toolbar";
+import { FloatingToolbarButtons } from "../../../../../components/ui/plate-ui/floating-toolbar-buttons";
+import { ELEMENT_H2 } from "@udecode/plate-heading";
+import {
+  plugins,
+} from "@/plateconfig";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd/dist/core";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../components/ui/dialog";
+import { Button } from "../../../../../components/ui/button";
+import { Label } from "../../../../../components/ui/label";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
     const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -106,10 +123,10 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
 
   const isHeader = (content: any): content is Header => 'title' in content;
   const isTextBox = (content: any): content is TextBox => 'content' in content;
-  const isContact = (content: any): content is Contact => 'email' in content;
+  const isContact = (content: any): content is Contact => 'socials' in content;
   const isMedia = (content: any): content is Media[] => Array.isArray(content) && content.every(item => 'href' in item && 'type' in item);
   const isFooter = (content: any): content is Footer => 'quote' in content;
-
+  
   const renderContent = () => {
     switch (section.type) {
       case 'header':
@@ -123,9 +140,12 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
           </div>
         ) : null;
       case "textbox":
-        return isTextBox(section.content) ? <p>{section.content.content}</p> : null;
+        return isTextBox(section.content) ? 
+        <div>
+        <SitePlateEditor handleUpdate={handleUpdate} section={section}></SitePlateEditor></div>: null;
+
       case "contact":
-        return isContact(section.content) ? <div>Contact: {section.content.email}</div> : null;
+        return isContact(section.content) ? <div><ShowContact section={section}></ShowContact><ContactDialog handleUpdate={handleUpdate} section={section}></ContactDialog></div> : null;
       case "projects":
         return <div>Projects: {}</div>;
       case "media":
@@ -245,3 +265,118 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
       </div>
     );
 }
+
+// Combine the editors into a single component with tabs
+
+function SitePlateEditor({handleUpdate, section}: {handleUpdate: (field: string, value: any) => void, section: Section}) {
+
+  const handleEditorChange = async (newValue: Value) => {
+      const serializedValue = JSON.stringify(newValue);
+      console.log('[Editor] Setting data', serializedValue);
+      const data = await handleUpdate('content', serializedValue);
+  };
+
+ const editorInitialValue = [
+  {
+    type: ELEMENT_H2,
+    children: [
+      { text: '🌳 ' },
+      { text: 'Untitled' },
+    ],
+  },
+  {
+    type: ELEMENT_PARAGRAPH,
+    children: [
+      { text: 'Easily create headings of various levels, from H1 to H6, to structure your content and make it more organized.' },
+    ],
+  },
+];
+
+  const deserializedInitialValue: Value = section.content
+    ? JSON.parse((section.content as TextBox).content)
+    : editorInitialValue;
+  
+    console.log("deseerialized", deserializedInitialValue)
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+        <Plate
+          onChange={handleEditorChange}
+          plugins={plugins}
+          initialValue={deserializedInitialValue}
+        >
+
+          <Editor />
+          <FloatingToolbar>
+            <FloatingToolbarButtons />
+          </FloatingToolbar>
+        </Plate>
+    </DndProvider>
+  );
+}
+
+function ShowContact({section}: {section: Section}) {
+    console.log('[ShowContent]', section)
+    return(
+        <div>
+            {(section.content as Contact).socials.map((social, index) => (
+                social.display && (
+                    <a key={index} href={social.url}>
+                        {social.platform}
+                    </a>
+                )
+            ))}
+        </div>
+    )
+}
+
+function ContactDialog({handleUpdate, section}: {handleUpdate: (field: string, value: any) => void, section: Section}) {
+    const [socials, setSocials] = useState((section.content as Contact).socials);
+  
+
+    const handleSocialChange = (index: number, field: 'url' | 'display', value: string | boolean) => {
+        const updatedSocials = socials.map((social, i) => {
+            if (i === index) {
+            return { ...social, [field]: value };
+            }
+            return social;
+        });
+        setSocials(updatedSocials);
+
+
+      handleUpdate('socials', socials);
+    };
+    
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline">Edit Profile</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {socials.map((social, index) => (
+              <div className="grid grid-cols-4 items-center gap-4" key={index}>
+                <Label htmlFor={social.platform} className="text-right">
+                  {social.platform}
+                </Label>
+                <Input
+                  id={social.platform}
+                  value={social.url}
+                  className="col-span-3"
+                  onChange={(e) => handleSocialChange(index, 'url', e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  

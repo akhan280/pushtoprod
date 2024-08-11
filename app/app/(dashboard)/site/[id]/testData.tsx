@@ -112,18 +112,18 @@ const testSiteData: Site = {
       id: 2,
       type: "textbox",
       content: {
-        content: "This is a sample textbox content for testing purposes."
+        content: "[{\"type\":\"h2\",\"children\":[{\"text\":\"🌳 My name is Areeb, I love codin\"}]},{\"type\":\"p\",\"children\":[{\"text\":\"Easily create headings of various levels, from H1 to H6, to structure your content and make it more organized.\"}]},{\"type\":\"blockquote\",\"children\":[{\"text\":\"Create blockquotes to emphasize important information or highlight quotes from external sources.\"}]},{\"type\":\"code_block\",\"children\":[{\"type\":\"code_line\",\"children\":[{\"text\":\"// Use code blocks to showcase code snippets\"}]},{\"type\":\"code_line\",\"children\":[{\"text\":\"function greet() {\"}]},{\"type\":\"code_line\",\"children\":[{\"text\":\"  console.info('Hello World!');\"}]},{\"type\":\"code_line\",\"children\":[{\"text\":\"}\"}]}]},{\"children\":[{\"text\":\"\"}],\"type\":\"p\",\"id\":\"0xi4y\"}]"
       }
     },
     {
       id: 3,
       type: "contact",
       content: {
-        email: testUsers[0].email,
-        phone: "123-456-7890",
         socials: [
-          { platform: "Twitter", url: `https://twitter.com/${testUsers[0].username}` },
-          { platform: "GitHub", url: `https://github.com/${testUsers[0].gh_username}` }
+          { platform: "Email", url: `areebkhan280@gmail.com`, display: true },
+          { platform: "Phone", url: `1-623-745-6654`, display: true },
+          { platform: "Twitter", url: `https://twitter.com/${testUsers[0].username}`, display: true },
+          { platform: "GitHub", url: `https://github.com/${testUsers[0].gh_username}`, display: true }
         ]
       }
     },
