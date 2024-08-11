@@ -43,7 +43,7 @@ export async function updateSession(request: NextRequest, hostname: string, path
         .eq("id", user.id)
         .single();
       
-      console.log('[MIDDLEWARE] User paid status', data?.paid);
+      console.log('[MIDDLEWARE] User paid status', data?.paid, user.id, error);
 
       if (error || !data?.paid) {
         console.log(request.url, hostname);
@@ -54,7 +54,8 @@ export async function updateSession(request: NextRequest, hostname: string, path
     const pathname = path.split('?')[0];
 
     // Case 2: If the user is authenticated, paid, but hasn't done onboarding
-    if (user && pathname !== "/onboarding") {
+    console.log('[MIDDLEWARE] Current Pathname', pathname)
+    if (user && pathname !== "/onboarding" && pathname !== "/checkout") {
       const { data, error } = await supabase
         .from("User")
         .select("email")

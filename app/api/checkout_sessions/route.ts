@@ -10,8 +10,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   const userId = params.get("user_id");
   const action = params.get("action");
+  const redirect_url = params.get("redirect_url")
 
-  console.log('[Checkout-session]', { user_id: userId, action: action });
+  console.log('[Checkout-session]', { user_id: userId, action: action, redirect_url: redirect_url });
 
   let priceId;
   let mode;
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           quantity: 1,
         },
       ],
-      success_url: `${headersList.get("origin")}/onboarding`,
+      success_url: `${headersList.get("origin")}/${redirect_url}`,
       cancel_url: `${headersList.get("origin")}/`,
     };
 

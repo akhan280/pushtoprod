@@ -55,6 +55,8 @@ export function ManagedAI() {
       <form action="/api/checkout_sessions" method="POST">
         <input type="hidden" name="user_id" value={user?.id || ''} />
         <input type="hidden" name="action" value="managed-ai" />
+        <input type="hidden" name="redirect_url" value="onboarding?checkout=true" />
+
         <Button type="submit" role="link" className="bg-blue-500 text-white py-2 px-4 rounded">
           Subscribe Now
         </Button>

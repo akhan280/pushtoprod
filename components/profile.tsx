@@ -24,7 +24,7 @@ export default async function Profile({fetchedUser}: ProfileProps) {
           alt={fetchedUser?.email ?? "User avatar"}
           className="h-6 w-6 rounded-full"
         />
-        <Link href={`/site/${fetchedUser.site?.id}`}>
+        <Link href={`/site/${fetchedUser.siteId}`}>
           <span className="truncate text-sm font-medium">
             Your Portfolio
           </span>

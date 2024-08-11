@@ -10,6 +10,7 @@ import {
 import { RocketIcon } from "lucide-react";
 import Image from "next/image";
 import logo from "../../../../public/logo.png";
+import { useEffect } from "react";
 
 interface OnboardingLayoutProps {
   survey: React.ReactNode;
@@ -26,9 +27,10 @@ export default function OnboardingLayout({
   enableAI,
   complete,
 }: OnboardingLayoutProps) {
-  const { onboardingStep } = useMainStore();
+  const { onboardingStep, setOnboardingStep } = useMainStore();
   const searchParams = useSearchParams();
   const returning = searchParams.get("redirect");
+  const checkout = searchParams.get("checkout");
 
   const tabs = [
     { id: 0, name: "Get Started", component: getStarted },
@@ -37,6 +39,12 @@ export default function OnboardingLayout({
     { id: 3, name: "Portfolio Setup", component: portfolioSetup },
     { id: 4, name: "Complete", component: complete },
   ];
+
+  useEffect(()=> {
+    if (checkout) {
+      setOnboardingStep(3)
+    }
+  },[])
 
   // If onboardingStep is 4, only show the complete component
   if (onboardingStep === 4) {

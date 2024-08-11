@@ -224,9 +224,6 @@ export const getUser = async () => {
       where: {
         id: session.id,
       },
-      include: {
-        site: true,
-      },
     });
 
     if (!user) {
@@ -404,7 +401,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
                 updatedAt: true,
                 paid: true,
                 siteReferral: true,
-                site: true,
+                siteId: true,
               },
             },
           },
@@ -428,7 +425,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
-          site: collaborator.user.site!,
+          siteId: collaborator.user.siteId ?? '',
           siteReferral: collaborator.user.siteReferral ?? [],
         }
       })),
@@ -488,7 +485,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
                 updatedAt: true,
                 paid: true,
                 siteReferral: true,
-                site: true,
+                siteId: true,
               },
             },
           },
@@ -517,7 +514,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
           createdAt: collaborator.user.createdAt,
           updatedAt: collaborator.user.updatedAt,
           paid: collaborator.user.paid,
-          site: collaborator.user.site!,
+          siteId: collaborator.user.siteId ?? ``,
           siteReferral: collaborator.user.siteReferral,
         },
       })),

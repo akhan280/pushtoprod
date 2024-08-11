@@ -11,9 +11,10 @@ export type User = {
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
-  siteReferral: string[] | null; 
+  siteReferral: string[]; 
   paid: boolean;
-  site: Site | null
+  siteId: string | null;
+  managedAI: boolean;
 }
 
 export type Technology = {

@@ -1,58 +1,114 @@
 import { StateCreator } from 'zustand';
 import { Site } from '@prisma/client';
-import { updateSite } from '../site-actions';
+import { updateSite, updateSiteJSON } from '../site-actions';
+import { LocalSiteData, Section } from '../../app/app/(dashboard)/site/types';
 
 type SiteStore = {
-    site: Site
+    site: Site | null,
+    localSite: LocalSiteData | null
 };
 
 type SiteActions = {
     setSite: (site: Site) => void;
-  setSiteProperty: <K extends keyof Site>(key: K, value: Site[K], siteId: string) => Promise<string>;
+    setLocalSiteData: (data: LocalSiteData) => void;
+    updateSection: (sectionId: number, updates: Partial<Section>) => Promise<any>;
+    moveSection: (oldIndex: number, newIndex: number) => void;
+    addSection: (newSection: Section) => void;
+    removeSection: (sectionId: number) => void;
 };
 
 export type SiteSlice = SiteStore & SiteActions;
 
 export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
-    site: {
-        id: '',
-        name: null,
-        description: null,
-        logo: null,
-        font: '',
-        image: null,
-        imageBlurhash: null,
-        subdomain: null,
-        customDomain: null,
-        message404: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        userId: null,
-    },
+    site: null,
+    localSite: null,
 
     setSite: (site: Site) => {
         console.log('[Site Store] Setting', site)
         set({site: site})
     },
 
-  setSiteProperty: async <K extends keyof Site>(key: K, value: Site[K]) => {
-    console.log(`Changing ${key} to ${value} for site ${get().site.id}`);
+    setLocalSiteData: (data) => set({ localSite: data }),
+  
+    updateSection: async (sectionId, updates) => {
+      const state = get();
+      if (!state.localSite) {
+          throw new Error('No local site data');
+      }
 
-    const formData = new FormData();
-    formData.append(key, value as string); // Assuming `value` is a string, adjust if necessary
-    
-    try {
-      const data = await updateSite(formData, get().site, key);
+      const updatedSections = state.localSite.parsedSections.map(section =>
+          section.id === sectionId ? { ...section, ...updates } : section
+      );
 
-      set((state) => ({
-        ...state,
-        [key]: value,
-      }));
+      console.log('[SITE SLICE] Updating Section', updates)
+      const updatedLocalSite = {
+          ...state.localSite,
+          parsedSections: updatedSections
+      };
 
-      return "success";
-    } catch (error) {
-      console.error(`Error updating site property ${key}:`, error);
-      throw error;
-    }
+      set({ localSite: updatedLocalSite });
+      // console.log('[SITE SLICE] Updated Section', get().localSite)
+
+
+      try {
+        console.log('entering')
+          const site = await updateSiteJSON({
+              ...updatedLocalSite,
+              sections: JSON.stringify(updatedSections)
+          });
+         
+          return {
+            ...state,
+            localSite: {
+              ...state.localSite,
+              parsedSections: updatedSections
+            }
+          };
+          
+      } catch (error) {
+          console.error('Failed to update site:', error);
+          throw error;
+      }
   },
+  
+  
+    moveSection: (oldIndex, newIndex) => set((state) => {
+      if (!state.localSite) return state;
+  
+      const sections = [...state.localSite.parsedSections];
+      const [movedSection] = sections.splice(oldIndex, 1);
+      sections.splice(newIndex, 0, movedSection);
+  
+      return {
+        ...state,
+        localSite: {
+          ...state.localSite,
+          parsedSections: sections
+        }
+      };
+    }),
+  
+    addSection: (newSection) => set((state) => {
+      if (!state.localSite) return state;
+  
+      return {
+        ...state,
+        localSite: {
+          ...state.localSite,
+          parsedSections: [...state.localSite.parsedSections, newSection]
+        }
+      };
+    }),
+  
+    removeSection: (sectionId) => set((state) => {
+      if (!state.localSite) return state;
+  
+      return {
+        ...state,
+        localSite: {
+          ...state.localSite,
+          parsedSections: state.localSite.parsedSections.filter(section => section.id !== sectionId)
+        }
+      };
+    }),
 });

@@ -86,9 +86,8 @@ export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
           <ButtonLoading />
         </div>
       )}
-      
       <>
-      <AddNewProject></AddNewProject>
+      <AddNewProject/>
       <BoardContainer>
         <SortableContext items={columnsId}>
           {columns

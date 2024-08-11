@@ -1,7 +1,7 @@
 "use server"
 import prisma from "@/lib/prisma";
 import { Post, Site } from "@prisma/client";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { withPostAuth, withSiteAuth } from "./auth";
 import { getSession } from "@/lib/auth";
 import {
@@ -14,11 +14,40 @@ import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Project } from "./types";
+import { LocalSiteData } from "../app/app/(dashboard)/site/types";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
   7,
 );
+
+
+export async function updateSiteJSON(siteData: LocalSiteData & { sections: string }) {
+  console.log(`[SERVER ACTION] Updating Site log`, siteData)
+  try {
+    const updatedSite = await prisma.site.update({
+      where: { id: siteData.id },
+      data: {
+        name: siteData.name,
+        description: siteData.description,
+        logo: siteData.logo,
+        font: siteData.font,
+        image: siteData.image,
+        imageBlurhash: siteData.imageBlurhash,
+        subdomain: siteData.subdomain,
+        customDomain: siteData.customDomain,
+        message404: siteData.message404,
+        sections: siteData.sections 
+      }
+    });
+
+    revalidatePath(`/site/${siteData.id}`);
+    return { success: true, site: updatedSite };
+  } catch (error) {
+    console.error('Failed to update site:', error);
+    return { success: false, error: 'Failed to update site' };
+  }
+}
 
 export const createSite = async (formData: FormData) => {
   console.log("[Server Action] Starting createSite function.");
@@ -55,6 +84,15 @@ export const createSite = async (formData: FormData) => {
         },
       },
     });
+
+    const data = await prisma.user.update({
+      where: {
+        id: session.id
+      },
+      data: {
+        siteId: response.id
+      }
+    })
 
     console.log("[Server Action] Site created successfully:", response);
 

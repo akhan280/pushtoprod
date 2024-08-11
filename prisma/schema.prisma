@@ -24,6 +24,7 @@ model User {
   posts        Post[]
   projects     ProjectCollaborator[]
   site         Site?
+  siteId       String?
 }
 
 model Account {
@@ -104,6 +105,7 @@ model Site {
   updatedAt     DateTime @updatedAt
   userId        String   @unique
   posts         Post[]
+  sections      Json?     @default("{}")
   user          User     @relation(fields: [userId], references: [id])
 
   @@index([userId])

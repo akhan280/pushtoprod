@@ -52,6 +52,8 @@ export default function CheckoutPage() {
         <form action="/api/checkout_sessions" method="POST">
           <input type="hidden" name="user_id" value={user?.id || ''} />
           <input type="hidden" name="action" value={"license"} />
+          <input type="hidden" name="redirect_url" value={"onboarding"} />
+
           <Button type="submit" role="link" className="max-w-xs rounded-2xl">Get License</Button>
         </form>
       </div>
