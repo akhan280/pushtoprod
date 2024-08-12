@@ -97,6 +97,7 @@
     "cytoscape": "^3.30.2",
     "date-fns": "^2.30.0",
     "elkjs": "^0.9.3",
+    "embla-carousel-react": "^8.1.8",
     "emblor": "^1.4.4",
     "focus-trap-react": "^10.2.3",
     "framer-motion": "^10.16.4",

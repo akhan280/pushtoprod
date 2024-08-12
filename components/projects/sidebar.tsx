@@ -41,7 +41,7 @@ export default function Sidebar() {
 
             <div className="flex justify-between items-center">
               Technologies
-              <TechnologiesContext variant="icon" technologies={selectedProject.technologies}></TechnologiesContext>
+              {/* <TechnologiesContext variant="icon" technologies={selectedProject?.technologies}></TechnologiesContext> */}
             </div>
             <div className="flex justify-between items-center">
               <span>Dates</span>

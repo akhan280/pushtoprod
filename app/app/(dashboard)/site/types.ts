@@ -9,12 +9,14 @@ import { Project, Technology } from "../../../../lib/types";
     url: string; //mailto: areebkhan280@gmail.com
     display: boolean;
   }
+
+
   
   // Main interfaces
   export interface Section {
     id: number;
     type: 'header' | 'textbox' | 'contact' | 'projects' | 'media' | 'footer';
-    content: Header | TextBox | Contact | SiteProjects | Media[] | Footer;
+    content: Header | TextBox | Contact | SiteProjects | Media | Footer;
   }
   
   export interface Header {
@@ -36,11 +38,17 @@ import { Project, Technology } from "../../../../lib/types";
     writing: WritingProject[];
     ideas: Project[];
   }
-  
-  export interface Media {
+
+  export interface MediaItem {
     href: string;
     type: 'image' | 'video';
     alt?: string;
+    
+  }
+  
+  export interface Media {
+    mediaItems: MediaItem[];
+    
   }
   
   export interface Footer {

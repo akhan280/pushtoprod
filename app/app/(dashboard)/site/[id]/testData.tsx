@@ -134,20 +134,22 @@ const testSiteData: Site = {
         projects: testProjects
       }
     },
+    
     {
       id: 5,
       type: "media",
-      content: [
+      content: {
+        mediaItems: [
         {
           href: "https://example.com/image1.jpg",
           type: "image",
-          alt: "Test Image 1"
         },
         {
           href: "https://example.com/video1.mp4",
           type: "video"
         }
       ]
+      }
     },
     {
       id: 6,

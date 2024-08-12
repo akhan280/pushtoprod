@@ -26,7 +26,7 @@ export default async function SitePosts({
 
   const siteJson = JSON.parse(data!.sections as string);
   const siteData: LocalSiteData = {
-    ...data!,
+    ...data!, 
     parsedSections: siteJson as Section[]
   };
 

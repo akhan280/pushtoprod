@@ -43,7 +43,7 @@ export async function updateSession(request: NextRequest, hostname: string, path
         .eq("id", user.id)
         .single();
       
-      console.log('[MIDDLEWARE] User paid status', data?.paid, user.id, error);
+      console.log('[MIDDLEWARE] User paid status', data?.paid, user.id, user.email, error);
 
       if (error || !data?.paid) {
         console.log(request.url, hostname);
