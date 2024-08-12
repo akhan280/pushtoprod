@@ -17,8 +17,8 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer, MediaItem } from "../types";
-import { Github, GripVertical, Instagram, Linkedin, Twitter } from "lucide-react";
+import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer, MediaItem, SiteProjects } from "../types";
+import { Github, GripVertical, Instagram, Linkedin, Sparkles, Twitter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/plate-ui/avatar";
 import { Input } from "../../../../../components/ui/input";
 import { toast } from "sonner";
@@ -42,6 +42,7 @@ import { Button } from "../../../../../components/ui/button";
 import { Label } from "../../../../../components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import { MultiSelect } from "../../../../../components/ui/multi-select-dropdown";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -150,23 +151,10 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
       case "contact":
         return isContact(section.content) ? <div><ShowContact section={section}></ShowContact><ContactDialog handleUpdate={handleUpdate} section={section}></ContactDialog></div> : null;
       case "projects":
-        return <div>Projects: { }</div>;
+        return <div><ProjectsDisplay section={section}></ProjectsDisplay></div>;
       case "media":
         console.log("sec", section.content)
         return isMedia(section.content) ? (
-          
-          // <div>
-          //   Media:
-          //   {section.content.map((item, index) => (
-          //     <div key={index}>
-          //       {item.type === 'image' ? (
-          //         <img src={item.href} alt={item.alt || ''} />
-          //       ) : (
-          //         <video src={item.href} />
-          //       )}
-          //     </div>
-          //   ))}
-          // </div>
           <MediaCarousel section={section} handleUpdate={handleUpdate}></MediaCarousel>
         ) : null;
       case "footer":
@@ -270,6 +258,58 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
       {uploading && <span>Uploading...</span>}
     </div>
   );
+}
+
+function ProjectsDisplay({section}: {section: Section}) {
+    
+    const frameworksList = [
+        { value: "ideas", label: "ideas", icon: Sparkles },
+        { value: "development", label: "development", icon: Sparkles },
+        { value: "launches", label: "launches", icon: Sparkles },
+        { value: "writing", label: "writing", icon: Sparkles },
+      ];
+
+    // iterate through projects
+    useEffect(() => {
+        const content = (section.content as { projects: SiteProjects }).projects;
+        const presentSections = frameworksList.map(framework => {
+            // console.log('Section Content', framework)
+            const column = framework.value
+            // console.log('Column Content', column)
+            const sectionContent = content[framework.value as keyof SiteProjects];
+            if (sectionContent.length > 0) {
+                console.log('returning value', framework.value)
+                return framework.value as string
+            } else {
+                return ""
+            }
+          })
+        const cleanedDefaultValue = presentSections.filter((value) => value.trim() !== '');
+
+        console.log('[Present Selections]', cleanedDefaultValue)
+        setSelectedSections(cleanedDefaultValue as string[])
+      }, []);
+
+      const [selectedSections, setSelectedSections] = useState<string[]>([]);
+
+    return (
+        <div className="grid grid-cols-3">
+        <MultiSelect
+            options={frameworksList}
+            onValueChange={setSelectedSections}
+            value={selectedSections}
+            placeholder="Select frameworks"
+            variant="inverted"
+            animation={2}
+            maxCount={3}
+        /> 
+        {selectedSections.map((selection, index) => (
+            <div key={index}>hi</div>
+        ))}
+         
+        </div>
+
+    )
 }
 
 // Combine the editors into a single component with tabs

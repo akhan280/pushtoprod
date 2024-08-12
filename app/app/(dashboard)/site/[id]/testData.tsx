@@ -1,6 +1,6 @@
 import { Site } from "@prisma/client";
 import { Collaborator, Project, Technology, User } from "../../../../../lib/types";
-import { LocalSiteData, Section } from "../types";
+import { LocalSiteData, Section, SiteProjects } from "../types";
 
 
 const testUsers: User[] = [
@@ -58,32 +58,12 @@ const testCollaborators: Collaborator[] = [
   }
 ];
 
-const testProjects: Project[] = [
-  {
-    id: "proj1",
-    title: "Test Project 1",
-    description: "A sample project for testing purposes",
-    tags: ["web", "frontend"],
-    collaborators: testCollaborators,
-    technologies: testTechnologies,
-    mermaidSchema: "graph TD; A-->B; B-->C; C-->D;",
-    githuburl: "https://github.com/test/project1",
-    websiteurl: "https://testproject1.com",
-    columnId: "column1"
-  },
-  {
-    id: "proj2",
-    title: "Test Project 2",
-    description: "Another sample project for testing",
-    tags: ["mobile", "app"],
-    collaborators: [testCollaborators[0]],
-    technologies: [testTechnologies[0]],
-    mermaidSchema: null,
-    githuburl: "https://github.com/test/project2",
-    websiteurl: null,
-    columnId: "column2"
-  }
-];
+const testProjects: SiteProjects = {
+  development: ['id1, id2'],
+  launches: ['id2, id3'],
+  writing: [],
+  ideas: [],  
+}
 
 const testSiteData: Site = {
   id: "clzp555ph00004dblukv42fw6",

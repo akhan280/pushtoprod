@@ -36,7 +36,10 @@ export type Project = {
   websiteurl: string | null; 
   columnId: string;
   textEditor?: any;
+  display: boolean | null;
   excalidrawEditor?: any;
+  productHuntRank?: number;
+  launchDate: Date;
 }
 
 export type Collaborator =  {
