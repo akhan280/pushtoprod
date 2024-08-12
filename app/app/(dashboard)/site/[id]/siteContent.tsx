@@ -170,7 +170,7 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
           <MediaCarousel section={section} handleUpdate={handleUpdate}></MediaCarousel>
         ) : null;
       case "footer":
-        return isFooter(section.content) ? <footer>{section.content.quote}</footer> : null;
+        return isFooter(section.content) ?  <FooterDialog section={section} handleUpdate={handleUpdate}/> : null;
       default:
         return null;
     }
@@ -564,3 +564,40 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
 }
 
 export default MediaCarousel;
+
+
+function FooterDialog({ handleUpdate, section }: { handleUpdate: (field: string, value: any) => void, section: Section }) {
+  const [footer, setFooter] = useState((section.content as Footer).quote)
+
+  const handleFooterChange = async (newValue: string) => {
+    setFooter(newValue)
+    handleUpdate('quote', newValue);
+  };
+
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Edit Footer</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit Footer</DialogTitle>
+          <DialogDescription>
+            Make changes to footer
+          </DialogDescription>
+        </DialogHeader>
+        
+          <Input
+            id={footer}
+            value={footer}
+            className="col-span-3"
+            onChange={(e) => handleFooterChange(e.target.value)}
+          />
+           
+
+      </DialogContent>
+    </Dialog>
+  );
+}
+
