@@ -260,6 +260,7 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<{ proje
         id: true,
         title: true,
         description: true,
+        columnId: true,
       },
     });
 

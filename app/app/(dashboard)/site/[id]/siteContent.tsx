@@ -270,8 +270,6 @@ function ProjectsDisplay({ section }: { section: Section }) {
     { value: "writing", label: "writing", icon: Sparkles },
   ];
 
-
-
   // iterate through projects
   useEffect(() => {
     const content = (section.content as { projects: SiteProjects }).projects;
@@ -288,7 +286,6 @@ function ProjectsDisplay({ section }: { section: Section }) {
         return { section: framework.value, ids: sectionContent ? sectionContent : [] }; //had to add here, ideally make section content length null on line 281
 
       } else {
-        //return ""
         return { section: "", ids: [] };
       }
     })
@@ -301,8 +298,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
 
   // const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
-  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string }[]>([]);
-
+  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
 
   // const [selectedProjects, setSelectedProjects] = useState<{ id: string; title: string | null; description: string | null }[]>([]);
 
@@ -320,42 +316,47 @@ function ProjectsDisplay({ section }: { section: Section }) {
     fetchProjectDetails();
   }, [selectedProjects]);
 
+  const renderProjectsForSection = (sectionName: string) => {
+    const sectionProjects = projectDetails.filter(project => 
+      selectedProjects.find(sp => sp.section === sectionName)?.ids.includes(project.id)
+    );
 
-
+    return (
+      <div>
+        <h3>{sectionName}</h3>
+        {sectionProjects.map((project, index) => (
+          <div key={index}>
+            <strong>Title:</strong> {project.title}
+            <br />
+            <strong>Description:</strong> {project.description}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
+    <div className="flex flex-col">
+    <MultiSelect
+    options={frameworksList}
+    onValueChange={setSelectedProjects}
+    value={selectedProjects}
+    placeholder="Select frameworks"
+    variant="default"
+    className="max-w-[30px]"
+    animation={2}
+    maxCount={3}
+  />
     <div className="grid grid-cols-3">
-      <MultiSelect
-        options={frameworksList}
-        onValueChange={setSelectedProjects}
-        value={selectedProjects}
-        placeholder="Select frameworks"
-        variant="default"
-        animation={2}
-        maxCount={3}
-      />
-      {/* {selectedProjects.map((selection, index) => (
-        <div key={index}>
-          <strong>Section:</strong> {selection.section}
-          <br />
-          <strong>IDs:</strong>
-          <ul>
-            {selection.ids.map((id, idIndex) => (
-              <li key={idIndex}>{id}</li>
-            ))}
-          </ul>
-        </div>
-      ))} */}
-      {projectDetails.map((project, index) => (
-        <div key={index}>
-          <strong>Title:</strong> {project.title}
-          <br />
-          <strong>Description:</strong> {project.description}
-        </div>
-      ))}
-
+       <div className="grid grid-cols-4 gap-4">
+        {selectedProjects.map((selectedProject) => (
+          <div key={selectedProject.section}>
+            {renderProjectsForSection(selectedProject.section)}
+          </div>
+        ))}
+      </div>
     </div>
-
+    </div>
   )
 }
 
