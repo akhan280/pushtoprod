@@ -43,6 +43,7 @@ import { Label } from "../../../../../components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { MultiSelect } from "../../../../../components/ui/multi-select-dropdown";
+import { getMultipleProjects } from "@/lib/site-actions";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -128,7 +129,7 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
   const isTextBox = (content: any): content is TextBox => 'content' in content;
   const isContact = (content: any): content is Contact => 'socials' in content;
   const isMedia = (content: any): content is Media => 'mediaItems' in content;
-    // Array.isArray(content) && content.every(item => 'href' in item && 'type' in item);
+  // Array.isArray(content) && content.every(item => 'href' in item && 'type' in item);
   const isFooter = (content: any): content is Footer => 'quote' in content;
 
   const renderContent = () => {
@@ -158,7 +159,7 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
           <MediaCarousel section={section} handleUpdate={handleUpdate}></MediaCarousel>
         ) : null;
       case "footer":
-        return isFooter(section.content) ?  <FooterDialog section={section} handleUpdate={handleUpdate}/> : null;
+        return isFooter(section.content) ? <FooterDialog section={section} handleUpdate={handleUpdate} /> : null;
       default:
         return null;
     }
@@ -260,56 +261,102 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
   );
 }
 
-function ProjectsDisplay({section}: {section: Section}) {
+function ProjectsDisplay({ section }: { section: Section }) {
+
+  const frameworksList = [
+    { value: "ideas", label: "ideas", icon: Sparkles },
+    { value: "development", label: "development", icon: Sparkles },
+    { value: "launches", label: "launches", icon: Sparkles },
+    { value: "writing", label: "writing", icon: Sparkles },
+  ];
+
+
+
+  // iterate through projects
+  useEffect(() => {
+    const content = (section.content as { projects: SiteProjects }).projects;
+    const presentSections = frameworksList.map(framework => {
+      // console.log('Section Content', framework)
+      const column = framework.value
+      // console.log('Column Content', column)
+      const sectionContent = content[framework.value as keyof SiteProjects];
+      if (sectionContent.length > 0) {
+        console.log('returning value', framework.value)
+        console.log('section content', sectionContent)
+
+        // return framework.value as string
+        return { section: framework.value, ids: sectionContent ? sectionContent : [] }; //had to add here, ideally make section content length null on line 281
+
+      } else {
+        //return ""
+        return { section: "", ids: [] };
+      }
+    })
     
-    const frameworksList = [
-        { value: "ideas", label: "ideas", icon: Sparkles },
-        { value: "development", label: "development", icon: Sparkles },
-        { value: "launches", label: "launches", icon: Sparkles },
-        { value: "writing", label: "writing", icon: Sparkles },
-      ];
+    // const cleanedDefaultValue = presentSections.map(item => item.section).filter(value => value.trim() !== '');
 
-    // iterate through projects
-    useEffect(() => {
-        const content = (section.content as { projects: SiteProjects }).projects;
-        const presentSections = frameworksList.map(framework => {
-            // console.log('Section Content', framework)
-            const column = framework.value
-            // console.log('Column Content', column)
-            const sectionContent = content[framework.value as keyof SiteProjects];
-            if (sectionContent.length > 0) {
-                console.log('returning value', framework.value)
-                return framework.value as string
-            } else {
-                return ""
-            }
-          })
-        const cleanedDefaultValue = presentSections.filter((value) => value.trim() !== '');
+    console.log('[Present Selections]', presentSections)
+    setSelectedProjects(presentSections)
+  }, [section]);
 
-        console.log('[Present Selections]', cleanedDefaultValue)
-        setSelectedSections(cleanedDefaultValue as string[])
-      }, []);
+  // const [selectedSections, setSelectedSections] = useState<string[]>([]);
+  const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
+  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string }[]>([]);
 
-      const [selectedSections, setSelectedSections] = useState<string[]>([]);
 
-    return (
-        <div className="grid grid-cols-3">
-        <MultiSelect
-            options={frameworksList}
-            onValueChange={setSelectedSections}
-            value={selectedSections}
-            placeholder="Select frameworks"
-            variant="inverted"
-            animation={2}
-            maxCount={3}
-        /> 
-        {selectedSections.map((selection, index) => (
-            <div key={index}>hi</div>
-        ))}
-         
+  // const [selectedProjects, setSelectedProjects] = useState<{ id: string; title: string | null; description: string | null }[]>([]);
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      const allIds = selectedProjects.flatMap(project => project.ids);
+      if (allIds.length > 0) {
+        const { projects, error } = await getMultipleProjects(allIds);
+        if (!error) {
+          setProjectDetails(projects);
+        }
+      }
+    };
+
+    fetchProjectDetails();
+  }, [selectedProjects]);
+
+
+
+
+  return (
+    <div className="grid grid-cols-3">
+      <MultiSelect
+        options={frameworksList}
+        onValueChange={setSelectedProjects}
+        value={selectedProjects}
+        placeholder="Select frameworks"
+        variant="default"
+        animation={2}
+        maxCount={3}
+      />
+      {/* {selectedProjects.map((selection, index) => (
+        <div key={index}>
+          <strong>Section:</strong> {selection.section}
+          <br />
+          <strong>IDs:</strong>
+          <ul>
+            {selection.ids.map((id, idIndex) => (
+              <li key={idIndex}>{id}</li>
+            ))}
+          </ul>
         </div>
+      ))} */}
+      {projectDetails.map((project, index) => (
+        <div key={index}>
+          <strong>Title:</strong> {project.title}
+          <br />
+          <strong>Description:</strong> {project.description}
+        </div>
+      ))}
 
-    )
+    </div>
+
+  )
 }
 
 // Combine the editors into a single component with tabs
@@ -427,31 +474,6 @@ function ContactDialog({ handleUpdate, section }: { handleUpdate: (field: string
 }
 
 
-// function MediaCarousel({ handleUpdate, section }: { handleUpdate: (field: string, value: any) => void, section: Section }) {
-//   return (
-//     <Carousel className="w-full max-w-sm">
-//   <CarouselContent className="-ml-1">
-//     {Array.from({ length: 5 }).map((_, index) => (
-//       <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
-//         <div className="p-1">
-//           <Card>
-//             <CardContent className="flex aspect-square items-center justify-center p-6">
-//               <span className="text-2xl font-semibold">{index + 1}</span>
-//             </CardContent>
-//           </Card>
-//         </div>
-//       </CarouselItem>
-//     ))}
-//   </CarouselContent>
-//   <CarouselPrevious />
-//   <CarouselNext />
-// </Carousel>
-
-
-//   );
-
-// }
-
 
 interface MediaCarouselProps {
   handleUpdate: (field: string, value: any) => void;
@@ -489,18 +511,18 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
 
       if (response.ok) {
         const { url } = await response.json();
-        const newMediaItem: MediaItem = { 
-          href: url, 
-          type: file.type.startsWith('image/') ? 'image' : 'video' 
+        const newMediaItem: MediaItem = {
+          href: url,
+          type: file.type.startsWith('image/') ? 'image' : 'video'
         };
 
-        console.log("[URL]: " , url);
+        console.log("[URL]: ", url);
         const updatedMediaItems = [...mediaItems, newMediaItem];
 
         console.log("updated", updatedMediaItems)
 
         setMediaItems(updatedMediaItems);
-        handleUpdate('mediaItems', updatedMediaItems );
+        handleUpdate('mediaItems', updatedMediaItems);
 
         console.log("updatedpt2", updatedMediaItems)
         toast.success("File uploaded successfully!");
@@ -527,73 +549,73 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
       AF
       <Carousel className="w-full max-w-sm">
         <CarouselContent className="-ml-1">
-        
-{mediaItems.length > 0 ? (
-  <>
-    {mediaItems.map((mediaItem, index) => (
-      <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
-        <div className="p-1">
-          <Card>
-            <CardContent className="flex aspect-square items-center justify-center p-6">
-              {mediaItem.type === 'image' ? (
-                <img
-                  src={mediaItem.href}
-                  alt={mediaItem.alt || 'Image'}
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                <video
-                  src={mediaItem.href}
-                  className="object-cover w-full h-full"
-                  controls
-                />
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </CarouselItem>
-    ))}
-    <CarouselItem className="pl-1 md:basis-1/2 lg:basis-1/3">
-      <div className="p-1">
-        <Card>
-          <CardContent className="flex aspect-square items-center justify-center p-6">
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-              disabled={uploading}
-              accept="image/*,video/*"
-            />
-            <button onClick={handleAddMediaClick} disabled={uploading} className="text-2xl font-semibold">
-              + Add Media
-            </button>
-          </CardContent>
-        </Card>
-      </div>
-    </CarouselItem>
-  </>
-) : (
-  <CarouselItem className="pl-1">
-    <div className="p-1">
-      <Card>
-        <CardContent className="flex aspect-square items-center justify-center p-6">
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
-            disabled={uploading}
-            accept="image/*,video/*"
-          />
-          <button onClick={handleAddMediaClick} disabled={uploading} className="text-2xl font-semibold">
-            + Add Media
-          </button>
-        </CardContent>
-      </Card>
-    </div>
-  </CarouselItem>
-)}
+
+          {mediaItems.length > 0 ? (
+            <>
+              {mediaItems.map((mediaItem, index) => (
+                <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card>
+                      <CardContent className="flex aspect-square items-center justify-center p-6">
+                        {mediaItem.type === 'image' ? (
+                          <img
+                            src={mediaItem.href}
+                            alt={mediaItem.alt || 'Image'}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <video
+                            src={mediaItem.href}
+                            className="object-cover w-full h-full"
+                            controls
+                          />
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+              <CarouselItem className="pl-1 md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        disabled={uploading}
+                        accept="image/*,video/*"
+                      />
+                      <button onClick={handleAddMediaClick} disabled={uploading} className="text-2xl font-semibold">
+                        + Add Media
+                      </button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            </>
+          ) : (
+            <CarouselItem className="pl-1">
+              <div className="p-1">
+                <Card>
+                  <CardContent className="flex aspect-square items-center justify-center p-6">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      disabled={uploading}
+                      accept="image/*,video/*"
+                    />
+                    <button onClick={handleAddMediaClick} disabled={uploading} className="text-2xl font-semibold">
+                      + Add Media
+                    </button>
+                  </CardContent>
+                </Card>
+              </div>
+            </CarouselItem>
+          )}
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
@@ -627,14 +649,14 @@ function FooterDialog({ handleUpdate, section }: { handleUpdate: (field: string,
             Make changes to footer
           </DialogDescription>
         </DialogHeader>
-        
-          <Input
-            id={footer}
-            value={footer}
-            className="col-span-3"
-            onChange={(e) => handleFooterChange(e.target.value)}
-          />
-           
+
+        <Input
+          id={footer}
+          value={footer}
+          className="col-span-3"
+          onChange={(e) => handleFooterChange(e.target.value)}
+        />
+
 
       </DialogContent>
     </Dialog>

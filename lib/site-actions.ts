@@ -239,6 +239,55 @@ export const updateSite = async (formData: FormData, site: Site, key: string) =>
     }
   }
 
+  
+export const getMultipleProjects = async (projectIds: string[]): Promise<{ projects: { id: string; title: string; description: string }[], error: string | null }> => {
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      projects: [],
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        id: {
+          in: projectIds,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+      },
+    });
+
+    const transformedProjects = projects.map(project => ({
+      id: project.id,
+      title: project.title || "Untitled",
+      description: project.description || "description",
+    }));
+
+    return {
+      projects: transformedProjects,
+      error: null,
+    };
+
+  } catch (error: unknown) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        projects: [],
+        error: error.message,
+      };
+    }
+    return {
+      projects: [],
+      error: "An unexpected error occurred",
+    };
+  }
+};
+
 // export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
 //   try {
 //     const response = await prisma.site.delete({

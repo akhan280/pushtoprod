@@ -545,6 +545,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
 };
 
 
+
 export const updateEditor = async (editor: any, projectId: string) => {
   console.log("[COL ID] is:", projectId);
 

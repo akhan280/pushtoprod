@@ -59,8 +59,8 @@ const testCollaborators: Collaborator[] = [
 ];
 
 const testProjects: SiteProjects = {
-  development: ['id1, id2'],
-  launches: ['id2, id3'],
+  development: ['b3446c76-06ca-4798-bb46-85ecaa1f7fe6'],
+  launches: ['b3446c76-06ca-4798-bb46-85ecaa1f7fe6'],
   writing: [],
   ideas: [],  
 }
