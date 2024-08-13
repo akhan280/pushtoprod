@@ -90,6 +90,9 @@ export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSit
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={localSite.parsedSections.map((section) => section.id)}>
+        <div className="flex flex-col justify-center items-center">
+          <div>
+
         {localSite.parsedSections.map((section) => (
           <SectionComponent
             key={section.id}
@@ -97,6 +100,8 @@ export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSit
             isOver={activeId === section.id}
           />
         ))}
+                  </div>
+        </div>
       </SortableContext>
       <DragOverlay>
         {activeId ? (
@@ -296,19 +301,30 @@ function ProjectsDisplay({ section }: { section: Section }) {
     setSelectedProjects(presentSections)
   }, [section]);
 
-  // const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
   const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
-
-  // const [selectedProjects, setSelectedProjects] = useState<{ id: string; title: string | null; description: string | null }[]>([]);
+  const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
       const allIds = selectedProjects.flatMap(project => project.ids);
       if (allIds.length > 0) {
-        const { projects, error } = await getMultipleProjects(allIds);
+        const { projects, hiddenProjectsCount, error } = await getMultipleProjects(allIds);
         if (!error) {
           setProjectDetails(projects);
+
+          const selectedHiddenCounts = selectedProjects.reduce((acc, project) => {
+            if (hiddenProjectsCount[project.section] !== undefined) {
+              acc[project.section] = hiddenProjectsCount[project.section];
+            }
+            return acc;
+          }, {} as { [key: string]: number });
+
+          setHiddenProjectCounts(selectedHiddenCounts);
+          
+          console.log(`[Hidden Counts from API]`, hiddenProjectsCount);
+          console.log(`[Selected Hidden Counts]`, selectedHiddenCounts);
+
         }
       }
     };
@@ -321,9 +337,25 @@ function ProjectsDisplay({ section }: { section: Section }) {
       selectedProjects.find(sp => sp.section === sectionName)?.ids.includes(project.id)
     );
 
+    console.log('HIdden counts', sectionName, hiddenCounts[sectionName as string])
+
     return (
-      <div>
-        <h3>{sectionName}</h3>
+      <div className="p-12">
+          <div className="flex flex-row">
+            <div>{sectionName}</div>
+            <MultiSelect
+              options={frameworksList}
+              onValueChange={setSelectedProjects}
+              value={selectedProjects}
+              placeholder="Select frameworks"
+              variant="default"
+              className="max-w-[30px]"
+              animation={2}
+              maxCount={3}
+            />
+        </div>
+        {sectionName === "development" && <div>development</div>}
+
         {sectionProjects.map((project, index) => (
           <div key={index}>
             <strong>Title:</strong> {project.title}
@@ -331,6 +363,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
             <strong>Description:</strong> {project.description}
           </div>
         ))}
+       <div>{hiddenCounts[sectionName as string]}</div>
       </div>
     );
   };
@@ -347,16 +380,16 @@ function ProjectsDisplay({ section }: { section: Section }) {
     animation={2}
     maxCount={3}
   />
-    <div className="grid grid-cols-3">
-       <div className="grid grid-cols-4 gap-4">
-        {selectedProjects.map((selectedProject) => (
-          <div key={selectedProject.section}>
-            {renderProjectsForSection(selectedProject.section)}
-          </div>
-        ))}
+   <div className="grid grid-cols-3">
+  {selectedProjects
+    .filter((selectedProject) => selectedProject.section)
+    .map((selectedProject) => (
+      <div key={selectedProject.section}>
+        {renderProjectsForSection(selectedProject.section)}
       </div>
-    </div>
-    </div>
+    ))}
+</div>
+</div>
   )
 }
 

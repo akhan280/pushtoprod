@@ -239,8 +239,8 @@ export const updateSite = async (formData: FormData, site: Site, key: string) =>
     }
   }
 
-  
-export const getMultipleProjects = async (projectIds: string[]): Promise<{ projects: { id: string; title: string; description: string }[], error: string | null }> => {
+
+export const getMultipleProjects = async (projectIds: string[]): Promise<any> => {
   const session = await getSession();
   if (!session?.id) {
     return {
@@ -249,33 +249,49 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<{ proje
     };
   }
 
+  console.log("much needed")
+
   try {
-    const projects = await prisma.project.findMany({
+    const allUserProjects = await prisma.project.findMany({
       where: {
-        id: {
-          in: projectIds,
+        collaborators: {
+          some: {
+            userId: session.id,
+          },
         },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        columnId: true,
       },
     });
 
-    const transformedProjects = projects.map(project => ({
-      id: project.id,
-      title: project.title || "Untitled",
-      description: project.description || "description",
-    }));
+    console.log("All user projects", allUserProjects)
+
+    const projects = allUserProjects
+      .filter(project => projectIds.includes(project.id) && project.display !== false)
+      .map(project => ({
+        id: project.id,
+        title: project.title || "Untitled",
+        description: project.description || "description",
+        columnId: project.columnId,
+      }));
+
+      type HiddenProjectsCount = {
+        [key: string]: number
+      }
+      
+      const hiddenProjectsCount: (HiddenProjectsCount) = allUserProjects
+        .filter(project => project.display === false)
+        .reduce((acc, project) => {
+          acc[project.columnId] = (acc[project.columnId] || 0) + 1;
+          return acc;
+      }, {} as HiddenProjectsCount);
 
     return {
-      projects: transformedProjects,
+      projects,
+      hiddenProjectsCount,
       error: null,
     };
 
   } catch (error: unknown) {
+    console.log('error', error)
     if (error instanceof PrismaClientKnownRequestError) {
       return {
         projects: [],

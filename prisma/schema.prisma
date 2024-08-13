@@ -47,7 +47,7 @@ model Project {
   websiteurl       String?
   tags             String[]              @default([])
   mermaidSchema    String?
-  display          Boolean?
+  display          Boolean?             @default(false)
   collaborators    ProjectCollaborator[]
   technologies     Technology[]          @relation("ProjectTechnologies")
 }
