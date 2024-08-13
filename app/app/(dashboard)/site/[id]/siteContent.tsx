@@ -275,6 +275,7 @@ type GetAllColumnProjectsProp = {
 };
 
 function ProjectsDisplay({ section }: { section: Section }) {
+ 
   const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
   const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
   const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
@@ -303,8 +304,13 @@ function ProjectsDisplay({ section }: { section: Section }) {
     const fetchProjectDetails = async () => {
       const allIds = selectedProjects.flatMap(project => project.ids);
       if (allIds.length > 0) {
+
+        // JSON (stored in DB) -> Project Object is how we render for unprotected
+        // but bc we're editing our own site, we can directly fetch ALL OF OUR PROJECTS (because we own them, so we don't necessarily have to do the JSON -> Project mapping)
+        // BUT when we make changes, we need to push them to JSON using the project id (because this is how an unprotected user will view the page)
         const { projects, hiddenProjectsCount, error } = await getMultipleProjects(allIds);
         const columnToProjects = await getAllColumnProjects();
+
         console.log('[All Projects]', projects)
         if (!error) {
           const selectedHiddenCounts = selectedProjects.reduce((acc, project) => {
