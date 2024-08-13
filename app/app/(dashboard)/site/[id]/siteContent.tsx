@@ -43,7 +43,8 @@ import { Label } from "../../../../../components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { MultiSelect } from "../../../../../components/ui/multi-select-dropdown";
-import { getMultipleProjects } from "@/lib/site-actions";
+import { getAllColumnProjects, getMultipleProjects } from "@/lib/site-actions";
+import { ProjectContextMenu } from "../../../../../components/ui/project-sections-menu";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -159,7 +160,6 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
       case "projects":
         return <div><ProjectsDisplay section={section}></ProjectsDisplay></div>;
       case "media":
-        console.log("sec", section.content)
         return isMedia(section.content) ? (
           <MediaCarousel section={section} handleUpdate={handleUpdate}></MediaCarousel>
         ) : null;
@@ -266,7 +266,19 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
   );
 }
 
+type GetAllColumnProjectsProp = {
+  columnToProject: {
+    section: string; 
+    projects: { title: string; description: string; id: string; display: boolean }[];
+  }[];
+  error: any;
+};
+
 function ProjectsDisplay({ section }: { section: Section }) {
+  const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
+  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
+  const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
+  const [columnIdToProject, setColumnIdToProject] = useState<GetAllColumnProjectsProp>({ columnToProject: [], error: null });
 
   const frameworksList = [
     { value: "ideas", label: "ideas", icon: Sparkles },
@@ -274,87 +286,59 @@ function ProjectsDisplay({ section }: { section: Section }) {
     { value: "launches", label: "launches", icon: Sparkles },
     { value: "writing", label: "writing", icon: Sparkles },
   ];
-
   // iterate through projects
   useEffect(() => {
     const content = (section.content as { projects: SiteProjects }).projects;
     const presentSections = frameworksList.map(framework => {
-      // console.log('Section Content', framework)
-      const column = framework.value
-      // console.log('Column Content', column)
       const sectionContent = content[framework.value as keyof SiteProjects];
       if (sectionContent.length > 0) {
-        console.log('returning value', framework.value)
-        console.log('section content', sectionContent)
-
-        // return framework.value as string
-        return { section: framework.value, ids: sectionContent ? sectionContent : [] }; //had to add here, ideally make section content length null on line 281
-
-      } else {
-        return { section: "", ids: [] };
-      }
+        return { section: framework.value, ids: sectionContent ? sectionContent : [] };
+      } 
+      return { section: "", ids: [] };
     })
-    
-    // const cleanedDefaultValue = presentSections.map(item => item.section).filter(value => value.trim() !== '');
-
-    console.log('[Present Selections]', presentSections)
     setSelectedProjects(presentSections)
   }, [section]);
-
-  const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
-  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
-  const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
       const allIds = selectedProjects.flatMap(project => project.ids);
       if (allIds.length > 0) {
         const { projects, hiddenProjectsCount, error } = await getMultipleProjects(allIds);
+        const columnToProjects = await getAllColumnProjects();
+        console.log('[All Projects]', projects)
         if (!error) {
-          setProjectDetails(projects);
-
           const selectedHiddenCounts = selectedProjects.reduce((acc, project) => {
-            if (hiddenProjectsCount[project.section] !== undefined) {
-              acc[project.section] = hiddenProjectsCount[project.section];
-            }
+            if (hiddenProjectsCount[project.section] !== undefined) {acc[project.section] = hiddenProjectsCount[project.section];}
             return acc;
           }, {} as { [key: string]: number });
 
+          setProjectDetails(projects);
           setHiddenProjectCounts(selectedHiddenCounts);
-          
-          console.log(`[Hidden Counts from API]`, hiddenProjectsCount);
-          console.log(`[Selected Hidden Counts]`, selectedHiddenCounts);
+          console.log('Column ID to Project', columnToProjects)
+          setColumnIdToProject(columnToProjects);
 
         }
       }
     };
-
     fetchProjectDetails();
   }, [selectedProjects]);
 
-  const renderProjectsForSection = (sectionName: string) => {
+  const renderProjectsForSection = (columnId: string) => {
     const sectionProjects = projectDetails.filter(project => 
-      selectedProjects.find(sp => sp.section === sectionName)?.ids.includes(project.id)
+      selectedProjects.find(sp => sp.section === columnId)?.ids.includes(project.id)
     );
 
-    console.log('HIdden counts', sectionName, hiddenCounts[sectionName as string])
+    const columnProjects = columnIdToProject.columnToProject?.find(
+      (section) => section.section === columnId
+    )?.projects || [];  
 
     return (
       <div className="p-12">
           <div className="flex flex-row">
-            <div>{sectionName}</div>
-            <MultiSelect
-              options={frameworksList}
-              onValueChange={setSelectedProjects}
-              value={selectedProjects}
-              placeholder="Select frameworks"
-              variant="default"
-              className="max-w-[30px]"
-              animation={2}
-              maxCount={3}
-            />
-        </div>
-        {sectionName === "development" && <div>development</div>}
+            <div>{columnId}</div>
+            <ProjectContextMenu columnId={columnId} projects={columnProjects} />
+          </div>
+        {columnId === "development" && <div>development</div>}
 
         {sectionProjects.map((project, index) => (
           <div key={index}>
@@ -363,7 +347,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
             <strong>Description:</strong> {project.description}
           </div>
         ))}
-       <div>{hiddenCounts[sectionName as string]}</div>
+       <div>{hiddenCounts[columnId as string]}</div>
       </div>
     );
   };
@@ -423,7 +407,6 @@ function SitePlateEditor({ handleUpdate, section }: { handleUpdate: (field: stri
     ? JSON.parse((section.content as TextBox).content)
     : editorInitialValue;
 
-  console.log("deseerialized", deserializedInitialValue)
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -443,7 +426,6 @@ function SitePlateEditor({ handleUpdate, section }: { handleUpdate: (field: stri
 }
 
 function ShowContact({ section }: { section: Section }) {
-  console.log('[ShowContent]', section)
   return (
     <div>
       {(section.content as Contact).socials.map((social, index) => (
@@ -507,8 +489,6 @@ function ContactDialog({ handleUpdate, section }: { handleUpdate: (field: string
   );
 }
 
-
-
 interface MediaCarouselProps {
   handleUpdate: (field: string, value: any) => void;
   section: Section;
@@ -518,7 +498,6 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>(
     (section.content as Media).mediaItems || []
   );
-  console.log("MM:", mediaItems)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -658,7 +637,6 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
     </div>
   );
 }
-
 export default MediaCarousel;
 
 

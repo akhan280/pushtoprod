@@ -51,14 +51,6 @@ const multiSelectVariants = cva(
   }
 );
 
-type GetAllColumnProjectsProp = {
-  columnToProject: {
-    section: string;
-    projects: { title: string; description: string; id: string; display: boolean }[];
-  }[];
-  error: any;
-};
-
 /**
  * Props for MultiSelect component
  */

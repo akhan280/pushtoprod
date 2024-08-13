@@ -15,6 +15,7 @@ import { getBlurDataURL } from "@/lib/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Project } from "./types";
 import { LocalSiteData } from "../app/app/(dashboard)/site/types";
+import { error } from "console";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -240,6 +241,92 @@ export const updateSite = async (formData: FormData, site: Site, key: string) =>
   }
 
 
+  type GetAllColumnProjectsProp = {
+    columnToProject: {
+      section: string; 
+      projects: { title: string; description: string; id: string; display: boolean }[];
+    }[];
+    error: any;
+  };
+  
+  export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> => {
+    const session = await getSession();
+    
+    if (!session?.id) {
+      return {
+        columnToProject: [],
+        error: "Not authenticated",
+      };
+    }
+  
+    try {
+      const allUserProjects = await prisma.project.findMany({
+        where: {
+          collaborators: {
+            some: {
+              userId: session.id,
+            },
+          },
+        },
+        select: {
+          title: true,
+          description: true,
+          columnId: true,
+          id: true,
+          display: true,
+        }
+      });
+  
+      const columnToProjects: Map<string, { id: string; title: string; description: string; display: boolean }[]> = new Map();
+  
+      allUserProjects.forEach((project) => {
+        const { columnId } = project;
+  
+        if (columnToProjects.has(columnId)) {
+          columnToProjects.get(columnId)?.push({
+            id: project.id,
+            title: project.title || '',
+            description: project.description || '',
+            display: project.display || false
+          });
+        } else {
+          columnToProjects.set(columnId, [{
+            id: project.id,
+            title: project.title || '',
+            description: project.description || '',
+            display: project.display || false
+          }]);
+        }
+      });
+  
+      const result = Array.from(columnToProjects, ([section, projects]) => ({
+        section,
+        projects,
+      }));
+  
+      console.log('Mapped column ids', result);
+  
+      return {
+        columnToProject: result,
+        error: '',
+      };
+  
+    } catch (error: unknown) {
+      console.log('error', error);
+      if (error instanceof PrismaClientKnownRequestError) {
+        return {
+          columnToProject: [],
+          error: error.message,
+        };
+      }
+      return {
+        columnToProject: [],
+        error: "An unexpected error occurred",
+      };
+    }
+  };  
+  
+
 export const getMultipleProjects = async (projectIds: string[]): Promise<any> => {
   const session = await getSession();
   if (!session?.id) {
@@ -248,8 +335,6 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<any> =>
       error: "Not authenticated",
     };
   }
-
-  console.log("much needed")
 
   try {
     const allUserProjects = await prisma.project.findMany({
@@ -260,29 +345,41 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<any> =>
           },
         },
       },
+      select: {
+        title: true,
+        description: true,
+        columnId: true,
+        id: true,
+        display: true,
+      }
     });
 
-    console.log("All user projects", allUserProjects)
+    console.log(`[All of User's Projects]`, allUserProjects)
 
-    const projects = allUserProjects
-      .filter(project => projectIds.includes(project.id) && project.display !== false)
+    const allProjects = allUserProjects
       .map(project => ({
         id: project.id,
         title: project.title || "Untitled",
         description: project.description || "description",
         columnId: project.columnId,
+        display: project.display 
       }));
+    
+    console.log(`[allProjects]`, allProjects)
+    const projects = allProjects.filter(project => projectIds.includes(project.id) && project.display !== false)
 
-      type HiddenProjectsCount = {
-        [key: string]: number
-      }
-      
-      const hiddenProjectsCount: (HiddenProjectsCount) = allUserProjects
-        .filter(project => project.display === false)
-        .reduce((acc, project) => {
-          acc[project.columnId] = (acc[project.columnId] || 0) + 1;
-          return acc;
-      }, {} as HiddenProjectsCount);
+    console.log(`[projects]`, projects)
+
+
+    type HiddenProjectsCount = {[key: string]: number}
+    const hiddenProjectsCount: (HiddenProjectsCount) = allUserProjects
+      .filter(project => project.display === false)
+      .reduce((acc, project) => {
+        acc[project.columnId] = (acc[project.columnId] || 0) + 1;
+        return acc;
+    }, {} as HiddenProjectsCount);
+
+    console.log(`hiddenProjectCounts`, hiddenProjectsCount)
 
     return {
       projects,
