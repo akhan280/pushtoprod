@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { Site } from '@prisma/client';
 import { getAllColumnProjects, getMultipleProjects, updateSite, updateSiteJSON } from '../site-actions';
-import { LocalSiteData, Section } from '../../app/app/(dashboard)/site/types';
+import { LocalSiteData, Section, SiteProjects } from '../../app/app/(dashboard)/site/types';
 
 export interface SiteProject {
   id: string;
@@ -69,18 +69,62 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
     },
 
     updateProjectDisplay: (projectId: string, columnId: string, display: boolean) => {
+
       set((state) => {
-        const columnProjects = state.columnProjects?.map((column) => {
+        const updatedColumnProjects = state.columnProjects?.map((column) => {
           if (column.columnId === columnId) {
             const updatedProjects = column.projects.map((project) =>
               project.id === projectId ? { ...project, display } : project
             );
+            console.log(`[(1) Updated Projects in ${columnId}]`, updatedProjects);
             return { ...column, projects: updatedProjects };
           }
           return column;
         });
-        return { ...state, columnProjects };
+        console.log('[(2) Updated Column Projects]', updatedColumnProjects);
+        return { ...state, updatedColumnProjects };
       });
+
+      console.log('[All projects]', get().columnProjects)
+
+      const allProjects = get().columnProjects;
+
+      const tempProject: SiteProjects = { 
+        development: [],
+        launches: [],
+        writing: [],
+        ideas: [],
+      };
+      
+      allProjects?.forEach((project) => {
+        if (project.columnId === "development") {
+          // Filter projects where display is true, then map their ids
+          const displayedProjects = project.projects
+            .filter(p => p.display === true)
+            .map(p => p.id);
+          tempProject.development.push(...displayedProjects);
+        } else if (project.columnId === "launches") {
+          const displayedProjects = project.projects
+            .filter(p => p.display === true)
+            .map(p => p.id);
+          tempProject.launches.push(...displayedProjects);
+        } else if (project.columnId === "writing") {
+          const displayedProjects = project.projects
+            .filter(p => p.display === true)
+            .map(p => p.id);
+          tempProject.writing.push(...displayedProjects);
+        } else if (project.columnId === "ideas") {
+          const displayedProjects = project.projects
+            .filter(p => p.display === true)
+            .map(p => p.id);
+          tempProject.ideas.push(...displayedProjects);
+        }
+      });
+      
+      console.log('this is temp', tempProject);
+
+      get().updateSection(4, { content: tempProject });
+    
     },
 
     setSite: (site: Site) => {

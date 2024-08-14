@@ -24,14 +24,14 @@ export default async function SitePosts({
   //   notFound();
   // }
 
-  // const siteJson = JSON.parse(data!.sections as string);
-  // const siteData: LocalSiteData = {
-  //   ...data!, 
-  //   parsedSections: siteJson as Section[]
-  // };
+  const siteJson = JSON.parse(data!.sections as string);
+  const siteData: LocalSiteData = {
+    ...data!, 
+    parsedSections: siteJson as Section[]
+  };
 
   // THIS IS OUR TEST CASE
-  const siteData = testLocalSiteData;
+  // const siteData = testLocalSiteData;
 
   // const url = `${data.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 

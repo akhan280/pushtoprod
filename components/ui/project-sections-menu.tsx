@@ -31,8 +31,6 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
   const {columnProjects, fetchColumnProjects, selectedColumns, setSelectedColumns, updateProjectDisplay} = useMainStore();
 
-
-  // Initialize the checkedItems state based on the project data
   useEffect(() => {
     const initialCheckedItems = projects.reduce((acc, project) => {
       acc[project.id] = project.display;
@@ -46,6 +44,7 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
     const project = projects.find((p) => p.id === projectId);
     if (project) {
       const newDisplayState = !project.display;
+      project.display = newDisplayState;
 
       // Optimistically update the local state
       setCheckedItems((prev) => ({
@@ -55,7 +54,7 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
       updateProjectDisplay(projectId, columnId, newDisplayState);
 
       try {
-        // Push the update to the database
+
         const result = await updateDisplay(projectId, newDisplayState);
         if (result.error) {
           console.error("Failed to update project display in database", result.error);
