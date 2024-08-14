@@ -94,14 +94,14 @@ export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSit
         <div className="flex flex-col justify-center items-center">
           <div>
 
-        {localSite.parsedSections.map((section) => (
-          <SectionComponent
-            key={section.id}
-            sectionId={section.id}
-            isOver={activeId === section.id}
-          />
-        ))}
-                  </div>
+            {localSite.parsedSections.map((section) => (
+              <SectionComponent
+                key={section.id}
+                sectionId={section.id}
+                isOver={activeId === section.id}
+              />
+            ))}
+          </div>
         </div>
       </SortableContext>
       <DragOverlay>
@@ -268,14 +268,14 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
 
 type GetAllColumnProjectsProp = {
   columnToProject: {
-    section: string; 
+    section: string;
     projects: { title: string; description: string; id: string; display: boolean }[];
   }[];
   error: any;
 };
 
 function ProjectsDisplay({ section }: { section: Section }) {
- 
+
   const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
   const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
   const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
@@ -294,7 +294,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
       const sectionContent = content[framework.value as keyof SiteProjects];
       if (sectionContent.length > 0) {
         return { section: framework.value, ids: sectionContent ? sectionContent : [] };
-      } 
+      }
       return { section: "", ids: [] };
     })
     setSelectedProjects(presentSections)
@@ -314,7 +314,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
         console.log('[All Projects]', projects)
         if (!error) {
           const selectedHiddenCounts = selectedProjects.reduce((acc, project) => {
-            if (hiddenProjectsCount[project.section] !== undefined) {acc[project.section] = hiddenProjectsCount[project.section];}
+            if (hiddenProjectsCount[project.section] !== undefined) { acc[project.section] = hiddenProjectsCount[project.section]; }
             return acc;
           }, {} as { [key: string]: number });
 
@@ -330,56 +330,60 @@ function ProjectsDisplay({ section }: { section: Section }) {
   }, [selectedProjects]);
 
   const renderProjectsForSection = (columnId: string) => {
-    const sectionProjects = projectDetails.filter(project => 
+    const sectionProjects = projectDetails.filter(project =>
       selectedProjects.find(sp => sp.section === columnId)?.ids.includes(project.id)
     );
 
     const columnProjects = columnIdToProject.columnToProject?.find(
       (section) => section.section === columnId
-    )?.projects || [];  
+    )?.projects || [];
+
+    console.log("CP", columnProjects);
 
     return (
       <div className="p-12">
-          <div className="flex flex-row">
-            <div>{columnId}</div>
-            <ProjectContextMenu columnId={columnId} projects={columnProjects} />
-          </div>
+        <div className="flex flex-row">
+          <div>{columnId}</div>
+          <ProjectContextMenu columnId={columnId} projects={columnProjects} />
+        </div>
         {columnId === "development" && <div>development</div>}
 
-        {sectionProjects.map((project, index) => (
-          <div key={index}>
-            <strong>Title:</strong> {project.title}
-            <br />
-            <strong>Description:</strong> {project.description}
-          </div>
-        ))}
-       <div>{hiddenCounts[columnId as string]}</div>
+        {columnProjects
+          .filter((project) => project.display) // Filter projects where display is true
+          .map((project, index) => (
+            <div key={index}>
+              <strong>Title:</strong> {project.title}
+              <br />
+              <strong>Description:</strong> {project.description}
+            </div>
+          ))}
+        <div>{hiddenCounts[columnId as string]}</div>
       </div>
     );
   };
 
   return (
     <div className="flex flex-col">
-    <MultiSelect
-    options={frameworksList}
-    onValueChange={setSelectedProjects}
-    value={selectedProjects}
-    placeholder="Select frameworks"
-    variant="default"
-    className="max-w-[30px]"
-    animation={2}
-    maxCount={3}
-  />
-   <div className="grid grid-cols-3">
-  {selectedProjects
-    .filter((selectedProject) => selectedProject.section)
-    .map((selectedProject) => (
-      <div key={selectedProject.section}>
-        {renderProjectsForSection(selectedProject.section)}
+      <MultiSelect
+        options={frameworksList}
+        onValueChange={setSelectedProjects}
+        value={selectedProjects}
+        placeholder="Select frameworks"
+        variant="default"
+        className="max-w-[30px]"
+        animation={2}
+        maxCount={3}
+      />
+      <div className="grid grid-cols-3">
+        {selectedProjects
+          .filter((selectedProject) => selectedProject.section)
+          .map((selectedProject) => (
+            <div key={selectedProject.section}>
+              {renderProjectsForSection(selectedProject.section)}
+            </div>
+          ))}
       </div>
-    ))}
-</div>
-</div>
+    </div>
   )
 }
 

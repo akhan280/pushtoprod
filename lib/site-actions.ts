@@ -38,7 +38,7 @@ export async function updateSiteJSON(siteData: LocalSiteData & { sections: strin
         subdomain: siteData.subdomain,
         customDomain: siteData.customDomain,
         message404: siteData.message404,
-        sections: siteData.sections 
+        sections: siteData.sections
       }
     });
 
@@ -60,7 +60,7 @@ export const createSite = async (formData: FormData) => {
       error: "Not authenticated",
     };
   }
-  
+
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const subdomain = formData.get("subdomain") as string;
@@ -120,212 +120,213 @@ export const createSite = async (formData: FormData) => {
 };
 
 
+
 export const updateSite = async (formData: FormData, site: Site, key: string) => {
-    const data = await getSession();
+  const data = await getSession();
 
-    if (!data?.id) {
-      return {
-        error: "Not authenticated",
-      };
-    }
-    
-    const currentSite = await prisma.site.findUnique({
-      where: {
-        id: site.userId!,
-      },
-    });
-
-    if (!currentSite || currentSite.userId !== data.id) {
-      return {
-        error: "Not authorized",
-      };
-    }
-    
-    const value = formData.get(key) as string;
-
-    try {
-      let response;
-
-      if (key === "customDomain") {
-        if (value.includes("vercel.pub")) {
-          return {
-            error: "Cannot use vercel.pub subdomain as your custom domain",
-          };
-        } else if (validDomainRegex.test(value)) {
-          response = await prisma.site.update({
-            where: {
-              id: site.id,
-            },
-            data: {
-              customDomain: value,
-            },
-          });
-          await Promise.all([addDomainToVercel(value)]);
-        } else if (value === "") {
-          response = await prisma.site.update({
-            where: {
-              id: site.id,
-            },
-            data: {
-              customDomain: null,
-            },
-          });
-        }
-
-        if (site.customDomain && site.customDomain !== value) {
-          await removeDomainFromVercelProject(site.customDomain);
-        }
-
-      } else if (key === "image" || key === "logo") {
-
-        if (!process.env.BLOB_READ_WRITE_TOKEN) {
-          return {
-            error:
-              "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – please fill out this form for access: https://tally.so/r/nPDMNd",
-          };
-        }
-
-        const file = formData.get(key) as File;
-        const filename = `${nanoid()}.${file.type.split("/")[1]}`;
-
-        const { url } = await put(filename, file, {
-          access: "public",
-        });
-
-        const blurhash = key === "image" ? await getBlurDataURL(url) : null;
-
-        response = await prisma.site.update({
-          where: {
-            id: site.id,
-          },
-          data: {
-            [key]: url,
-            ...(blurhash && { imageBlurhash: blurhash }),
-          },
-        });
-      } else {
-
-        response = await prisma.site.update({
-          where: {
-            id: site.id,
-          },
-          data: {
-            [key]: value,
-          },
-        });
-      }
-
-      console.log(
-        "Updated site data! Revalidating tags: ",
-        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
-        `${site.customDomain}-metadata`
-      );
-      revalidateTag(
-        `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`
-      );
-      site.customDomain &&
-        revalidateTag(`${site.customDomain}-metadata`);
-
-      return response;
-    } catch (error: any) {
-      if (error.code === "P2002") {
-        return {
-          error: `This ${key} is already taken`,
-        };
-      } else {
-        return {
-          error: error.message,
-        };
-      }
-    }
+  if (!data?.id) {
+    return {
+      error: "Not authenticated",
+    };
   }
 
+  const currentSite = await prisma.site.findUnique({
+    where: {
+      id: site.userId!,
+    },
+  });
 
-  type GetAllColumnProjectsProp = {
-    columnToProject: {
-      section: string; 
-      projects: { title: string; description: string; id: string; display: boolean }[];
-    }[];
-    error: any;
-  };
-  
-  export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> => {
-    const session = await getSession();
-    
-    if (!session?.id) {
-      return {
-        columnToProject: [],
-        error: "Not authenticated",
-      };
-    }
-  
-    try {
-      const allUserProjects = await prisma.project.findMany({
-        where: {
-          collaborators: {
-            some: {
-              userId: session.id,
-            },
-          },
-        },
-        select: {
-          title: true,
-          description: true,
-          columnId: true,
-          id: true,
-          display: true,
-        }
-      });
-  
-      const columnToProjects: Map<string, { id: string; title: string; description: string; display: boolean }[]> = new Map();
-  
-      allUserProjects.forEach((project) => {
-        const { columnId } = project;
-  
-        if (columnToProjects.has(columnId)) {
-          columnToProjects.get(columnId)?.push({
-            id: project.id,
-            title: project.title || '',
-            description: project.description || '',
-            display: project.display || false
-          });
-        } else {
-          columnToProjects.set(columnId, [{
-            id: project.id,
-            title: project.title || '',
-            description: project.description || '',
-            display: project.display || false
-          }]);
-        }
-      });
-  
-      const result = Array.from(columnToProjects, ([section, projects]) => ({
-        section,
-        projects,
-      }));
-  
-      console.log('Mapped column ids', result);
-  
-      return {
-        columnToProject: result,
-        error: '',
-      };
-  
-    } catch (error: unknown) {
-      console.log('error', error);
-      if (error instanceof PrismaClientKnownRequestError) {
+  if (!currentSite || currentSite.userId !== data.id) {
+    return {
+      error: "Not authorized",
+    };
+  }
+
+  const value = formData.get(key) as string;
+
+  try {
+    let response;
+
+    if (key === "customDomain") {
+      if (value.includes("vercel.pub")) {
         return {
-          columnToProject: [],
-          error: error.message,
+          error: "Cannot use vercel.pub subdomain as your custom domain",
+        };
+      } else if (validDomainRegex.test(value)) {
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            customDomain: value,
+          },
+        });
+        await Promise.all([addDomainToVercel(value)]);
+      } else if (value === "") {
+        response = await prisma.site.update({
+          where: {
+            id: site.id,
+          },
+          data: {
+            customDomain: null,
+          },
+        });
+      }
+
+      if (site.customDomain && site.customDomain !== value) {
+        await removeDomainFromVercelProject(site.customDomain);
+      }
+
+    } else if (key === "image" || key === "logo") {
+
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        return {
+          error:
+            "Missing BLOB_READ_WRITE_TOKEN token. Note: Vercel Blob is currently in beta – please fill out this form for access: https://tally.so/r/nPDMNd",
         };
       }
+
+      const file = formData.get(key) as File;
+      const filename = `${nanoid()}.${file.type.split("/")[1]}`;
+
+      const { url } = await put(filename, file, {
+        access: "public",
+      });
+
+      const blurhash = key === "image" ? await getBlurDataURL(url) : null;
+
+      response = await prisma.site.update({
+        where: {
+          id: site.id,
+        },
+        data: {
+          [key]: url,
+          ...(blurhash && { imageBlurhash: blurhash }),
+        },
+      });
+    } else {
+
+      response = await prisma.site.update({
+        where: {
+          id: site.id,
+        },
+        data: {
+          [key]: value,
+        },
+      });
+    }
+
+    console.log(
+      "Updated site data! Revalidating tags: ",
+      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`,
+      `${site.customDomain}-metadata`
+    );
+    revalidateTag(
+      `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}-metadata`
+    );
+    site.customDomain &&
+      revalidateTag(`${site.customDomain}-metadata`);
+
+    return response;
+  } catch (error: any) {
+    if (error.code === "P2002") {
       return {
-        columnToProject: [],
-        error: "An unexpected error occurred",
+        error: `This ${key} is already taken`,
+      };
+    } else {
+      return {
+        error: error.message,
       };
     }
-  };  
-  
+  }
+}
+
+
+type GetAllColumnProjectsProp = {
+  columnToProject: {
+    section: string;
+    projects: { title: string; description: string; id: string; display: boolean }[];
+  }[];
+  error: any;
+};
+
+export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> => {
+  const session = await getSession();
+
+  if (!session?.id) {
+    return {
+      columnToProject: [],
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    const allUserProjects = await prisma.project.findMany({
+      where: {
+        collaborators: {
+          some: {
+            userId: session.id,
+          },
+        },
+      },
+      select: {
+        title: true,
+        description: true,
+        columnId: true,
+        id: true,
+        display: true,
+      }
+    });
+
+    const columnToProjects: Map<string, { id: string; title: string; description: string; display: boolean }[]> = new Map();
+
+    allUserProjects.forEach((project) => {
+      const { columnId } = project;
+
+      if (columnToProjects.has(columnId)) {
+        columnToProjects.get(columnId)?.push({
+          id: project.id,
+          title: project.title || '',
+          description: project.description || '',
+          display: project.display || false
+        });
+      } else {
+        columnToProjects.set(columnId, [{
+          id: project.id,
+          title: project.title || '',
+          description: project.description || '',
+          display: project.display || false
+        }]);
+      }
+    });
+
+    const result = Array.from(columnToProjects, ([section, projects]) => ({
+      section,
+      projects,
+    }));
+
+    console.log('Mapped column ids', result);
+
+    return {
+      columnToProject: result,
+      error: '',
+    };
+
+  } catch (error: unknown) {
+    console.log('error', error);
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        columnToProject: [],
+        error: error.message,
+      };
+    }
+    return {
+      columnToProject: [],
+      error: "An unexpected error occurred",
+    };
+  }
+};
+
 
 export const getMultipleProjects = async (projectIds: string[]): Promise<any> => {
   const session = await getSession();
@@ -362,22 +363,22 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<any> =>
         title: project.title || "Untitled",
         description: project.description || "description",
         columnId: project.columnId,
-        display: project.display 
+        display: project.display
       }));
-    
+
     console.log(`[allProjects]`, allProjects)
     const projects = allProjects.filter(project => projectIds.includes(project.id) && project.display !== false)
 
     console.log(`[projects]`, projects)
 
 
-    type HiddenProjectsCount = {[key: string]: number}
+    type HiddenProjectsCount = { [key: string]: number }
     const hiddenProjectsCount: (HiddenProjectsCount) = allUserProjects
       .filter(project => project.display === false)
       .reduce((acc, project) => {
         acc[project.columnId] = (acc[project.columnId] || 0) + 1;
         return acc;
-    }, {} as HiddenProjectsCount);
+      }, {} as HiddenProjectsCount);
 
     console.log(`hiddenProjectCounts`, hiddenProjectsCount)
 
@@ -402,6 +403,63 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<any> =>
   }
 };
 
+
+
+
+
+export const updateDisplay = async (projectId: string, display: boolean): Promise<any> => {
+  const session = await getSession();
+  if (!session?.id) {
+    return {
+      project: null,
+      error: "Not authenticated",
+    };
+  }
+
+  try {
+    // Update the display status of the project in the database
+    const updatedProject = await prisma.project.update({
+      where: {
+        id: projectId,
+        collaborators: {
+          some: {
+            userId: session.id,
+          },
+        },
+      },
+      data: {
+        display: display,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        columnId: true,
+        display: true,
+      }
+    });
+
+    console.log(`[Updated Project]`, updatedProject);
+
+    return {
+      project: updatedProject,
+      error: null,
+    };
+
+  } catch (error: unknown) {
+    console.log('error', error);
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        project: null,
+        error: error.message,
+      };
+    }
+    return {
+      project: null,
+      error: "An unexpected error occurred",
+    };
+  }
+};
 // export const deleteSite = withSiteAuth(async (_: FormData, site: Site) => {
 //   try {
 //     const response = await prisma.site.delete({
@@ -497,7 +555,7 @@ export const updatePost = async (data: Post) => {
 
     post.site?.customDomain &&
       (revalidateTag(`${post.site?.customDomain}-posts`),
-      revalidateTag(`${post.site?.customDomain}-${post.slug}`));
+        revalidateTag(`${post.site?.customDomain}-${post.slug}`));
 
     return response;
   } catch (error: any) {
