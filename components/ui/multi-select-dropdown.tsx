@@ -82,19 +82,19 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
     ref
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(!value || value.length === 0);
+    // const [isLoading, setIsLoading] = React.useState(!value || value.length === 0);
 
-    React.useEffect(() => {
-      if (value && value.length > 0) {
-        setIsLoading(false);
-      }
-    }, [value]);
+    // React.useEffect(() => {
+    //   if (value && value.length > 0) {
+    //     setIsLoading(false);
+    //   }
+    // }, [value]);
 
-    if (isLoading) {
-      return <div>Loading...</div>;
-    }
+    // if (isLoading) {
+    //   return <div>Loading...</div>;
+    // }
 
-    const selectedSections = value.map((v) => v.columnId);
+    const selectedSections = value ? value.map((v) => v.columnId) : [];
 
     const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {

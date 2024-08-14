@@ -12,6 +12,7 @@ import {
   ContextMenuCheckboxItem,
 } from "@/components/ui/context-menu";
 import { updateDisplay } from "@/lib/site-actions";
+import useMainStore from "@/lib/hooks/use-main-store";
 
 type Project = {
   id: string;
@@ -28,15 +29,18 @@ type ProjectContextMenuProps = {
 export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuProps) {
 
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
+  const {columnProjects, fetchColumnProjects, selectedColumns, setSelectedColumns, updateProjectDisplay} = useMainStore();
+
 
   // Initialize the checkedItems state based on the project data
   useEffect(() => {
     const initialCheckedItems = projects.reduce((acc, project) => {
       acc[project.id] = project.display;
+      
       return acc;
     }, {} as { [key: string]: boolean });
     setCheckedItems(initialCheckedItems);
-  }, [projects]);
+  }, [projects, columnProjects]);
 
   const handleCheckboxChange = async (projectId: string) => {
     const project = projects.find((p) => p.id === projectId);
@@ -48,6 +52,7 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
         ...prev,
         [projectId]: newDisplayState,
       }));
+      updateProjectDisplay(projectId, columnId, newDisplayState);
 
       try {
         // Push the update to the database
@@ -59,6 +64,8 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
             ...prev,
             [projectId]: project.display,
           }));
+          updateProjectDisplay(projectId, columnId, !newDisplayState);
+          
         } else {
           // If the update is successful, ensure the local project state reflects the change
           project.display = newDisplayState;
@@ -70,17 +77,26 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
           ...prev,
           [projectId]: project.display,
         }));
+        updateProjectDisplay(projectId, columnId, !newDisplayState);
       }
     }
   };
 
+
   return (
-    <ContextMenu>
-      <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-        Right click here
+
+    <div>
+   
+    <ContextMenu >
+    
+    <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
+ 
       </ContextMenuTrigger>
+      
 
       <ContextMenuContent className="w-64">
+
+        
         <ContextMenuSub>
           <ContextMenuSubTrigger inset>{columnId}</ContextMenuSubTrigger>
           <ContextMenuSubContent className="w-48">
@@ -101,9 +117,19 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
               <ContextMenuCheckboxItem>No projects found</ContextMenuCheckboxItem>
             )}
           </ContextMenuSubContent>
+          
         </ContextMenuSub>
+      
+     
         <ContextMenuSeparator />
+        
       </ContextMenuContent>
     </ContextMenu>
+
+          
+
+</div>
+  
   );
+
 }

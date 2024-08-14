@@ -34,6 +34,7 @@ type SiteActions = {
     setSite: (site: Site) => void;
     setLocalSiteData: (data: LocalSiteData) => void;
     updateSection: (sectionId: number, updates: Partial<Section>) => Promise<any>;
+    updateProjectDisplay: (projectId: string, columnId: string, display: boolean) => void;
     moveSection: (oldIndex: number, newIndex: number) => void;
     addSection: (newSection: Section) => void;
     removeSection: (sectionId: number) => void;
@@ -65,6 +66,21 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
         columnToProject: projects,
         selectedProjects: selectedProjects
       }
+    },
+
+    updateProjectDisplay: (projectId: string, columnId: string, display: boolean) => {
+      set((state) => {
+        const columnProjects = state.columnProjects?.map((column) => {
+          if (column.columnId === columnId) {
+            const updatedProjects = column.projects.map((project) =>
+              project.id === projectId ? { ...project, display } : project
+            );
+            return { ...column, projects: updatedProjects };
+          }
+          return column;
+        });
+        return { ...state, columnProjects };
+      });
     },
 
     setSite: (site: Site) => {
@@ -117,6 +133,8 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
           throw error;
       }
   },
+
+  
   
   moveSection: (oldIndex, newIndex) => set((state) => {
       if (!state.localSite) return state;
