@@ -1,17 +1,14 @@
+"use client"
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   CheckIcon,
-  XCircle,
   ChevronDown,
-  XIcon,
-  Sparkles,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
@@ -26,11 +23,8 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { SiteProject } from "../../lib/hooks/site-slice";
 
-/**
- * Variants for the multi-select component to handle different styles.
- * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
- */
 const multiSelectVariants = cva(
   "m-1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300",
   {
@@ -51,17 +45,6 @@ const multiSelectVariants = cva(
   }
 );
 
-type GetAllColumnProjectsProp = {
-  columnToProject: {
-    section: string;
-    projects: { title: string; description: string; id: string; display: boolean }[];
-  }[];
-  error: any;
-};
-
-/**
- * Props for MultiSelect component
- */
 interface MultiSelectProps extends VariantProps<typeof multiSelectVariants> {
   options: {
     label: string;
@@ -69,27 +52,19 @@ interface MultiSelectProps extends VariantProps<typeof multiSelectVariants> {
     icon?: React.ComponentType<{ className?: string }>;
   }[];
 
-  value: { section: string; ids: string[] }[];
+  value: { columnId: string; projectIds: SiteProject[] }[];
 
-  onValueChange: (value: { section: string; ids: string[] }[]) => void;
+  onValueChange: (value: { columnId: string; projectIds: SiteProject[] }[]) => void;
 
   placeholder?: string;
-
   animation?: number;
-
   maxCount?: number;
-
   modalPopover?: boolean;
-
   asChild?: boolean;
-
   className?: string;
 }
 
-export const MultiSelect = React.forwardRef<
-  HTMLButtonElement,
-  MultiSelectProps
->(
+export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
   (
     {
       options,
@@ -107,12 +82,21 @@ export const MultiSelect = React.forwardRef<
     ref
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(!value || value.length === 0);
 
-    const selectedSections = value.map((v) => v.section);
+    React.useEffect(() => {
+      if (value && value.length > 0) {
+        setIsLoading(false);
+      }
+    }, [value]);
 
-    const handleInputKeyDown = (
-      event: React.KeyboardEvent<HTMLInputElement>
-    ) => {
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
+
+    const selectedSections = value.map((v) => v.columnId);
+
+    const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
         setIsPopoverOpen(true);
       } else if (event.key === "Backspace" && !event.currentTarget.value) {
@@ -124,8 +108,9 @@ export const MultiSelect = React.forwardRef<
     const toggleOption = (optionValue: string) => {
       const isSelected = selectedSections.includes(optionValue);
       const newSelectedValues = isSelected
-        ? value.filter((v) => v.section !== optionValue)
-        : [...value, { section: optionValue, ids: [] }];
+        ? value.filter((v) => v.columnId !== optionValue)
+        : [...value, { columnId: optionValue, projectIds: [] as SiteProject[] }];
+    
       onValueChange(newSelectedValues);
     };
 
@@ -142,13 +127,12 @@ export const MultiSelect = React.forwardRef<
         handleClear();
       } else {
         const allValues = options.map((option) => ({
-          section: option.value,
-          ids: [],
+          columnId: option.value,
+          projectIds: [] as SiteProject[],
         }));
         onValueChange(allValues);
       }
     };
-
     return (
       <Popover
         open={isPopoverOpen}
@@ -165,8 +149,7 @@ export const MultiSelect = React.forwardRef<
               className
             )}
           >
-                  <ChevronDown className="h-4 cursor-pointer text-muted-foreground" />
-
+            <ChevronDown className="h-4 cursor-pointer text-muted-foreground" />
           </Button>
         </PopoverTrigger>
         <PopoverContent

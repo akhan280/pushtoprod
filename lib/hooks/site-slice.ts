@@ -1,11 +1,33 @@
 import { StateCreator } from 'zustand';
 import { Site } from '@prisma/client';
-import { updateSite, updateSiteJSON } from '../site-actions';
+import { getAllColumnProjects, getMultipleProjects, updateSite, updateSiteJSON } from '../site-actions';
 import { LocalSiteData, Section } from '../../app/app/(dashboard)/site/types';
+
+export interface SiteProject {
+  id: string;
+  title: string;
+  description: string;
+  columnId: string;
+  display: boolean;
+}
 
 type SiteStore = {
     site: Site | null,
     localSite: LocalSiteData | null
+    displayedProjects: SiteProject[] | null
+    hiddenProjectCount: {[key: string]: number} | null
+
+
+    columnProjects: {columnId: string, projects: SiteProject[]}[] | null
+    selectedColumns: {columnId: string; projectIds: SiteProject[]}[] | null
+};
+
+type GetAllColumnProjectsProp = {
+  columnToProject: {
+    columnId: string;
+    projects: SiteProject[];
+  }[];
+  selectedProjects: SiteProject[]
 };
 
 type SiteActions = {
@@ -15,20 +37,47 @@ type SiteActions = {
     moveSection: (oldIndex: number, newIndex: number) => void;
     addSection: (newSection: Section) => void;
     removeSection: (sectionId: number) => void;
+    fetchColumnProjects: () => Promise<GetAllColumnProjectsProp>;
+    setSelectedColumns: (selectedColumns: {columnId: string; projectIds: SiteProject[]}[]) => void;
 };
+
+
 
 export type SiteSlice = SiteStore & SiteActions;
 
 export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
     site: null,
     localSite: null,
+    displayedProjects: null,
+    hiddenProjectCount: null,
+    columnProjects: [],
+    selectedColumns: null,
+    
+    fetchColumnProjects: async () => {
+      const data = await getAllColumnProjects();
+      const projects = data.columnToProject;
+      const selectedProjects = data.selectedProjects;
+      console.log('[ZUSTAND] Projects', projects)
+      console.log('[ZUSTAND] SelectedProjects', selectedProjects)
+
+      set({columnProjects: projects})
+      return {
+        columnToProject: projects,
+        selectedProjects: selectedProjects
+      }
+    },
 
     setSite: (site: Site) => {
         console.log('[Site Store] Setting', site)
         set({site: site})
     },
+    
+    setSelectedColumns: (selectedColumns: {columnId: string; projectIds: SiteProject[]}[]) => {
+        set({selectedColumns})
+    },
 
-    setLocalSiteData: (data) => set({ localSite: data }),
+    setLocalSiteData: (data: LocalSiteData) => set({ localSite: data }),
+
   
     updateSection: async (sectionId, updates) => {
       const state = get();
@@ -47,8 +96,6 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       };
 
       set({ localSite: updatedLocalSite });
-      // console.log('[SITE SLICE] Updated Section', get().localSite)
-
 
       try {
         console.log('entering')
@@ -71,8 +118,7 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       }
   },
   
-  
-    moveSection: (oldIndex, newIndex) => set((state) => {
+  moveSection: (oldIndex, newIndex) => set((state) => {
       if (!state.localSite) return state;
   
       const sections = [...state.localSite.parsedSections];

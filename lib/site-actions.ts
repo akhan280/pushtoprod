@@ -16,6 +16,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Project } from "./types";
 import { LocalSiteData } from "../app/app/(dashboard)/site/types";
 import { error } from "console";
+import { SiteProject } from "./hooks/site-slice";
 
 const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -242,12 +243,14 @@ export const updateSite = async (formData: FormData, site: Site, key: string) =>
 }
 
 
+
 type GetAllColumnProjectsProp = {
   columnToProject: {
-    section: string;
-    projects: { title: string; description: string; id: string; display: boolean }[];
+    columnId: string;
+    projects: SiteProject[];
   }[];
-  error: any;
+  selectedProjects: SiteProject[]
+  error: string | null;
 };
 
 export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> => {
@@ -256,6 +259,7 @@ export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> 
   if (!session?.id) {
     return {
       columnToProject: [],
+      selectedProjects: [],
       error: "Not authenticated",
     };
   }
@@ -270,63 +274,54 @@ export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> 
         },
       },
       select: {
+        id: true,
         title: true,
         description: true,
         columnId: true,
-        id: true,
         display: true,
-      }
+      },
     });
 
-    const columnToProjects: Map<string, { id: string; title: string; description: string; display: boolean }[]> = new Map();
+    const columnToProjects = allUserProjects.reduce((map, project) => {
+      const { columnId, id, title, description, display } = project;
+      const projectData: SiteProject = { 
+        id, 
+        title: title || '', 
+        description: description || '', 
+        columnId: columnId || '', 
+        display: display || false 
+      };
 
-    allUserProjects.forEach((project) => {
-      const { columnId } = project;
-
-      if (columnToProjects.has(columnId)) {
-        columnToProjects.get(columnId)?.push({
-          id: project.id,
-          title: project.title || '',
-          description: project.description || '',
-          display: project.display || false
-        });
-      } else {
-        columnToProjects.set(columnId, [{
-          id: project.id,
-          title: project.title || '',
-          description: project.description || '',
-          display: project.display || false
-        }]);
+      if (!map.has(columnId)) {
+        map.set(columnId, []);
       }
-    });
 
-    const result = Array.from(columnToProjects, ([section, projects]) => ({
-      section,
-      projects,
+      map.get(columnId)!.push(projectData);
+      return map;
+    }, new Map<string, SiteProject[]>());
+
+    const result = Array.from(columnToProjects, ([columnId, projects]) => ({ columnId, projects }));
+    const selectedProjects = result.map(({ columnId, projects }) => ({
+      columnId,
+      projects: projects.filter(project => project.display === true),
     }));
-
-    console.log('Mapped column ids', result);
-
+    
     return {
       columnToProject: result,
-      error: '',
+      selectedProjects: selectedProjects.map(({ projects }) => projects).flat(),
+      error: null,
     };
 
   } catch (error: unknown) {
-    console.log('error', error);
-    if (error instanceof PrismaClientKnownRequestError) {
-      return {
-        columnToProject: [],
-        error: error.message,
-      };
-    }
+    console.error('Error fetching projects:', error);
+    const errorMessage = error instanceof PrismaClientKnownRequestError ? error.message : "An unexpected error occurred";
     return {
       columnToProject: [],
-      error: "An unexpected error occurred",
+      selectedProjects: [],
+      error: errorMessage,
     };
   }
 };
-
 
 export const getMultipleProjects = async (projectIds: string[]): Promise<any> => {
   const session = await getSession();
@@ -370,7 +365,6 @@ export const getMultipleProjects = async (projectIds: string[]): Promise<any> =>
     const projects = allProjects.filter(project => projectIds.includes(project.id) && project.display !== false)
 
     console.log(`[projects]`, projects)
-
 
     type HiddenProjectsCount = { [key: string]: number }
     const hiddenProjectsCount: (HiddenProjectsCount) = allUserProjects

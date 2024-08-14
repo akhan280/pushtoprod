@@ -45,6 +45,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MultiSelect } from "../../../../../components/ui/multi-select-dropdown";
 import { getAllColumnProjects, getMultipleProjects } from "@/lib/site-actions";
 import { ProjectContextMenu } from "../../../../../components/ui/project-sections-menu";
+import { SiteProject } from "../../../../../lib/hooks/site-slice";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -266,108 +267,76 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
   );
 }
 
-type GetAllColumnProjectsProp = {
-  columnToProject: {
-    section: string;
-    projects: { title: string; description: string; id: string; display: boolean }[];
-  }[];
-  error: any;
-};
-
 function ProjectsDisplay({ section }: { section: Section }) {
 
-  const [selectedProjects, setSelectedProjects] = useState<{ section: string; ids: string[] }[]>([]);
-  const [projectDetails, setProjectDetails] = useState<{ id: string; title: string; description: string; columnId: string }[]>([]);
-  const [hiddenCounts, setHiddenProjectCounts] = useState<{ [key: string]: number }>({});
-  const [columnIdToProject, setColumnIdToProject] = useState<GetAllColumnProjectsProp>({ columnToProject: [], error: null });
+  const {columnProjects, fetchColumnProjects, selectedColumns, setSelectedColumns} = useMainStore();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const frameworksList = [
+  const columnIds = [
     { value: "ideas", label: "ideas", icon: Sparkles },
     { value: "development", label: "development", icon: Sparkles },
     { value: "launches", label: "launches", icon: Sparkles },
     { value: "writing", label: "writing", icon: Sparkles },
   ];
-  // iterate through projects
-  useEffect(() => {
-    const content = (section.content as { projects: SiteProjects }).projects;
-    const presentSections = frameworksList.map(framework => {
-      const sectionContent = content[framework.value as keyof SiteProjects];
-      if (sectionContent.length > 0) {
-        return { section: framework.value, ids: sectionContent ? sectionContent : [] };
-      }
-      return { section: "", ids: [] };
-    })
-    setSelectedProjects(presentSections)
-  }, [section]);
 
   useEffect(() => {
-    const fetchProjectDetails = async () => {
-      const allIds = selectedProjects.flatMap(project => project.ids);
-      if (allIds.length > 0) {
-
-        // JSON (stored in DB) -> Project Object is how we render for unprotected
-        // but bc we're editing our own site, we can directly fetch ALL OF OUR PROJECTS (because we own them, so we don't necessarily have to do the JSON -> Project mapping)
-        // BUT when we make changes, we need to push them to JSON using the project id (because this is how an unprotected user will view the page)
-        const { projects, hiddenProjectsCount, error } = await getMultipleProjects(allIds);
-        const columnToProjects = await getAllColumnProjects();
-
-        console.log('[All Projects]', projects)
-        if (!error) {
-          const selectedHiddenCounts = selectedProjects.reduce((acc, project) => {
-            if (hiddenProjectsCount[project.section] !== undefined) { acc[project.section] = hiddenProjectsCount[project.section]; }
-            return acc;
-          }, {} as { [key: string]: number });
-
-          setProjectDetails(projects);
-          setHiddenProjectCounts(selectedHiddenCounts);
-          console.log('Column ID to Project', columnToProjects)
-          setColumnIdToProject(columnToProjects);
-
+    const initializeData = async () => {
+      setIsLoading(true);
+      const data = await fetchColumnProjects();
+      
+      const presentColumns = columnIds.map(columnId => {
+        const foundColumn = data.selectedProjects?.find((column) => column.columnId === columnId.value);
+        if (foundColumn) {
+          return { columnId: columnId.value, projectIds: Array.isArray(foundColumn) ? foundColumn : [foundColumn]}
         }
-      }
+        return { columnId: "", projectIds: [] as SiteProject[] };
+      });
+  
+      console.log("[PresentColumns for Section]", presentColumns);
+      setSelectedColumns(presentColumns.filter(column => column.columnId !== ""));
+      setIsLoading(false);
     };
-    fetchProjectDetails();
-  }, [selectedProjects]);
+  
+    initializeData();
+  }, []);
+  
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const renderProjectsForSection = (columnId: string) => {
-    const sectionProjects = projectDetails.filter(project =>
-      selectedProjects.find(sp => sp.section === columnId)?.ids.includes(project.id)
-    );
-
-    const columnProjects = columnIdToProject.columnToProject?.find(
-      (section) => section.section === columnId
-    )?.projects || [];
-
-    console.log("CP", columnProjects);
+    const projects = columnProjects?.find((section) => section.columnId === columnId)?.projects || [];
 
     return (
       <div className="p-12">
         <div className="flex flex-row">
           <div>{columnId}</div>
-          <ProjectContextMenu columnId={columnId} projects={columnProjects} />
+          <ProjectContextMenu columnId={columnId} projects={projects} />
         </div>
         {columnId === "development" && <div>development</div>}
 
-        {columnProjects
-          .filter((project) => project.display) // Filter projects where display is true
-          .map((project, index) => (
+        {projects.filter((project) => project.display).map((project, index) => (
             <div key={index}>
               <strong>Title:</strong> {project.title}
               <br />
               <strong>Description:</strong> {project.description}
             </div>
           ))}
-        <div>{hiddenCounts[columnId as string]}</div>
+        {/* <div>{hiddenCounts[columnId as string]}</div> */}
       </div>
     );
   };
 
+  console.log("[Rendered Projects for Section]");
+  console.log("[ColumnIds for Section]",  columnIds);
+  console.log("[SelectedColumns for Section]", selectedColumns);
+
   return (
     <div className="flex flex-col">
       <MultiSelect
-        options={frameworksList}
-        onValueChange={setSelectedProjects}
-        value={selectedProjects}
+        options={columnIds}
+        onValueChange={setSelectedColumns}
+        value={selectedColumns!}
         placeholder="Select frameworks"
         variant="default"
         className="max-w-[30px]"
@@ -375,11 +344,11 @@ function ProjectsDisplay({ section }: { section: Section }) {
         maxCount={3}
       />
       <div className="grid grid-cols-3">
-        {selectedProjects
-          .filter((selectedProject) => selectedProject.section)
+        {selectedColumns
+          ?.filter((columnId) => columnId.columnId)
           .map((selectedProject) => (
-            <div key={selectedProject.section}>
-              {renderProjectsForSection(selectedProject.section)}
+            <div key={selectedProject.columnId}>
+              {renderProjectsForSection(selectedProject.columnId)}
             </div>
           ))}
       </div>
@@ -647,8 +616,6 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
     </div>
   );
 }
-export default MediaCarousel;
-
 
 function FooterDialog({ handleUpdate, section }: { handleUpdate: (field: string, value: any) => void, section: Section }) {
   const [footer, setFooter] = useState((section.content as Footer).quote)
