@@ -177,21 +177,37 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       }
   },
 
-  moveSection: (oldIndex, newIndex) => set((state) => {
-      if (!state.localSite) return state;
+  moveSection: (oldIndex, newIndex) => {
+    console.log('Moving the section')
+
+    const state = get();
+    if (!state.localSite) return state;
+
+    console.log('Moving section')
   
-      const sections = [...state.localSite.parsedSections];
-      const [movedSection] = sections.splice(oldIndex, 1);
-      sections.splice(newIndex, 0, movedSection);
+    const sections = [...state.localSite.parsedSections];
+    const [movedSection] = sections.splice(oldIndex, 1);
+    sections.splice(newIndex, 0, movedSection); 
   
-      return {
-        ...state,
-        localSite: {
-          ...state.localSite,
-          parsedSections: sections
-        }
-      };
-    }),
+    const updatedLocalSite = {
+      ...state.localSite,
+      parsedSections: sections,
+    };
+  
+    set({ localSite: updatedLocalSite });
+  
+    try {
+      console.log("Saving new section order to backend...");
+      updateSiteJSON({
+        ...updatedLocalSite,
+        sections: JSON.stringify(sections),
+      });
+    } catch (error) {
+      console.error("Failed to save new section order:", error);
+    }
+  
+    return updatedLocalSite;
+  },
   
     addSection: async (newSection) => {
       const state = get();

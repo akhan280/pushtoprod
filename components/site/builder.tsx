@@ -70,10 +70,20 @@ export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSit
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
+    console.log('Moving section starting')
+
+  
     if (active.id !== over?.id) {
-      const oldIndex = localSite!.parsedSections.findIndex((section) => section.id === active.id);
-      const newIndex = localSite!.parsedSections.findIndex((section) => section.id === over?.id);
-      moveSection(oldIndex, newIndex);
+      console.log('Moving over')
+
+      const oldIndex = localSite!.parsedSections.findIndex(
+        (section) => section.id === active.id
+      );
+      const newIndex = localSite!.parsedSections.findIndex(
+        (section) => section.id === over?.id
+      );
+  
+      moveSection(oldIndex, newIndex); 
     }
     setActiveId(null);
   };
@@ -287,7 +297,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
         return { columnId: "", projectIds: [] as SiteProject[] };
       });
   
-      console.log("[PresentColumns for Section]", presentColumns);
+      // console.log("[PresentColumns for Section]", presentColumns);
       setSelectedColumns(presentColumns.filter(column => column.columnId !== ""));
       setIsLoading(false);
     };
@@ -322,9 +332,9 @@ function ProjectsDisplay({ section }: { section: Section }) {
     );
   };
 
-  console.log("[Rendered Projects for Section]");
-  console.log("[ColumnIds for Section]",  columnIds);
-  console.log("[SelectedColumns for Section]", selectedColumns);
+  // console.log("[Rendered Projects for Section]");
+  // console.log("[ColumnIds for Section]",  columnIds);
+  // console.log("[SelectedColumns for Section]", selectedColumns);
 
   return (
     <div className="flex flex-col">
