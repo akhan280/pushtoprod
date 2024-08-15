@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { generateContent } from "@/lib/actions"
 import { POST } from "@/app/api/auth/route"
+import useMainStore from "@/lib/hooks/use-main-store"
 
 const platforms = [
     { id: 'producthunt', name: 'Product Hunt', logo: 'P' },
@@ -29,11 +30,12 @@ type PlatformComponentProps = {
 function PlatformComponent({ platform }: PlatformComponentProps) {
     const [content, setContent] = useState('')
     const [isGenerating, setIsGenerating] = useState(false)
+    const { selectedProject} = useMainStore();
 
     const handleGenerate = async () => {
         setIsGenerating(true)
         try {
-            // const generatedContent = await POST(platform.id)
+            const generatedContent = await generateContent( platform.id, selectedProject.id, selectedProject.title, selectedProject.description)
             setContent(generatedContent)
         } catch (error) {
             console.error('Error generating content:', error)

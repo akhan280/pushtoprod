@@ -439,6 +439,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
     }));
 
 
+
     return {
       projects: transformedProjects,
       error: null,
@@ -649,33 +650,73 @@ export async function updateMermaidSchema(projectId: string, data: string) {
 
 // const openai = new OpenAI();
 
-// export async function generateContent(platformId: string) {
-//   const completion = await openai.createChatCompletion({
-//     model: "gpt-4",
-//     messages: [
-//       {
-//         role: "system",
-//         content: `You are an AI assistant generating marketing content for various platforms. 
-//                   Tailor your response to the specific platform: ${platformId}. 
-//                   Provide concise, engaging content suitable for a product launch or marketing campaign.`,
-//       },
-//       {
-//         role: "user",
-//         content: `Generate marketing content for the ${platformId} platform.`,
-//       },
-//     ],
-//     temperature: 0.7,
-//     top_p: 1,
-//     frequency_penalty: 0,
-//     presence_penalty: 0,
-//     stream: true,
-//     n: 1,
-//   });
+export async function generateContent(platformId: string, projectId: string, title: string, description: string) {
+  try {
+    // Step 1: Generate the content using OpenAI API
+    const completion = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: `You are a highly skilled AI assistant specializing in creating marketing content tailored to various online platforms. 
+                    Your task is to generate engaging and effective marketing content based on the following details:
+                    - Platform: ${platformId}
+                    - Project Title: ${title}
+                    - Project Description: ${description}
+    
+                    The content should be concise, compelling, and suitable for the {platformName} platform, taking into consideration the platform's audience and format. 
+                    Ensure the content aligns with best practices for {platformName} and is optimized to drive engagement and interest in the project.`,
+        },
+        {
+          role: "user",
+          content: `Please generate marketing content for the {platformName} platform based on the project's title "{projectTitle}" and the description: "{projectDescription}".`,
+        },
+      ],
+      temperature: 0.7,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      stream: false,
+      n: 1,
+    });
 
-//   const message = completion.choices[0].message.Content
+    const generatedContent = completion.choices[0].message.content;
 
-//   return message
+    // Step 2: Save the generated content to the database
+    const session = await getSession();
+    if (!session?.id) {
+      return {
+        project: null,
+        error: "Not authenticated",
+      };
+    }
 
+    const newGeneratedContent = { [platformId]: generatedContent };
 
+    const response = await prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        generatedContent: {
+          push: newGeneratedContent, // Add new content to the generatedContent array
+        },
+      },
+      include: {
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+        technologies: true,
+      },
+    });
 
-// }
+    console.log("[generateAndSaveContent Server Action]", response);
+
+    return { project: response };
+  } catch (error: any) {
+    console.error('[An error occurred while generating and saving content]', error);
+    return { success: false, error: 'Failed to generate or save content' };
+  }
+}
