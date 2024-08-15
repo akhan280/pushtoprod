@@ -44,21 +44,21 @@ export async function POST(req: Request): Promise<Response> {
   // slice the content from the end to prioritize later characters
   content = content.replace(/\/$/, "").slice(-5000);
 
+  const { platformId } = await req.json();
+
   const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages: [
       {
         role: "system",
         content:
-          "You are an AI writing assistant that continues existing text based on context from prior text. " +
-          "Give more weight/priority to the later characters than the beginning ones. " +
-          "Limit your response to no more than 200 characters, but make sure to construct complete sentences.",
-        // we're disabling markdown for now until we can figure out a way to stream markdown text with proper formatting: https://github.com/steven-tey/novel/discussions/7
-        // "Use Markdown formatting when appropriate.",
+          `You are an AI writing assistant that generates marketing content for various platforms. 
+           Tailor your response to the specific platform: ${platformId}. 
+           Provide concise, engaging content suitable for a product launch or marketing campaign.`,
       },
       {
         role: "user",
-        content,
+        content: `Generate marketing content for the ${platformId} platform.`,
       },
     ],
     temperature: 0.7,

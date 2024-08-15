@@ -20,6 +20,8 @@ import { Project, Technology, User } from "./types";
 //   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 //   7,
 // );
+// import OpenAI from "openai"
+
 
 
 export async function PopulateSupabase() {
@@ -645,3 +647,35 @@ export async function updateMermaidSchema(projectId: string, data: string) {
 }
 
 
+// const openai = new OpenAI();
+
+// export async function generateContent(platformId: string) {
+//   const completion = await openai.createChatCompletion({
+//     model: "gpt-4",
+//     messages: [
+//       {
+//         role: "system",
+//         content: `You are an AI assistant generating marketing content for various platforms. 
+//                   Tailor your response to the specific platform: ${platformId}. 
+//                   Provide concise, engaging content suitable for a product launch or marketing campaign.`,
+//       },
+//       {
+//         role: "user",
+//         content: `Generate marketing content for the ${platformId} platform.`,
+//       },
+//     ],
+//     temperature: 0.7,
+//     top_p: 1,
+//     frequency_penalty: 0,
+//     presence_penalty: 0,
+//     stream: true,
+//     n: 1,
+//   });
+
+//   const message = completion.choices[0].message.Content
+
+//   return message
+
+
+
+// }
