@@ -1,6 +1,6 @@
 import { Site } from "@prisma/client";
 import { Collaborator, Project, Technology, User } from "../../../../../lib/types";
-import { LocalSiteData, Section, SiteProjects } from "../types";
+import { LocalSiteData, Section, SiteProjects } from "../../../../../components/site/site-interfaces";
 
 
 const testUsers: User[] = [

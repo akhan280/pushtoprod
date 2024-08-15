@@ -22,7 +22,7 @@ export default async function middleware(req: NextRequest) {
 
   let hostname = `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
 
-  // let hostname = 'localhost:3000';
+  // let hostname = 'test-site.localhost:3000';
 
   if (
     hostname.includes("---") &&

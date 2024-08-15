@@ -1,21 +1,20 @@
-import Link from "next/link";
+
 import prisma from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import BlurImage from "@/components/blur-image";
-import { placeholderBlurhash, toDateString } from "@/lib/utils";
-import BlogCard from "@/components/blog-card";
+import { notFound, redirect } from "next/navigation";
 import { getPostsForSite, getSiteData } from "@/lib/fetchers";
-import Image from "next/image";
+import { getSession } from "../../lib/auth";
+import { Contact, Footer, Header, LocalSiteData, Media, MediaItem, Section, SiteProjects, Social, TextBox } from "../../components/site/site-interfaces";
+import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/plate-ui/avatar";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
+import { Card, CardContent } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import ProjectsDisplay, { SitePlateEditor } from "./project-render";
 
 export async function generateStaticParams() {
   const allSites = await prisma.site.findMany({
     select: {
       subdomain: true,
       customDomain: true,
-    },
-    // feel free to remove this filter if you want to generate paths for all sites
-    where: {
-      subdomain: "demo",
     },
   });
 
@@ -38,7 +37,9 @@ export default async function SiteHomePage({
 }: {
   params: { domain: string };
 }) {
+
   const domain = decodeURIComponent(params.domain);
+
   const [data, posts] = await Promise.all([
     getSiteData(domain),
     getPostsForSite(domain),
@@ -48,92 +49,170 @@ export default async function SiteHomePage({
     notFound();
   }
 
+  const siteJson = JSON.parse(data!.sections as string);
+  const siteData: LocalSiteData = {
+    ...data!, 
+    parsedSections: siteJson as Section[]
+  };
+
   return (
     <>
-      <div className="mb-20 w-full">
-        {posts.length > 0 ? (
-          <div className="mx-auto w-full max-w-screen-xl md:mb-28 lg:w-5/6">
-            <Link href={`/${posts[0].slug}`}>
-              <div className="group relative mx-auto h-80 w-full overflow-hidden sm:h-150 lg:rounded-xl">
-                <BlurImage
-                  alt={posts[0].title ?? ""}
-                  blurDataURL={posts[0].imageBlurhash ?? placeholderBlurhash}
-                  className="h-full w-full object-cover group-hover:scale-105 group-hover:duration-300"
-                  width={1300}
-                  height={630}
-                  placeholder="blur"
-                  src={posts[0].image ?? "/placeholder.png"}
-                />
-              </div>
-              <div className="mx-auto mt-10 w-5/6 lg:w-full">
-                <h2 className="my-10 font-title text-4xl dark:text-white md:text-6xl">
-                  {posts[0].title}
-                </h2>
-                <p className="w-full text-base dark:text-white md:text-lg lg:w-2/3">
-                  {posts[0].description}
-                </p>
-                <div className="flex w-full items-center justify-start space-x-4">
-                  <div className="relative h-8 w-8 flex-none overflow-hidden rounded-full">
-                    {data.user?.image ? (
-                      <BlurImage
-                        alt={data.user?.name ?? "User Avatar"}
-                        width={100}
-                        height={100}
-                        className="h-full w-full object-cover"
-                        src={data.user?.image}
-                      />
-                    ) : (
-                      <div className="absolute flex h-full w-full select-none items-center justify-center bg-stone-100 text-4xl text-stone-500">
-                        ?
-                      </div>
-                    )}
-                  </div>
-                  <p className="ml-3 inline-block whitespace-nowrap align-middle text-sm font-semibold dark:text-white md:text-base">
-                    {data.user?.name}
-                  </p>
-                  <div className="h-6 border-l border-stone-600 dark:border-stone-400" />
-                  <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 dark:text-stone-400 md:text-base">
-                    {toDateString(posts[0].createdAt)}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Image
-              alt="missing post"
-              src="https://illustrations.popsy.co/gray/success.svg"
-              width={400}
-              height={400}
-              className="dark:hidden"
-            />
-            <Image
-              alt="missing post"
-              src="https://illustrations.popsy.co/white/success.svg"
-              width={400}
-              height={400}
-              className="hidden dark:block"
-            />
-            <p className="font-title text-2xl text-stone-600 dark:text-stone-400">
-              No posts yet.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {posts.length > 1 && (
-        <div className="mx-5 mb-20 max-w-screen-xl lg:mx-24 2xl:mx-auto">
-          <h2 className="mb-10 font-title text-4xl dark:text-white md:text-5xl">
-            More stories
-          </h2>
-          <div className="grid w-full grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
-            {posts.slice(1).map((metadata: any, index: number) => (
-              <BlogCard key={index} data={metadata} />
-            ))}
-          </div>
-        </div>
-      )}
+        (return <StaticSiteRender siteData={siteData} domain={domain} />);
     </>
   );
 }
+
+
+export function StaticSiteRender({siteData, domain}: {siteData: LocalSiteData, domain: string}) {
+  return(
+    <div>
+        <div className="flex flex-col justify-center items-center">
+          <div>
+
+            {siteData.parsedSections.map((section) => (
+              <SectionComponent
+                key={section.id}
+                section = {section}
+                domain = {domain}
+              />
+            ))}
+          </div>
+        </div>
+    </div>
+  )
+}
+
+
+
+function SectionComponent({ section, domain }: { section: Section , domain: string }) {
+
+  const isHeader = (content: any): content is Header => 'title' in content;
+  const isTextBox = (content: any): content is TextBox => 'content' in content;
+  const isContact = (content: any): content is Contact => 'socials' in content;
+  const isMedia = (content: any): content is Media => 'mediaItems' in content;
+  const isFooter = (content: any): content is Footer => 'quote' in content;
+
+  const renderContent = () => {
+    switch (section.type) {
+      case 'header':
+        return isHeader(section.content) ? (
+          <div className="flex flex-row gap-3">
+            <ProfileHeader
+              imageUrl={section.content.profileUrl}
+              title={section.content.title}
+            />
+          </div>
+        ) : null;
+      case "textbox":
+        return isTextBox(section.content) ?
+          <div>
+            <SitePlateEditor content={(section.content as TextBox).content}></SitePlateEditor>
+          </div> : 
+          <div></div>;
+      case "contact":
+        return isContact(section.content) ? <div>
+          <ShowContact socials={(section.content as Contact).socials}></ShowContact>
+          </div> : null;
+      case "projects":
+        return <div><ProjectsDisplay section={section} domain={domain}></ProjectsDisplay></div>;
+      case "media":
+        return isMedia(section.content) ? (
+          <MediaCarousel mediaItems={ (section.content as Media).mediaItems || []}></MediaCarousel>
+        ) : null;
+      case "footer":
+        return isFooter(section.content) ? <FooterDialog quote={(section.content as Footer).quote}  /> : null;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className={`flex flex-row flex-shrink-0 flex-grow-0`}>
+      <div>
+        {renderContent()}
+      </div>
+    </div>
+  );
+}
+
+function ProfileHeader({imageUrl, title }: {imageUrl: string, title: string }) {
+  return (
+    <div className="flex flex-row gap-3 items-center">
+        {imageUrl ? (
+          <Avatar>
+            <AvatarImage width={30} height={30} src={imageUrl} alt={title} />
+            <AvatarFallback>{title[0]}</AvatarFallback>
+          </Avatar>
+        ) : (
+          <Avatar>
+            <AvatarFallback className="bg-gray-300">{title[0]}</AvatarFallback>
+          </Avatar>
+        )}
+        <div>{title}</div>
+    </div>
+  );
+}
+
+function ShowContact({ socials }: { socials: Social[] }) {
+  return (
+    <div>
+      {socials.map((social, index) => (
+        social.display && (
+          <a key={index} href={social.url}>
+            {social.platform}
+          </a>
+        )
+      ))}
+    </div>
+  )
+}
+
+function MediaCarousel({mediaItems }: { mediaItems: MediaItem[]}) {
+  return (
+    <div className="media-carousel">
+      <Carousel className="w-full max-w-sm">
+        <CarouselContent className="-ml-1">
+            <>
+              {mediaItems.map((mediaItem, index) => (
+                <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card>
+                      <CardContent className="flex aspect-square items-center justify-center p-6">
+                        {mediaItem.type === 'image' ? (
+                          <img
+                            src={mediaItem.href}
+                            alt={mediaItem.alt || 'Image'}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <video
+                            src={mediaItem.href}
+                            className="object-cover w-full h-full"
+                            controls
+                          />
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </>
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </div>
+  );
+}
+
+function FooterDialog({quote }: { quote: string }) {
+
+  return (
+    <div>
+      <Label> {quote} </Label>
+
+      </div>
+
+  );
+}
+

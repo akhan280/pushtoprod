@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { Site } from '@prisma/client';
 import { getAllColumnProjects, getMultipleProjects, updateSite, updateSiteJSON } from '../site-actions';
-import { LocalSiteData, Section, SiteProjects } from '../../app/app/(dashboard)/site/types';
+import { LocalSiteData, Section, SiteProjects } from '../../components/site/site-interfaces';
 
 export interface SiteProject {
   id: string;
@@ -138,7 +138,6 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
 
     setLocalSiteData: (data: LocalSiteData) => set({ localSite: data }),
 
-  
     updateSection: async (sectionId, updates) => {
       const state = get();
       if (!state.localSite) {
@@ -178,8 +177,6 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       }
   },
 
-  
-  
   moveSection: (oldIndex, newIndex) => set((state) => {
       if (!state.localSite) return state;
   
@@ -196,27 +193,84 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       };
     }),
   
-    addSection: (newSection) => set((state) => {
+    addSection: async (newSection) => {
+      const state = get();
       if (!state.localSite) return state;
   
-      return {
-        ...state,
-        localSite: {
-          ...state.localSite,
-          parsedSections: [...state.localSite.parsedSections, newSection]
-        }
-      };
-    }),
+      const updatedSections = [...state.localSite.parsedSections, newSection];
+      console.log('[SITE SLICE] Updating Sections:', updatedSections);
   
-    removeSection: (sectionId) => set((state) => {
+      const updatedLocalSite = {
+          ...state.localSite,
+          parsedSections: updatedSections,
+      };
+  
+      set({ localSite: updatedLocalSite });
+  
+      try {
+          console.log('Entering updateSiteJSON...');
+          // Call the async function to update the site JSON
+          const site = await updateSiteJSON({
+              ...updatedLocalSite,
+              sections: JSON.stringify(updatedSections),
+          });
+  
+          console.log('Site updated successfully', site);
+  
+          // Return the new state after successful async operation
+          return {
+              ...state,
+              localSite: {
+                  ...state.localSite,
+                  parsedSections: updatedSections,
+              },
+          };
+      } catch (error) {
+          console.error('Failed to update site:', error);
+          throw error;
+      }
+    },
+
+    removeSection: async (sectionId) => {
+      console.log('removing')
+      const state = get();
       if (!state.localSite) return state;
-  
-      return {
-        ...state,
-        localSite: {
-          ...state.localSite,
-          parsedSections: state.localSite.parsedSections.filter(section => section.id !== sectionId)
-        }
+    
+      // Filter out the section with the given sectionId
+      const updatedSections = state.localSite.parsedSections.filter(section => section.id !== sectionId);
+      
+      console.log('[SITE SLICE] Removing Section ID:', sectionId);
+      console.log('[SITE SLICE] Updated Sections:', updatedSections);
+    
+      const updatedLocalSite = {
+        ...state.localSite,
+        parsedSections: updatedSections,
       };
-    }),
+    
+      // Immediately update the local state with the new sections
+      set({ localSite: updatedLocalSite });
+    
+      try {
+        console.log('Entering updateSiteJSON...');
+        // Call the async function to update the site JSON
+        const site = await updateSiteJSON({
+          ...updatedLocalSite,
+          sections: JSON.stringify(updatedSections),
+        });
+    
+        console.log('Site updated successfully', site);
+    
+        // Return the new state after successful async operation
+        return {
+          ...state,
+          localSite: {
+            ...state.localSite,
+            parsedSections: updatedSections,
+          },
+        };
+      } catch (error) {
+        console.error('Failed to update site:', error);
+        throw error;
+      }
+    },
 });

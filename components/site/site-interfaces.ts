@@ -1,5 +1,5 @@
 import { Site } from "@prisma/client";
-import { Project, Technology } from "../../../../lib/types";
+import { Project, Technology } from "../../lib/types";
 
 // Base interfaces
 

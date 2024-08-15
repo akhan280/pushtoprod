@@ -104,7 +104,7 @@ export function ProjectContextMenu({ columnId, projects }: ProjectContextMenuPro
                 <ContextMenuCheckboxItem
                   key={project.id}
                   checked={checkedItems[project.id]}
-                  onSelect={(event) => event.preventDefault()}
+                  onSelect={(event: any) => event.preventDefault()}
                   onCheckedChange={() => handleCheckboxChange(project.id)}
                 >
                   {project.title}

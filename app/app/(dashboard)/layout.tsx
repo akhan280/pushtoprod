@@ -9,7 +9,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <TooltipProvider>
 
       <div className="min-h-screen dark:bg-black">{children}</div>
-      <div><Navbar></Navbar></div>
 
       </TooltipProvider>
     </div>

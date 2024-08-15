@@ -33,6 +33,7 @@ export async function updateSession(request: NextRequest, hostname: string, path
   console.log("[MIDDLEWARE] User Data:", user?.role);
 
   // Handle requests for the app subdomain
+
   if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
 
     // Case 1: If the user is authenticated but unpaid, redirect to checkout
@@ -89,6 +90,7 @@ export async function updateSession(request: NextRequest, hostname: string, path
   }
 
   // Handle requests for the main domain or localhost
+  console.log('[Hostname]', hostname)
   if (hostname === "localhost:3000" || hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
 
     // If user is authenticated, rewrite to app path
@@ -106,21 +108,11 @@ export async function updateSession(request: NextRequest, hostname: string, path
     );
   }
 
+  console.log('[Hostname]', hostname, path)
   // Default rewrite for other cases
-  return NextResponse.rewrite(new URL(`/${hostname}${path}`, request.url));
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
+  const newUrl = new URL(`/${hostname}${path}`, request.url);
+  console.log(`[Rewriting (last one) to ${newUrl.toString()}]`);
+  return NextResponse.rewrite(newUrl);
 
   return supabaseResponse;
 }

@@ -14,7 +14,7 @@ import { customAlphabet } from "nanoid";
 import { getBlurDataURL } from "@/lib/utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Project } from "./types";
-import { LocalSiteData } from "../app/app/(dashboard)/site/types";
+import { LocalSiteData } from "../components/site/site-interfaces";
 import { error } from "console";
 import { SiteProject } from "./hooks/site-slice";
 
@@ -323,21 +323,24 @@ export const getAllColumnProjects = async (): Promise<GetAllColumnProjectsProp> 
   }
 };
 
-export const getMultipleProjects = async (projectIds: string[]): Promise<any> => {
-  const session = await getSession();
-  if (!session?.id) {
-    return {
-      projects: [],
-      error: "Not authenticated",
-    };
-  }
+export const getMultipleProjects = async (projectIds: string[], domain: string): Promise<any> => {
 
-  try {
-    const allUserProjects = await prisma.project.findMany({
-      where: {
-        collaborators: {
-          some: {
-            userId: session.id,
+  const subdomain = domain.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+  ? domain.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`, "")
+  : null;
+
+
+    const data = await  prisma.site.findUnique({
+      where: subdomain ? { subdomain } : { customDomain: domain },
+      include: { user: true },
+    });
+
+    try {
+      const allUserProjects = await prisma.project.findMany({
+        where: {
+          collaborators: {
+            some: {
+              userId: data?.user.id,
           },
         },
       },

@@ -17,35 +17,32 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer, MediaItem, SiteProjects } from "../types";
+import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer, MediaItem, SiteProjects } from "./site-interfaces";
 import { Github, GripVertical, Instagram, Linkedin, Sparkles, Twitter } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/plate-ui/avatar";
-import { Input } from "../../../../../components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/plate-ui/avatar";
+import { Input } from "../ui/input";
 import { toast } from "sonner";
-import useMainStore from "../../../../../lib/hooks/use-main-store";
-import { PlateEditor } from "../../../../../components/projects/plate";
+import useMainStore from "../../lib/hooks/use-main-store";
 import { Plate, Value } from "@udecode/plate-common";
 import { ELEMENT_PARAGRAPH } from "@udecode/plate-paragraph";
-import { FixedToolbar } from "../../../../../components/ui/plate-ui/fixed-toolbar";
-import { FixedToolbarButtons } from "../../../../../components/ui/plate-ui/fixed-toolbar-buttons";
-import { Editor } from "../../../../../components/ui/plate-ui/editor";
-import { FloatingToolbar } from "../../../../../components/ui/plate-ui/floating-toolbar";
-import { FloatingToolbarButtons } from "../../../../../components/ui/plate-ui/floating-toolbar-buttons";
+import { Editor } from "../ui/plate-ui/editor";
+import { FloatingToolbar } from "../ui/plate-ui/floating-toolbar";
+import { FloatingToolbarButtons } from "../ui/plate-ui/floating-toolbar-buttons";
 import { ELEMENT_H2 } from "@udecode/plate-heading";
 import {
   plugins,
 } from "@/plateconfig";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd/dist/core";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../components/ui/dialog";
-import { Button } from "../../../../../components/ui/button";
-import { Label } from "../../../../../components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-import { MultiSelect } from "../../../../../components/ui/multi-select-dropdown";
+import { MultiSelect } from "./multi-select-dropdown";
 import { getAllColumnProjects, getMultipleProjects } from "@/lib/site-actions";
-import { ProjectContextMenu } from "../../../../../components/ui/project-sections-menu";
-import { SiteProject } from "../../../../../lib/hooks/site-slice";
+import { ProjectContextMenu } from "./project-sections-menu";
+import { SiteProject } from "../../lib/hooks/site-slice";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -119,7 +116,7 @@ export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSit
 
 function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: sectionId });
-  const { localSite, updateSection } = useMainStore();
+  const { localSite, updateSection, removeSection } = useMainStore();
 
   const section = localSite!.parsedSections.find(s => s.id === sectionId)!;
 
@@ -136,7 +133,6 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
   const isTextBox = (content: any): content is TextBox => 'content' in content;
   const isContact = (content: any): content is Contact => 'socials' in content;
   const isMedia = (content: any): content is Media => 'mediaItems' in content;
-  // Array.isArray(content) && content.every(item => 'href' in item && 'type' in item);
   const isFooter = (content: any): content is Footer => 'quote' in content;
 
   const renderContent = () => {
@@ -154,15 +150,14 @@ function SectionComponent({ sectionId, isOver }: { sectionId: number, isOver: bo
       case "textbox":
         return isTextBox(section.content) ?
           <div>
-            <SitePlateEditor handleUpdate={handleUpdate} section={section}></SitePlateEditor></div> : null;
-
+            <SitePlateEditor removeSection = {removeSection} handleUpdate={handleUpdate} section={section}></SitePlateEditor></div> : null;
       case "contact":
         return isContact(section.content) ? <div><ShowContact section={section}></ShowContact><ContactDialog handleUpdate={handleUpdate} section={section}></ContactDialog></div> : null;
       case "projects":
         return <div><ProjectsDisplay section={section}></ProjectsDisplay></div>;
       case "media":
         return isMedia(section.content) ? (
-          <MediaCarousel section={section} handleUpdate={handleUpdate}></MediaCarousel>
+          <MediaCarousel removeSection = {removeSection} section={section} handleUpdate={handleUpdate}></MediaCarousel>
         ) : null;
       case "footer":
         return isFooter(section.content) ? <FooterDialog section={section} handleUpdate={handleUpdate} /> : null;
@@ -358,7 +353,7 @@ function ProjectsDisplay({ section }: { section: Section }) {
 
 // Combine the editors into a single component with tabs
 
-function SitePlateEditor({ handleUpdate, section }: { handleUpdate: (field: string, value: any) => void, section: Section }) {
+function SitePlateEditor({ removeSection, handleUpdate, section }: { removeSection: (sectionId: number) => void, handleUpdate: (field: string, value: any) => void, section: Section }) {
 
   const handleEditorChange = async (newValue: Value) => {
     const serializedValue = JSON.stringify(newValue);
@@ -388,19 +383,22 @@ function SitePlateEditor({ handleUpdate, section }: { handleUpdate: (field: stri
 
 
   return (
+    <>
+          <Button variant={"destructive"} onClick={() => {console.log('clicked'), removeSection(section.id)}}>Delete</Button>
     <DndProvider backend={HTML5Backend}>
       <Plate
         onChange={handleEditorChange}
         plugins={plugins}
         initialValue={deserializedInitialValue}
       >
-
         <Editor />
         <FloatingToolbar>
           <FloatingToolbarButtons />
         </FloatingToolbar>
       </Plate>
     </DndProvider>
+    </>
+
   );
 }
 
@@ -468,12 +466,7 @@ function ContactDialog({ handleUpdate, section }: { handleUpdate: (field: string
   );
 }
 
-interface MediaCarouselProps {
-  handleUpdate: (field: string, value: any) => void;
-  section: Section;
-}
-
-function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
+function MediaCarousel({ removeSection, handleUpdate, section }: {  removeSection: (sectionId: number) => void, handleUpdate: (field: string, value: any) => void; section: Section;}) {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>(
     (section.content as Media).mediaItems || []
   );
@@ -538,6 +531,7 @@ function MediaCarousel({ handleUpdate, section }: MediaCarouselProps) {
   }, [mediaItems]);
   return (
     <div className="media-carousel">
+      <Button variant={"destructive"} onClick={() => {console.log('clicked'), removeSection(section.id)}}>Delete</Button>
       AF
       <Carousel className="w-full max-w-sm">
         <CarouselContent className="-ml-1">
@@ -645,6 +639,8 @@ function FooterDialog({ handleUpdate, section }: { handleUpdate: (field: string,
           className="col-span-3"
           onChange={(e) => handleFooterChange(e.target.value)}
         />
+
+        <Label> {footer} </Label>
 
 
       </DialogContent>
