@@ -33,7 +33,7 @@ function PlatformComponent({ platform }: PlatformComponentProps) {
     const handleGenerate = async () => {
         setIsGenerating(true)
         try {
-            const generatedContent = await POST(platform.id)
+            // const generatedContent = await POST(platform.id)
             setContent(generatedContent)
         } catch (error) {
             console.error('Error generating content:', error)
