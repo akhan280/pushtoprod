@@ -208,7 +208,6 @@ export const updateProjectStatus = async (id: string, columnId: string) => {
   }
 }
 
-
 export const getUser = async () => {
   const session = await getSession();
   if (!session?.id) {

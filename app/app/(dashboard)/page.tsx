@@ -13,7 +13,6 @@ export default async function Overview() {
   return (
     <div className="flex min-h-screen flex-col">
         <KanbanBoard fetchedProjects={projects} fetchedUser={data.user!} />
-        <NavigationComponent site={false}></NavigationComponent> 
     </div>
   );
 }

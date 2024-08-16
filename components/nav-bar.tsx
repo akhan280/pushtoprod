@@ -15,6 +15,15 @@ export default function NavigationComponent({ site = false }: NavbarProps) {
   const pathname = usePathname();
   const { previousUrl, addSection, user } = useMainStore();
 
+  console.log('pathname', pathname)
+  if (pathname === '') {
+
+  }
+
+
+  const basePath = `/site/${pathname.split("/")[2]}`;
+
+  
   function handleAddSection(type: "textbox" | "media") {
     const content = type === "textbox"
       ? {
@@ -30,8 +39,6 @@ export default function NavigationComponent({ site = false }: NavbarProps) {
 
     addSection({ id: Date.now(), type, content });
   };
-
-  const basePath = `/site/${pathname.split("/")[2]}`;
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto mb-4 flex h-full max-h-14 origin-bottom">

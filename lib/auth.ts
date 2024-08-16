@@ -2,13 +2,13 @@
 import prisma from "@/lib/prisma";
 import { createClient } from "./utils/supabase-server";
 import { User } from "./types";
+import useMainStore from "./hooks/use-main-store";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
 export async function getSession(): Promise<User | null> {
   const supabase = createClient();
-  const { data, error } = await supabase.auth.getUser();
-
+  const { data, error } = await supabase.auth.getUser();  
   if (error || !data.user) {
     return null;
   }
