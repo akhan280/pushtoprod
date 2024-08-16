@@ -6,6 +6,7 @@ import { replaceLinks } from "@/lib/remark-plugins";
 import { Tweet } from "react-tweet";
 import BlurImage from "@/components/blur-image";
 import styles from "./mdx.module.css";
+import Link from "next/link";
 
 export default function MDX({ source }: { source: MDXRemoteProps }) {
   const components = {
@@ -46,7 +47,7 @@ function Examples({ data }: { data: string }) {
 
 function ExamplesCard({ data }: { data: ExampleCardProps }) {
   return (
-    <a href={`https://${data.url}`} target="_blank" rel="noreferrer">
+    <Link href={`https://${data.url}`} target="_blank" rel="noreferrer">
       <div className="ease hidden rounded-2xl border-2 border-gray-100 bg-white shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-xl lg:block">
         <div className="overflow-hidden rounded-t-2xl">
           <BlurImage
@@ -89,6 +90,6 @@ function ExamplesCard({ data }: { data: ExampleCardProps }) {
           </p>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }

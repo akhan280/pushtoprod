@@ -83,7 +83,7 @@ function SubmitButton() {
       )}
       disabled={pending}
     >
-      {pending ? <LoadingDots color="#808080" /> : <p>Report Abuse</p>}
+      {pending ? <LoadingDots color="#808080" /> : <div>Report Abuse</div>}
     </button>
   );
 }

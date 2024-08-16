@@ -1,10 +1,10 @@
 import "@/styles/globals.css";
 import { cal, inter } from "@/styles/fonts";
 import { Analytics } from "@vercel/analytics/react";
-import { Providers } from "./providers";
 import { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { Toaster } from "../components/ui/toaster";
+import { ModalProvider } from "../components/modal/provider";
 
 const title =
   "Push2Prod";
@@ -39,11 +39,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(cal.variable, inter.variable)}>
-        <Providers>
+        <ModalProvider>
           {children}
-          <Analytics />
-          <Toaster />
-        </Providers>
+        </ModalProvider>
+        <Analytics />
+        <Toaster />
       </body>
     </html>
   );

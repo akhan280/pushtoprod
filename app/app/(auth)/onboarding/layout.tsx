@@ -65,7 +65,7 @@ export default function OnboardingLayout({
               <path
                 d="M247.351 4.76461C192.832 -102.249 90.5914 -159.429 18.9906 -122.951C-52.6103 -86.4732 -117.673 80.9868 -63.1543 188C-8.63529 295.013 144.821 301.056 216.422 264.578C288.022 228.1 301.87 111.778 247.351 4.76461Z"
                 fill="url(#paint0_radial_438_1470)"
-                fill-opacity="0.5"
+                fillOpacity="0.5"
               />
               <defs>
                 <radialGradient
@@ -111,7 +111,7 @@ export default function OnboardingLayout({
               <path
                 d="M247.351 4.76461C192.832 -102.249 90.5914 -159.429 18.9906 -122.951C-52.6103 -86.4732 -117.673 80.9868 -63.1543 188C-8.63529 295.013 144.821 301.056 216.422 264.578C288.022 228.1 301.87 111.778 247.351 4.76461Z"
                 fill="url(#paint0_radial_438_1470)"
-                fill-opacity="0.5"
+                fillOpacity="0.5"
               />
               <defs>
                 <radialGradient

@@ -20,7 +20,7 @@ export const LinkElement = withRef<typeof PlateElement>(
         {...(linkProps as any)}
         {...props}
       >
-        <a>{children}</a>
+        <div>{children}</div>
       </PlateElement>
     );
   }

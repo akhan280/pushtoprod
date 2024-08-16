@@ -178,6 +178,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 export default function GithubProperty() {
     const { selectedProject, setProjectProperty } = useMainStore();
@@ -219,13 +220,13 @@ export default function GithubProperty() {
                 <div className="flex items-center space-x-12">
                     <div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-full px-4 py-2">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <a 
+                        <Link 
                             href={selectedProject.githuburl} 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             className="text-gray-700">
                             {projectName}
-                        </a>
+                        </Link>
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger>Edit</DropdownMenuTrigger>

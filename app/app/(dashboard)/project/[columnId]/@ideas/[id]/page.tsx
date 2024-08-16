@@ -39,7 +39,7 @@ export default function IdeasRenderer({ params }: { params: {id: string} }) {
   
     return (
         <div className="flex flex-col justify-center items-center place-items-center">
-            <Header partial={false}/>
+            <Header partial={false}></Header>
       </div>
     );
 }

@@ -209,7 +209,7 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
     return updatedLocalSite;
   },
   
-    addSection: async (newSection) => {
+    addSection: (newSection) => {
       const state = get();
       if (!state.localSite) return state;
   
@@ -226,7 +226,7 @@ export const createSiteSlice: StateCreator<SiteSlice> = (set, get) => ({
       try {
           console.log('Entering updateSiteJSON...');
           // Call the async function to update the site JSON
-          const site = await updateSiteJSON({
+          const site = updateSiteJSON({
               ...updatedLocalSite,
               sections: JSON.stringify(updatedSections),
           });

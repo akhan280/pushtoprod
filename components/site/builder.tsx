@@ -18,7 +18,7 @@ import {
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { LocalSiteData, Section, Header, TextBox, Contact, Media, Footer, MediaItem, SiteProjects } from "./site-interfaces";
-import { Github, GripVertical, Instagram, Linkedin, Sparkles, Twitter } from "lucide-react";
+import { Github, GripVertical, Instagram, Linkedin, Loader2, Sparkles, Twitter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/plate-ui/avatar";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ import { MultiSelect } from "./multi-select-dropdown";
 import { getAllColumnProjects, getMultipleProjects } from "@/lib/site-actions";
 import { ProjectContextMenu } from "./project-sections-menu";
 import { SiteProject } from "../../lib/hooks/site-slice";
+import { ButtonLoading } from "../ui/loading-ui/button-loading";
 
 export function SiteRender({ initialSiteData, url }: { initialSiteData: LocalSiteData, url: string }) {
   const { localSite, setLocalSiteData, moveSection } = useMainStore();
@@ -267,7 +268,7 @@ function Uploader({ onUpdate, imageUrl, title }: { onUpdate: (field: string, val
       ) : (
         <div onClick={() => setIsEditing(true)} style={{ cursor: 'pointer' }}>{title}</div>
       )}
-      {uploading && <span>Uploading...</span>}
+      {uploading && <ButtonLoading></ButtonLoading>}
     </div>
   );
 }
@@ -499,7 +500,7 @@ function MediaCarousel({ removeSection, handleUpdate, section }: {  removeSectio
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/mediaUpload", {
         method: "POST",
         body: formData,
       });

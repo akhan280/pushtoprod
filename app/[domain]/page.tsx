@@ -158,9 +158,9 @@ function ShowContact({ socials }: { socials: Social[] }) {
     <div>
       {socials.map((social, index) => (
         social.display && (
-          <a key={index} href={social.url}>
+          <div key={index} href={social.url}>
             {social.platform}
-          </a>
+          </div>
         )
       ))}
     </div>

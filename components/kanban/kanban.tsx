@@ -27,6 +27,9 @@ import { useRouter } from "next/navigation";
 import { ButtonLoading } from "../ui/loading-ui/button-loading";
 import AddNewProject from "../add-new-project";
 import { updateProjectStatus } from "../../lib/actions";
+import Profile from "../profile";
+import Nav from "../nav-bar";
+import AddProjectDialog from "../dialog/add-project-dialog";
 
 const defaultCols = [
   {id: "ideas" as const, title: "Ideas"},
@@ -79,7 +82,6 @@ export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
   );
 
   return (
-    
     <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}onDragOver={onDragOver}>
       {loading && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
@@ -87,8 +89,8 @@ export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
         </div>
       )}
       <>
-      <AddNewProject/>
       <BoardContainer>
+      <AddProjectDialog></AddProjectDialog>
         <SortableContext items={columnsId}>
           {columns
             .filter((col) => col.id === "development" || col.id === "ideas")

@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, ChangeEvent } from "react";
 import { toast } from "sonner";
 import LoadingDots from "./ui/loading-ui/loading-dots";
+import Link from "next/link";
 
 export default function Uploader() {
   const [data, setData] = useState<{
@@ -58,14 +59,14 @@ export default function Uploader() {
                   <p className="font-semibold text-gray-900">File uploaded!</p>
                   <p className="mt-1 text-sm text-gray-500">
                     Your file has been uploaded to{" "}
-                    <a
+                    <Link
                       className="font-medium text-gray-900 underline"
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {url}
-                    </a>
+                    </Link>
                   </p>
                 </div>
               </div>,

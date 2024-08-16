@@ -108,7 +108,7 @@ export default async function SitePostPage({
             {data.description}
           </p>
         </div>
-        <a
+        <div
           // if you are using Github OAuth, you can get rid of the Twitter option
           href={
             data.site?.user?.username
@@ -137,7 +137,7 @@ export default async function SitePostPage({
               by <span className="font-semibold">{data.site?.user?.name}</span>
             </div>
           </div>
-        </a>
+        </div>
       </div>
       <div className="relative m-auto mb-10 h-80 w-full max-w-screen-lg overflow-hidden md:mb-20 md:h-150 md:w-5/6 md:rounded-2xl lg:w-2/3">
         <BlurImage

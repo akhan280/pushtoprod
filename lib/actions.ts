@@ -22,8 +22,6 @@ import { Project, Technology, User } from "./types";
 // );
 // import OpenAI from "openai"
 
-
-
 export async function PopulateSupabase() {
   const data = {
     tech1: {
@@ -404,6 +402,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
                 paid: true,
                 siteReferral: true,
                 siteId: true,
+                managedAI: true,
               },
             },
           },
@@ -429,6 +428,7 @@ export const getProjects = async (): Promise<{ projects: Project[] | null, error
           paid: collaborator.user.paid,
           siteId: collaborator.user.siteId ?? '',
           siteReferral: collaborator.user.siteReferral ?? [],
+          managedAI: collaborator.user.managedAI,
         }
       })),
       technologies: project.technologies ?? null,
@@ -488,6 +488,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
                 paid: true,
                 siteReferral: true,
                 siteId: true,
+                managedAI: true,
               },
             },
           },
@@ -518,6 +519,7 @@ export const getSingularProject = async (projectId: string): Promise<{ project: 
           paid: collaborator.user.paid,
           siteId: collaborator.user.siteId ?? ``,
           siteReferral: collaborator.user.siteReferral,
+          managedAI: collaborator.user.managedAI,
         },
       })),
       technologies: project.technologies ?? null,

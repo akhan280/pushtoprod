@@ -36,10 +36,9 @@ export default function ProjectLayout({
         return (
           <>
             {development}
-            {/* <PlateEditor /> */}
           </>
         );
-      case "toLaunch":
+      case "to-launch":
         return toLaunch
       default:
         return null;

@@ -1,15 +1,12 @@
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 import { createClient } from "../../../lib/utils/supabase-server";
-import { PrismaClient } from "@prisma/client";
 
 // Initialize Supabase client
 
 export const config = {
   runtime: 'edge',
 };
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const supabase = createClient();
@@ -47,13 +44,6 @@ export async function POST(req: Request) {
       .from('avatars')
       .getPublicUrl(filePath);
     console.log('Public URL generated:', publicUrl);
-
-    const profileUpdate = await prisma.user.update({
-      where: {id: user?.id},
-      data: {
-        image: publicUrl,
-      }
-    })
 
     return NextResponse.json({ 
       url: publicUrl,

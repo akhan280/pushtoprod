@@ -39,10 +39,10 @@ export default function Overview() {
       </div>
 
       <div className="flex flex-col space-y-6">
-        <h1 className="font-cal text-3xl font-bold dark:text-white">
+        <div className="font-cal text-3xl font-bold dark:text-white">
           Recent Posts
-        </h1>
-        <Suspense
+        </div>
+        {/* <Suspense
           fallback={
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
@@ -50,9 +50,9 @@ export default function Overview() {
               ))}
             </div>
           }
-        >
+        > */}
           <Posts limit={8} />
-        </Suspense>
+        {/* </Suspense> */}
       </div>
     </div>
   );

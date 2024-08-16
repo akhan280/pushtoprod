@@ -8,10 +8,9 @@ import { cva } from "class-variance-authority";
 import { GripVertical } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Card, CardContent, CardHeader } from "../ui/card";
-import { Button } from "../ui/button";
 import { Column, Project } from "../../lib/types";
 import { ProjectCard } from "./project-card";
-import useMainStore from "../../lib/hooks/use-main-store";
+
 
 export type ColumnType = "Column";
 export interface ColumnDragData {

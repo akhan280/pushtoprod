@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import useMainStore from "../lib/hooks/use-main-store";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Button } from "./ui/button";
 
 
@@ -12,13 +11,12 @@ export default function AddNewProject() {
   function handleValueChange() {
     // PopulateSupabase();
     showDialog(true);
-    setSelectedProject(null);
     setSelectedValue("");
   }
 
   return (
     <>
-      <Button onClick={handleValueChange}> Add new</Button>
+      <Button onClick={handleValueChange} className="max-w-md rounded-full"> Add new project</Button>
     </>
   );
 }

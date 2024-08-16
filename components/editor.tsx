@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import LoadingDots from "./ui/loading-ui/loading-dots";
 import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 type PostWithSite = Post & { site: { subdomain: string | null } | null };
 
@@ -42,14 +43,14 @@ export default function Editor({ post }: { post: PostWithSite }) {
     <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
       <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
         {data.published && (
-          <a
+          <Link
             href={url}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1 text-sm text-stone-400 hover:text-stone-500"
           >
             <ExternalLink className="h-4 w-4" />
-          </a>
+          </Link>
         )}
         <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 dark:bg-stone-800 dark:text-stone-500">
           {isPendingSaving ? "Saving..." : "Saved"}
@@ -83,7 +84,7 @@ export default function Editor({ post }: { post: PostWithSite }) {
           {isPendingPublishing ? (
             <LoadingDots />
           ) : (
-            <p>{data.published ? "Unpublish" : "Publish"}</p>
+            <div>{data.published ? "Unpublish" : "Publish"}</div>
           )}
         </button>
       </div>

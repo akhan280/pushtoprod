@@ -39,7 +39,6 @@ export type Project = {
   display: boolean | null;
   excalidrawEditor?: any;
   productHuntRank?: number;
-  launchDate: Date;
 }
 
 export type Collaborator =  {

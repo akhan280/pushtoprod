@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function CTA() {
@@ -42,14 +43,14 @@ export default function CTA() {
         >
           This is a demo site showcasing how to build a multi-tenant application
           with{" "}
-          <a
+          <Link
             className="font-semibold text-black underline dark:text-white"
             href="https://platformize.co"
             rel="noreferrer"
             target="_blank"
           >
             custom domain
-          </a>{" "}
+          </Link>{" "}
           support.
         </p>
       </div>
@@ -58,22 +59,22 @@ export default function CTA() {
           closeCTA ? "hidden lg:flex" : ""
         } flex w-full flex-col space-y-3 text-center sm:flex-row sm:space-x-3 sm:space-y-0 lg:w-auto`}
       >
-        <a
+        <Link
           className="whitespace-no-wrap flex-auto rounded-md border border-stone-200 px-5 py-1 font-title text-lg text-black transition-all duration-150 ease-in-out hover:border-black dark:border-stone-700 dark:text-white dark:hover:border-white sm:py-3"
           href="https://app.vercel.pub"
           rel="noreferrer"
           target="_blank"
         >
           Create your publication
-        </a>
-        <a
+        </Link>
+        <Link
           className="whitespace-no-wrap flex-auto rounded-md border border-black bg-black px-5 py-1 font-title text-lg text-white transition-all duration-150 ease-in-out hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white sm:py-3"
           href="https://vercel.com/guides/nextjs-multi-tenant-application"
           rel="noreferrer"
           target="_blank"
         >
           Clone and deploy
-        </a>
+        </Link>
       </div>
     </div>
   );
