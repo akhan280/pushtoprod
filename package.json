@@ -114,6 +114,7 @@
     "next-mdx-remote": "^4.4.1",
     "next-themes": "^0.3.0",
     "novel": "^0.1.22",
+    "openai": "^4.55.9",
     "openai-edge": "^1.2.2",
     "panzoom": "^9.4.3",
     "pinch-zoom-js": "^2.3.5",

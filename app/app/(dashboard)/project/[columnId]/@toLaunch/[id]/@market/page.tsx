@@ -33,10 +33,13 @@ function PlatformComponent({ platform }: PlatformComponentProps) {
     const { selectedProject} = useMainStore();
 
     const handleGenerate = async () => {
+        if (!selectedProject || !selectedProject.id || !selectedProject.title || !selectedProject.description) {
+            return;
+        }
         setIsGenerating(true)
         try {
             const generatedContent = await generateContent( platform.id, selectedProject.id, selectedProject.title, selectedProject.description)
-            setContent(generatedContent)
+            setContent(generatedContent.generatedContent ?? 'Content could not be generated');
         } catch (error) {
             console.error('Error generating content:', error)
             setContent('Failed to generate content. Please try again.')

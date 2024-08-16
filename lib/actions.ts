@@ -16,11 +16,12 @@ import { ColumnId } from "@/components/kanban/kanban";
 import { ProjectMovement } from "./hooks/kanban-slice";
 import { ImportedDataState } from "@excalidraw/excalidraw/types/data/types";
 import { Project, Technology, User } from "./types";
+import { Configuration, OpenAIApi } from "openai-edge";
 // const nanoid = customAlphabet(
 //   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 //   7,
-// );
-// import OpenAI from "openai"
+
+import OpenAI from "openai"
 
 export async function PopulateSupabase() {
   const data = {
@@ -649,13 +650,17 @@ export async function updateMermaidSchema(projectId: string, data: string) {
 }
 
 
-// const openai = new OpenAI();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Access the API key from environment variables
+});
+
 
 export async function generateContent(platformId: string, projectId: string, title: string, description: string) {
   try {
     // Step 1: Generate the content using OpenAI API
-    const completion = await openai.createChatCompletion({
-      model: "gpt-4",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
@@ -665,12 +670,12 @@ export async function generateContent(platformId: string, projectId: string, tit
                     - Project Title: ${title}
                     - Project Description: ${description}
     
-                    The content should be concise, compelling, and suitable for the {platformName} platform, taking into consideration the platform's audience and format. 
-                    Ensure the content aligns with best practices for {platformName} and is optimized to drive engagement and interest in the project.`,
+                    The content should be concise, compelling, and suitable for the platform, taking into consideration the platform's audience and format. 
+                    Ensure the content aligns with best practices for the platform and is optimized to drive engagement and interest in the project.`,
         },
         {
           role: "user",
-          content: `Please generate marketing content for the {platformName} platform based on the project's title "{projectTitle}" and the description: "{projectDescription}".`,
+          content: `Please generate marketing content for the platform based on the project's title "${title}" and the description: "${description}".`,
         },
       ],
       temperature: 0.7,
@@ -715,7 +720,8 @@ export async function generateContent(platformId: string, projectId: string, tit
 
     console.log("[generateAndSaveContent Server Action]", response);
 
-    return { project: response };
+    return { success: true, generatedContent: generatedContent };
+
   } catch (error: any) {
     console.error('[An error occurred while generating and saving content]', error);
     return { success: false, error: 'Failed to generate or save content' };
