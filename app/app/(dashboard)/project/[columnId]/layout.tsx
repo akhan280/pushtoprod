@@ -38,9 +38,10 @@ export default function ProjectLayout({
             {development}
           </>
         );
-      case "to-launch":
+      case "toLaunch":
         return toLaunch
       default:
+        console.log("failed")
         return null;
     }
   };
