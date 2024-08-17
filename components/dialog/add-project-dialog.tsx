@@ -54,7 +54,14 @@ export default function AddProjectDialog() {
                   src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/ideas.png"
                   alt="ideas"
                   className="rounded-3xl transition-all duration-300 hover:opacity-90 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
-                  onClick={() => { setRequestAdd("ideas") }}
+                  onClick = { async () => {
+
+                    setLoading(true);
+                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: [],  githuburl: "",  columnId: "ideas", tags: [], websiteurl: "", mermaidSchema: null, display: false});
+                    setLoading(false);
+                    router.push(`/project/ideas/${data.project?.id}`);
+
+                  }}
                 />
                 <Image
                   height={30}
@@ -66,7 +73,7 @@ export default function AddProjectDialog() {
                   onClick = { async () => {
 
                     setLoading(true);
-                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "",  githuburl: "",  columnId: "development", tags: [], websiteurl: ""});
+                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "",  githuburl: "",  columnId: "development", tags: [], websiteurl: "",  mermaidSchema: null, display: false});
                     setLoading(false);
                     router.push(`/project/development/${data.project?.id}`);
 
@@ -82,7 +89,7 @@ export default function AddProjectDialog() {
                   onClick={async () => {
 
                     setLoading(true);
-                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "", githuburl: "", columnId: "development", tags: [], websiteurl: ""});
+                    const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "", githuburl: "", columnId: "development", tags: [], websiteurl: "", mermaidSchema: null, display: false });
                     setLoading(false);
                     router.push(`/project/toLaunch/${data.project?.id}`);
 

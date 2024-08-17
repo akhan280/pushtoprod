@@ -43,7 +43,7 @@ export default function Header({
     </div>
   ) : (
     
-    <div className="pt-8">
+    <div className="pt-8 px-6 bg-white rounded-lg shadow-sm">
       <div className="mb-4">
         <Input
           value={selectedProject?.title || ""}
@@ -53,7 +53,7 @@ export default function Header({
         />
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-row items-start">
         <AutosizeTextarea
           placeholder="Description"
           className="text-md w-full border-0 bg-transparent text-gray-700 outline-none focus:ring-0"

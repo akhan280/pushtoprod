@@ -268,43 +268,9 @@ export const plugins = createPlugins(
 
 export const editorInitialValue = [
     {
-      type: ELEMENT_H2,
-      children: [
-        { text: '🌳 ' },
-        { text: 'Untitled' },
-      ],
-    },
-    {
       type: ELEMENT_PARAGRAPH,
       children: [
-        { text: 'Easily create headings of various levels, from H1 to H6, to structure your content and make it more organized.' },
-      ],
-    },
-    {
-      type: ELEMENT_BLOCKQUOTE,
-      children: [
-        { text: 'Create blockquotes to emphasize important information or highlight quotes from external sources.' },
-      ],
-    },
-    {
-      type: ELEMENT_CODE_BLOCK,
-      children: [
-        {
-          type: ELEMENT_CODE_LINE,
-          children: [{ text: '// Use code blocks to showcase code snippets' }],
-        },
-        {
-          type: ELEMENT_CODE_LINE,
-          children: [{ text: 'function greet() {' }],
-        },
-        {
-          type: ELEMENT_CODE_LINE,
-          children: [{ text: '  console.info(\'Hello World!\');' }],
-        },
-        {
-          type: ELEMENT_CODE_LINE,
-          children: [{ text: '}' }],
-        },
+        { text: 'add text' },
       ],
     },
     
