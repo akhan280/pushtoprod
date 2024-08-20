@@ -83,8 +83,11 @@ export default function AddProjectDialog() {
                     alt="ideas"
                     className="rounded-3xl transition-all duration-300 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
                     onClick={() => {
-                      setRequestAdd("ideas");
-                    }}
+                      setLoading(true);
+                      const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: [],  githuburl: "",  columnId: "ideas", tags: [], websiteurl: "", mermaidSchema: null, display: false});
+                      setLoading(false);
+                      router.push(`/project/ideas/${data.project?.id}`);
+                      }}
                   />
                 </motion.div>
                 <motion.div variants={imageVariants}>
@@ -97,19 +100,10 @@ export default function AddProjectDialog() {
                     className="rounded-3xl transition-all duration-300 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
                     onClick={async () => {
                       setLoading(true);
-                      const data = await createProject({
-                        title: "Untitled",
-                        description: "Description",
-                        collaborators: [],
-                        technologies: "",
-                        githuburl: "",
-                        columnId: "development",
-                        tags: [],
-                        websiteurl: "",
-                      });
+                      const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "",  githuburl: "",  columnId: "development", tags: [], websiteurl: "",  mermaidSchema: null, display: false});
                       setLoading(false);
                       router.push(`/project/development/${data.project?.id}`);
-                    }}
+                      }}
                   />
                 </motion.div>
                 <motion.div variants={imageVariants}>
@@ -122,19 +116,11 @@ export default function AddProjectDialog() {
                     className="rounded-3xl transition-all duration-300 hover:ring-1 hover:ring-black/30 hover:ring-offset-1"
                     onClick={async () => {
                       setLoading(true);
-                      const data = await createProject({
-                        title: "Untitled",
-                        description: "Description",
-                        collaborators: [],
-                        technologies: "",
-                        githuburl: "",
-                        columnId: "development",
-                        tags: [],
-                        websiteurl: "",
-                      });
+                      const data = await createProject({title: "Untitled", description: "Description", collaborators: [], technologies: "", githuburl: "", columnId: "development", tags: [], websiteurl: "", mermaidSchema: null, display: false });
                       setLoading(false);
                       router.push(`/project/toLaunch/${data.project?.id}`);
-                    }}
+  
+                      }}
                   />
                 </motion.div>
               </motion.div>
