@@ -21,12 +21,9 @@ export default function Profile({fetchedUser}: ProfileProps) {
             <AvatarFallback className="w-8 h-8">{fetchedUser.name?.[0] || 'AA'}</AvatarFallback>
           </Avatar>
           
-        <Link href={`/site/${fetchedUser.siteId}`}>
-          <span className="truncate text-sm font-medium">
+          <div className="truncate text-sm font-medium">
             Your Portfolio
-          </span>
-        </Link>
-    
+          </div>
       </div>
     </div>
   );

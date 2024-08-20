@@ -1,6 +1,5 @@
 "use server"
 import { KanbanBoard } from "../../../components/kanban/kanban";
-import NavigationComponent from "../../../components/nav-bar";
 import { getProjects, getUser } from "../../../lib/actions";
 
 export default async function Overview() {

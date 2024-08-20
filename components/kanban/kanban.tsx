@@ -90,7 +90,6 @@ export function KanbanBoard({ fetchedProjects, fetchedUser}: KanbanBoardProps) {
       )}
       <>
       <BoardContainer>
-      <AddProjectDialog></AddProjectDialog>
         <SortableContext items={columnsId}>
           {columns
             .filter((col) => col.id === "development" || col.id === "ideas")

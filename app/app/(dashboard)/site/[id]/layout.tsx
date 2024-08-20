@@ -6,7 +6,6 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
     <div className="flex max-w-screen-full flex-col ">
       <div className="flex flex-col">{children}</div>
       <div><NavigationComponent site={true}/> </div>
-
     </div>
   );
 }

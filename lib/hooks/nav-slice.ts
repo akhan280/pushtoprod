@@ -1,20 +1,31 @@
 import { StateCreator } from 'zustand';
 
 type NavStore = {
-  previousUrl: string;
+  previousUrls: string[]; 
 };
 
 type NavActions = {
-  setPreviousUrl: (url: string) => void;
-  
+  pushUrl: (url: string) => void;
+  popUrl: () => string | undefined;
 };
 
 export type NavSlice = NavStore & NavActions;
 
 export const createNavSlice: StateCreator<NavSlice> = (set, get) => ({
-  previousUrl: "",
+  previousUrls: [],
 
-  setPreviousUrl: (previousUrl: string) => {
-    set({previousUrl})
+  pushUrl: (url: string) => {
+    set((state) => ({
+      previousUrls: [...state.previousUrls, url],
+    }));
+  },
+
+  popUrl: () => {
+    const state = get();
+    const previousUrls = [...state.previousUrls];
+    const lastUrl = previousUrls.pop(); 
+
+    set({ previousUrls });
+    return lastUrl;
   },
 });
