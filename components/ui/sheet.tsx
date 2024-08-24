@@ -60,12 +60,12 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(({ side = "right", className, children, route,  ...props }, ref) => {
   const router = useRouter();
-  const {setPreviousUrl} = useMainStore();
+  // const {setPreviousUrl} = useMainStore();
   const pathname = usePathname()
 
-  React.useEffect(() => {
-    setPreviousUrl("");
-  }, [])
+  // React.useEffect(() => {
+  //   setPreviousUrl("");
+  // }, [])
 
   return (
     <SheetPortal>
@@ -76,7 +76,7 @@ const SheetContent = React.forwardRef<
         className={cn(sheetVariants({ side }), className)}
         {...props}
       >
-        <Button className="text-white z-20" onClick={() => { router.push(`/project/ideas/${route}`); setPreviousUrl(pathname)}}>expand</Button>
+        <Button className="text-white z-20" onClick={() => { router.push(`/project/ideas/${route}`);}}>expand</Button>
         {children}
         <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
           <X className="h-4 w-4" />

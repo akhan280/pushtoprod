@@ -41,16 +41,16 @@ export default function Sidebar() {
 
             <div className="flex justify-between items-center">
               Technologies
-              {/* <TechnologiesContext variant="icon" technologies={selectedProject?.technologies}></TechnologiesContext> */}
+              <TechnologiesContext variant="icon" technologies={selectedProject?.technologies}></TechnologiesContext>
             </div>
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <span>Dates</span>
               <div className="flex space-x-2">
                 <span>Start</span>
                 <span className="text-gray-400">→</span>
                 <span>Target</span>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
@@ -59,7 +59,7 @@ export default function Sidebar() {
 
           <Image
             height={30}
-            width={410}
+            width={300}
             loading="eager"
             src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/ideas.png"
             alt="ideas"
@@ -69,7 +69,7 @@ export default function Sidebar() {
 
           <Image
             height={30}
-            width={410}
+            width={300}
             loading="eager"
             src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/development.png"
             alt="ideas"
@@ -80,7 +80,7 @@ export default function Sidebar() {
 
           <Image
             height={30}
-            width={410}
+            width={300}
             loading="eager"
             src="https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/launch.png"
             alt="ideas"

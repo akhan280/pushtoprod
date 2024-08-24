@@ -34,16 +34,10 @@ export default function Header({
         rows={1}
       />
 
-      <AutosizeTextarea
-        placeholder="GitHub URL"
-        className="text-bold text-md border-0 bg-transparent py-8 outline-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 "
-        value={selectedProject?.githuburl || ""}
-        onChange={(e) => setProjectProperty("githuburl", e.target.value)}
-      />
     </div>
   ) : (
     
-    <div className="pt-8 px-6 bg-white rounded-lg shadow-sm">
+    <div className="">
       <div className="mb-4">
         <Input
           value={selectedProject?.title || ""}

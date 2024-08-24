@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "@/components/projects/sidebar";
 import { PlateEditor } from "@/components/projects/plate";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import Image from "next/image";
 
 export default function ProjectLayout({
   ideas,
@@ -29,7 +30,12 @@ export default function ProjectLayout({
         return (
           <>
             {ideas}
+            <div className = "mt-20">
             <PlateEditor />
+
+
+            </div>
+            
           </>
         );
       case "development":
@@ -53,8 +59,21 @@ export default function ProjectLayout({
       </div>
       {/* Conditionally render the sidebar only for "ideas" and "development" */}
       {(columnId === "ideas" || columnId === "development") && (
-        <div className="w-100">
-          <Sidebar />
+        <div className="w-100 relative overflow-visible">
+          <div
+            className=" absolute inset-0  z-20 rounded-3xl"
+            style={{
+              width: 100,
+              height: 400,
+              backgroundImage: "url('https://sopheddvjgzwigrybjyy.supabase.co/storage/v1/object/public/site-images/blue-gradient.png?t=2024-08-24T01%3A00%3A21.874Z')",
+              backgroundSize: "cover",
+              backgroundPosition: "right center",
+              overflow: "visible",
+            }}
+          />
+          <div className="relative z-30">
+            <Sidebar />
+          </div>
         </div>
       )}
     </div>

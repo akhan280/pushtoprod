@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Technology } from "../../lib/types";
 import { Card } from "../ui/card";
 import { useState, useEffect } from "react";
-import { getAllTechnologies, updateProjectField, updateProjectTechnologies, removeTechnology} from "../../lib/actions";
+import { getAllTechnologies, updateProjectField, updateProjectTechnologies, removeTechnology } from "../../lib/actions";
 import { Input } from "../ui/input";
 import { ButtonLoading } from "../ui/loading-ui/button-loading";
 import { toast } from "../ui/use-toast";
@@ -17,7 +17,7 @@ import { toast } from "../ui/use-toast";
 
 
 const technologyCardVariants = cva(
-  "flex flex-col items-center p-2 rounded-md transition-all",
+  "flex flex-col items-center justify-center p-2 rounded-md transition-all",
   {
     variants: {
       variant: {
@@ -37,12 +37,12 @@ export interface TechnologyCardProps extends React.HTMLAttributes<HTMLDivElement
   asChild?: boolean;
 }
 
-const TechnologyCard = React.forwardRef<HTMLDivElement, TechnologyCardProps> (
+const TechnologyCard = React.forwardRef<HTMLDivElement, TechnologyCardProps>(
   ({ technology, className, variant, asChild = false, ...props }, ref) => {
-    const {selectedProject, setSelectedProject} = useMainStore();
+    const { selectedProject, setSelectedProject } = useMainStore();
     const [loading, setLoading] = useState(false);
     const Comp = asChild ? Slot : "div";
-    
+
     async function handleAddTechnology() {
       if (!selectedProject) {
         toast({
@@ -56,14 +56,14 @@ const TechnologyCard = React.forwardRef<HTMLDivElement, TechnologyCardProps> (
       const project = await updateProjectTechnologies(selectedProject.id, technology)
       console.log('[Technology Card] Project', project)
 
-      setSelectedProject({...project!, previous: selectedProject.previous, next: selectedProject.next});
+      setSelectedProject({ ...project!, previous: selectedProject.previous, next: selectedProject.next });
       setLoading(false)
     }
 
     async function handleRemove(technology: Technology) {
       console.log("Removing")
       const project = await removeTechnology(selectedProject?.id, technology)
-      setSelectedProject({previous: selectedProject.previous, next: selectedProject.next, ...project})
+      setSelectedProject({ previous: selectedProject.previous, next: selectedProject.next, ...project })
     }
 
     const isTechnologyAdded = selectedProject?.technologies.some(t => t.id === technology.id);
@@ -102,24 +102,26 @@ const TechnologyCard = React.forwardRef<HTMLDivElement, TechnologyCardProps> (
 
 TechnologyCard.displayName = "TechnologyCard";
 export { TechnologyCard, technologyCardVariants };
-  
+
 
 interface TechnologiesContextProps {
-    variant: "icon" | "iconWithText" | "iconWithTextDescription";
-    technologies: Technology[];
-  }
+  variant: "icon" | "iconWithText" | "iconWithTextDescription";
+  technologies: Technology[];
+}
 
 
 export function TechnologiesContext({ variant, technologies }: TechnologiesContextProps) {
   return (
-    <div>
+    <div >
       {technologies ? (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4 ">
           {technologies.map((technology, index) => (
             <div key={index}>
               <TechnologyCard
                 technology={technology}
                 variant={variant}
+
+
               />
             </div>
           ))}
@@ -131,49 +133,56 @@ export function TechnologiesContext({ variant, technologies }: TechnologiesConte
   );
 }
 
-  export function TechnologySearch() {
-    const {technologies, setTechnologies} = useMainStore((state) => ({technologies: state.technologies, setTechnologies: state.setTechnologies}))
-    const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
-  
-    useEffect(() => {
-      if (technologies.length === 0) {
-        console.log("[Tech Search] Inital Render, Fetching")
-        fetchTechnologies();
-      }
-    }, []);
-  
-    async function fetchTechnologies() {
-      const techs = await getAllTechnologies();
-      setTechnologies(techs);
-      setLoading(false);
-    }
+export function TechnologySearch() {
+  const { technologies, setTechnologies } = useMainStore((state) => ({ technologies: state.technologies, setTechnologies: state.setTechnologies }))
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    // if (loading) {
-    //   return <ButtonLoading></ButtonLoading>
-    // }
-  
-    function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
-      setSearchTerm(e.target.value);
+  useEffect(() => {
+    if (technologies.length === 0) {
+      console.log("[Tech Search] Inital Render, Fetching")
+      fetchTechnologies();
     }
-  
-    const filteredTechnologies = technologies?.filter((technology) =>
-      technology.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  
-    return (
-      <div>
-        <Input
-          type="text"
-          placeholder="Search technologies"
-          onChange={inputHandler}
-          className="p-2 border rounded"
+  }, []);
+
+  async function fetchTechnologies() {
+    const techs = await getAllTechnologies();
+    setTechnologies(techs);
+    setLoading(false);
+  }
+
+  // if (loading) {
+  //   return <ButtonLoading></ButtonLoading>
+  // }
+
+  function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearchTerm(e.target.value);
+  }
+
+  const filteredTechnologies = technologies?.filter((technology) =>
+    technology.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="mt-12">
+    <div className="flex justify-center items-center">
+
+      <Input
+        type="text"
+        placeholder="Search technologies"
+        onChange={inputHandler}
+        className="p-2 border rounded w-96" // Wider width using predefined Tailwind class
         />
-        
+ </div>
+
+
+      <div className="mt-4">
         <TechnologiesContext
           variant="iconWithTextDescription"
           technologies={filteredTechnologies}
         />
       </div>
-    );
-  }
+   
+    </div>
+  );
+}

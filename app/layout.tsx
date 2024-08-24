@@ -45,6 +45,6 @@ export default function RootLayout({
         <Analytics />
         <Toaster />
       </body>
-    </hgittml>
+    </html>
   );
 }
